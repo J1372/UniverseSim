@@ -59,20 +59,20 @@ class Body {
 
 
 public:
-	int id;
+	int id = -1;
 	//int cur_type = 0;
 
-	float x;
-	float y;
+	float x = 0.0;
+	float y = 0.0;
 	float vel_x = 0;
 	float vel_y = 0;
 	float acc_x = 0;
 	float acc_y = 0;
 	//float acceleration;
 
-	float radius; // in units. same as distance.
-	const TypeExt* type;
-	long mass; // in kg
+	float radius = 0.0; // in units. same as distance.
+	const TypeExt* type = &ASTEROID_TYPE;
+	long mass = 0l; // in kg
 	//TypeExt *type;  // either makes render faster or slower due to cache/indirection but idk??
 
 	// mass/size increase -> camera increases #units shown (zoom out). pixel/unit decrease.
@@ -80,7 +80,9 @@ public:
 	//Color color;
 	//const struct Texture2D* texture;
 
-	Body(int id, int x, int y, long mass) : id(id), x(x), y(y), mass(std::max(1l, mass))
+	Body() = default;
+
+	Body(int id, float x, float y, long mass) : id(id), x(x), y(y), mass(std::max(1l, mass))
 	{
 		type = &ASTEROID_TYPE;
 		//radius = (float)mass;

@@ -16,7 +16,7 @@ class Universe {
 	static constexpr long RAND_MASS = 100;
 	static constexpr int MASS_SCALING = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
 
-	std::unordered_map<int, std::unique_ptr<Body>> body_map;
+	std::unordered_map<int, Body> body_map;
 
 	QuadTree root{ -std::numeric_limits<float>::max(),
 		-std::numeric_limits<float>::max(),
@@ -51,7 +51,7 @@ public:
 	Body& create_rand_system();
 	Body& create_rand_satellite(const Body&);
 
-	const std::unordered_map<int, std::unique_ptr<Body>>& get_map() const { return body_map; }
+	const std::unordered_map<int, Body>& get_map() const { return body_map; }
 
 	void update();
 
@@ -68,13 +68,13 @@ private:
 	void handle_collisions();
 
 	// O(1)
-	void handle_collision(std::unordered_map<int, std::unique_ptr<Body>>::iterator& it);
+	void handle_collision(std::unordered_map<int, Body>::iterator& it);
 
 	// O(n^2)
-	void handle_gravity() const;
+	void handle_gravity();
 
 	// O(n)
-	void update_pos() const;
+	void update_pos();
 
 	void gen_rand_portions(float*, int) const;
 

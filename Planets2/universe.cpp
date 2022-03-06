@@ -27,7 +27,7 @@ void Universe::handle_collisions()
 		//body_map.erase(id);
 	//}
 	
-	std::unordered_map<int, std::unique_ptr<Body>>::iterator it = body_map.begin();
+	std::unordered_map<int, Body>::iterator it = body_map.begin();
 	//bool curr_eaten = false;
 	while (it != body_map.end()) {
 		handle_collision(it);
@@ -35,13 +35,13 @@ void Universe::handle_collisions()
 	
 }
 
-void Universe::handle_collision(std::unordered_map<int, std::unique_ptr<Body>>::iterator& it)
+void Universe::handle_collision(std::unordered_map<int, Body>::iterator& it)
 {
-	Body& body1 = *it->second;
+	Body& body1 = it->second;
 	auto it2 = std::next(it, 1);
 	while (it2 != body_map.end()) {
 		////std::cout << "\t\tCollision check against " << it2->first << "\n\n";
-		Body& body2 = *it2->second;
+		Body& body2 = it2->second;
 
 		if (body1.check_col(body2)) { // there is a collision
 			////std::cout << "\t\t\tCollision!" << '\n';
@@ -68,13 +68,14 @@ void Universe::handle_collision(std::unordered_map<int, std::unique_ptr<Body>>::
 	++it;
 }
 
-void Universe::handle_gravity() const
+void Universe::handle_gravity()
 {
 	// maybe set all acc to 0
+	// std::unordered_map<int, Body>::iterator
 	for (auto it = body_map.begin(); it != body_map.end(); ++it) {
-		Body& body1 = *it->second;
-		for (auto it2 = std::next(it, 1); it2 != body_map.end(); ++it2) {
-			Body& body2 = *it2->second;
+		Body& body1 = it->second;
+		for (std::unordered_map<int, Body>::iterator it2 = std::next(it, 1); it2 != body_map.end(); ++it2) {
+			Body& body2 = it2->second;
 
 			grav_pull(body1, body2);
 
@@ -82,10 +83,10 @@ void Universe::handle_gravity() const
 	}
 }
 
-void Universe::update_pos() const
+void Universe::update_pos()
 {
 	for (auto it = body_map.begin(); it != body_map.end(); ++it) {
-		Body& body = *it->second;
+		Body& body = it->second;
 
 		body.pos_update();
 	}
@@ -123,12 +124,12 @@ Body& Universe::create_body(float x, float y, long mass)
 {
 	int id = generated_bodies;
 
-	body_map[id] = std::make_unique<Body>(id, x, y, mass);
+	body_map[id] = { id, x, y, mass };
 
 	++cur_bodies;
 	++generated_bodies;
 
-	Body& body = *body_map[id].get();
+	Body& body = body_map[id];
 
 	root.add_body(body);
 
@@ -139,12 +140,12 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 {
 	int id = generated_bodies;
 
-	body_map[id] = std::make_unique<Body>(id, sat_dist, ecc, orbiting, GRAV_CONST, mass);
+	body_map[id] = { id, sat_dist, ecc, orbiting, GRAV_CONST, mass };
 
 	++cur_bodies;
 	++generated_bodies;
 
-	Body& body = *body_map[id].get();
+	Body& body = body_map[id];
 
 	root.add_body(body);
 
@@ -154,16 +155,16 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 Body& Universe::create_rand_body()
 {
 	int id = generated_bodies;
-	int x = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE); // might be more efficient to randf * start_size
-	int y = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE);
+	float x = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE); // might be more efficient to randf * start_size
+	float y = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE);
 	long mass = randi(1, RAND_MASS);
 
-	body_map[id] = std::make_unique<Body>(id, x, y, mass);
+	body_map[id] = { id, x, y, mass };
 
 	++cur_bodies;
 	++generated_bodies;
 
-	Body& body = *body_map[id].get();
+	Body& body = body_map[id];
 
 	root.add_body(body);
 

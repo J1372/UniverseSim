@@ -81,7 +81,7 @@ void draw_quad(const QuadTree* cur) {
 #endif
 
 void render_system(Universe& universe, Camera2D& camera) {
-	const std::unordered_map<int, std::unique_ptr<Body>>& body_map = universe.get_map();
+	const std::unordered_map<int, Body>& body_map = universe.get_map();
 
 #ifdef RENDER_QUAD_TREE
 
@@ -92,7 +92,7 @@ void render_system(Universe& universe, Camera2D& camera) {
 #endif
 
 	for (auto it = body_map.begin(); it != body_map.end(); ++it) {
-		const Body& body = *it->second;
+		const Body& body = it->second;
 
 		Vector2 screen_pos = GetWorldToScreen2D({ body.x, body.y }, camera);
 		if (on_screen(screen_pos, camera)) {
