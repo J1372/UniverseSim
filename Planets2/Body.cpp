@@ -1,0 +1,241 @@
+#include "Body.h"
+#include <cmath>
+#include <iostream>
+#include "rand_float.h"
+#include <numbers>
+
+
+
+Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_const, long mass)
+{
+	this->id = id;
+	this->mass = std::max(1l, mass);
+
+	type = &ASTEROID_TYPE;
+
+	upgrade_update();
+
+	radius = std::max(((float)mass) / type->density, 1.0f);
+
+
+
+	/*
+	*
+	* ecc = 0.0		Circular
+	* ecc < 1.0		Elliptical
+	* ecc = 1.0		Parabolic
+	* ecc > 1.0		Hyperbolic
+	*
+	*
+	*/
+	// find random (x,y) pair using ecc.
+	// e = (Ra-Rp)/(Ra+Rp)
+	// find apoapsis
+	// 
+
+
+	float periapsis = sat_dist * (orbiting.radius + radius);
+	float periapsis_angle = (randf() * 2) * std::numbers::pi; // angle from orbiting body where periapsis is.
+	float periapsis_v[2] = { periapsis * std::cos(periapsis_angle), periapsis * std::sin(periapsis_angle) };
+	// for some reason x = sin and y = cos;
+	// this should be valid x and y for pos and negative. hope so :)
+
+	float apoapsis = periapsis * (1 + ecc) / (1 - ecc); // appoapsis on opposite end. pi radians degrees.
+	float semi_major_axis = (periapsis + apoapsis) / 2;
+
+	// this is a random degree from periapsis;
+	// for now, every planet starts at their periapsis. the periapsis is random.
+	// in the future, I'd like every planet to start at a random point on there orbit.
+
+	/*float true_anomaly = (randf() * 2) * std::numbers::pi; // THIS IS INT NOT FLOAT REEEE
+	float dist_at_point = semi_major_axis * (1 - std::pow(ecc, 2)) / (1 + ecc * std::cos(true_anomaly));*/
+
+	// find x and y using dist_at_point and true_anomaly
+	// 
+	// int x = dist_at_point
+	// ecc >= 1.0 has possibility of divide by 0.
+
+	x = periapsis_v[0] + orbiting.x;
+	y = periapsis_v[1] + orbiting.y;
+
+	// currently sets velocity for if they're at periapsis with no implementation for random point in there orbit.
+
+//periapsis_angle at periapsis_v[0][1];
+// all velocity at periapsis and apoapsis is tangental to body. 90 degrees = pi/2
+	float nom = (1 + ecc) * grav_const * (orbiting.mass + mass); // orbiting.mass at least, possibly + mass
+	float den = (1 - ecc) * semi_major_axis;
+	float v_per = std::sqrt(nom / den);
+
+	//float v_angle = periapsis_angle;
+	float v_angle = 2 * std::numbers::pi - periapsis_angle; // flip on y-axis
+
+
+	float vel_v[2] = { v_per * sin(v_angle), v_per * cos(v_angle) };
+
+	bool retrograde_roll = randf() < .12; // % chance to have retrograde orbit
+
+	if (retrograde_roll) {
+		vel_v[0] = -vel_v[0];
+		vel_v[1] = -vel_v[1];
+	}
+
+	vel_x = vel_v[0];
+	vel_y = vel_v[1];
+
+#ifdef MY_DEBUG
+	std::cout << "Periapsis: " << periapsis << '\n';
+	std::cout << "Per_theta: " << periapsis_angle * 57.2958 << '\n';
+	std::cout << "Per_x    : " << periapsis_v[0] << '\n';
+	std::cout << "Per_y    : " << periapsis_v[1] << "\n\n";
+	std::cout << "Vel_p    : " << v_per << '\n';
+	std::cout << "Vel_theta: " << v_angle * 57.2958 << '\n';
+	std::cout << "Vel_x    : " << vel_v[0] << '\n';
+	std::cout << "Vel_y    : " << vel_v[1] << "\n\n";
+
+	std::cout << "Semi-maj : " << semi_major_axis << '\n';
+	std::cout << "Apoapsis : " << apoapsis << '\n';
+	std::cout << "Sat_dist : " << sat_dist << "\n\n";
+#endif
+
+}
+
+void Body::distv_body(const Body& other, float(&vectors)[2]) const
+{
+	vectors[0] = other.x - x;
+	vectors[1] = other.y - y;
+}
+
+float Body::dist_body(const Body& other) const
+{
+	//float abs_x = fabs(body1->x - body2->x
+	// unsure if this is ever needed aside from debugging or printing maybe.
+	// everything should use distv. because force is a vector.
+	float c_squared = std::pow(std::abs(other.x - x), 2) + std::pow(std::abs(other.y - y), 2);
+	return std::sqrt(c_squared);
+}
+
+bool Body::can_eat(const Body& other) const
+{
+	return mass >= other.mass;
+}
+
+void Body::absorb(Body& other)
+{
+
+	//double mass_ratio = (double)other.mass / (double)mass; // not perfect yet
+
+	long combined_mass = mass + other.mass;
+
+	float mom[2];
+	float other_mom[2];
+	float combined_mom[2];
+
+	get_momentum(mom);
+	other.get_momentum(other_mom);
+
+	combined_mom[0] = mom[0] + other_mom[0];
+	combined_mom[1] = mom[1] + other_mom[1];
+
+
+
+	//std::cout << "X_momf: " << combined_mom[0] << '\n';
+	//std::cout << "Y_momf: " << combined_mom[1] << "\n\n";
+
+	//float vel_x_add =// mass_ratio * other.vel_x;
+	//float vel_y_add = //mass_ratio * other.vel_y;
+
+
+
+	//float mass_ratio = other.mass / mass; // m1/(m1+m2)
+
+	float d_vel_x = combined_mom[0] / ((double)combined_mass); // vf , not delta
+	float d_vel_y = combined_mom[1] / ((double)combined_mass);
+
+	/*std::cout << "vel_f(X): " << d_vel_x << '\n';
+	std::cout << "vel_f(Y): " << d_vel_y << "\n\n";*/
+
+	vel_x = d_vel_x;
+	vel_y = d_vel_y;
+
+
+	// upgrade its type if it meets mass requirements.
+	mass = combined_mass;
+	upgrade_update();
+
+	//radius = mass / type->density;
+	radius = std::max(((float)mass) / type->density, 1.0f); // could be in upgrade_update
+
+	/*float force_x = other.mass / -other.vel_x;
+	float force_y = other.mass / -other.vel_y;
+
+	float acc_x = force_x / mass; // == (prev_mass + other.mass), we have its mass now
+	float acc_y = force_y / mass;
+
+	vel_x += acc_x;
+	vel_y += acc_y;*/
+	//vel_x += .3*other.vel_x; // this should be a portion of the force that other smacks u with.
+	//vel_y += .3*other.vel_y;
+	//free body2 if we decide to have it be dynamically allocated.
+	//upgrade_update(body1); < maybe part of check_col. or game loop.
+}
+
+// void impact (struct Body * const, struct Body * const){} partial absorb
+
+void Body::upgrade_update()
+{
+	int cur_index = type->level;
+	//int cur_index = static_cast<int>(type);
+	while (mass >= TYPES[cur_index + 1].min_mass) {
+
+		++cur_index;
+	}
+	type = &TYPES[cur_index];
+	// could just use TYPES as a prototype, and copy its density and color into bodies for faster access.
+	// color = type.color or store color  in type and make type a pointer to a static type and make a static type array ( but what if we dont want every type to be 
+}
+
+void Body::pos_update()
+{
+	vel_x += acc_x;
+	vel_y += acc_y;
+
+	x += vel_x;
+	y += vel_y;
+
+	acc_x = 0; // set accelerations to 0 for next tick
+	acc_y = 0;
+
+}
+
+bool Body::check_col(const Body& other) const
+{
+	// speed hack bypass dist_body's sqrt
+	float c_squared = std::pow(std::abs(other.x - x), 2) + std::pow(std::abs(other.y - y), 2);
+	//////std::cout << "c^2 = " << c_squared << '\n';
+	////std::cout << "r^2 = " << std::pow((other.radius + radius), 2) << '\n';
+	return c_squared < std::pow((other.radius + radius), 2);
+}
+
+
+void Body::grav_pull(const float(&force)[2]) // force = vectors (x, y)
+{
+
+	// calc net acceleration for both vectors.
+
+	float d_acc_x = force[0] / mass;
+	float d_acc_y = force[1] / mass;
+
+	acc_x += d_acc_x;
+	acc_y += d_acc_y;
+
+}
+
+void Body::get_momentum(float(&to_set)[2])
+{
+	to_set[0] = mass * vel_x;
+	to_set[1] = mass * vel_y;
+
+	//std::cout << "X_mom: " << to_set[0] << '\n';
+	//std::cout << "Y_mom: " << to_set[1] << "\n\n";
+
+}
