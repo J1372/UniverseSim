@@ -54,6 +54,17 @@ void processInput(Universe& universe, Camera2D& camera) {
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
 
+	float wheel_move = GetMouseWheelMove();
+
+	if (wheel_move < 0) {
+		camera.zoom /= 2;
+		cam_speed = 5 * multiplier / camera.zoom;
+	}
+	else if (wheel_move > 0) {
+		camera.zoom *= 2;
+		cam_speed = 5 * multiplier / camera.zoom;
+	}
+
 }
 
 bool on_screen(Vector2 screen_pos, Camera2D& camera) {
@@ -128,7 +139,6 @@ int main() {
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
 	InitWindow(screenWidth, screenHeight, "Game");
 	SetExitKey(KEY_NULL);
-	//SetTargetFPS(60);
 
 	Universe universe;
 
