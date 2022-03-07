@@ -27,21 +27,24 @@ void Universe::handle_collisions()
 		//body_map.erase(id);
 	//}
 	
-	std::unordered_map<int, Body>::iterator it = body_map.begin();
+	int index = 0;
 	//bool curr_eaten = false;
-	while (it != body_map.end()) {
-		handle_collision(it);
+	while (index < active_bodies.size()) {
+		bool removed = handle_collision(index);
+		if (!removed) {
+			index++;
+		}
 	}
 	
 }
 
-void Universe::handle_collision(std::unordered_map<int, Body>::iterator& it)
+bool Universe::handle_collision(int it)
 {
-	Body& body1 = it->second;
-	auto it2 = std::next(it, 1);
-	while (it2 != body_map.end()) {
+	Body& body1 = active_bodies[it];
+	int it2 = it + 1;
+	while (it2 < active_bodies.size()) {
 		////std::cout << "\t\tCollision check against " << it2->first << "\n\n";
-		Body& body2 = it2->second;
+		Body& body2 = active_bodies[it2];
 
 		if (body1.check_col(body2)) { // there is a collision
 			////std::cout << "\t\t\tCollision!" << '\n';
@@ -51,31 +54,33 @@ void Universe::handle_collision(std::unordered_map<int, Body>::iterator& it)
 			if (body1.can_eat(body2)) { // it1 eats it2
 				body1.absorb(body2);
 
-				it2 = body_map.erase(it2); // move to next check
+				// better way of removing elements from vector exists, but do this for now.
+				active_bodies.erase(active_bodies.begin() + it2); // move to next check
 			}
 			else { // it2 eats it1
 				body2.absorb(body1);
 
-				it = body_map.erase(it); // it1 no longer exists, no more checks on other it2s.
-				return;
+				active_bodies.erase(active_bodies.begin() + it); // it1 no longer exists, no more checks on other it2s.
+				return true;
 			}
 		}
 		else { // no collision. move to next check.
-			++it2;
+			it2++;
 		}
 
 	}
-	++it;
+	
+	return false;
 }
 
 void Universe::handle_gravity()
 {
 	// maybe set all acc to 0
 	// std::unordered_map<int, Body>::iterator
-	for (auto it = body_map.begin(); it != body_map.end(); ++it) {
-		Body& body1 = it->second;
-		for (std::unordered_map<int, Body>::iterator it2 = std::next(it, 1); it2 != body_map.end(); ++it2) {
-			Body& body2 = it2->second;
+	for (int i = 0; i < active_bodies.size() - 1; i++) {
+		Body& body1 = active_bodies[i];
+		for (int j = i + 1; j < active_bodies.size(); j++) {
+			Body& body2 = active_bodies[j];
 
 			grav_pull(body1, body2);
 
@@ -85,19 +90,22 @@ void Universe::handle_gravity()
 
 void Universe::update_pos()
 {
-	for (auto it = body_map.begin(); it != body_map.end(); ++it) {
-		Body& body = it->second;
+	for (int i = 0; i < active_bodies.size(); i++) {
+		Body& body = active_bodies[i];
 
 		body.pos_update();
 	}
 }
 
-void Universe::gen_rand_portions(float* slots, int num_slots) const
+std::vector<float> Universe::gen_rand_portions(int num_slots) const
 {
+	std::vector<float> slots;
+	slots.reserve(num_slots);
+
 	float sum = 0.0f;
 	for (int i = 0; i < num_slots; ++i) {
 		float lot = randf();
-		slots[i] = lot;
+		slots.emplace_back(lot);
 		sum += lot;
 	}
 
@@ -105,6 +113,8 @@ void Universe::gen_rand_portions(float* slots, int num_slots) const
 	for (int i = 0; i < num_slots; ++i) {
 		slots[i] /= sum;
 	}
+
+	return slots;
 }
 
 void Universe::update()
@@ -124,12 +134,11 @@ Body& Universe::create_body(float x, float y, long mass)
 {
 	int id = generated_bodies;
 
-	body_map[id] = { id, x, y, mass };
+	active_bodies.emplace_back( id, x, y, mass );
 
-	++cur_bodies;
 	++generated_bodies;
 
-	Body& body = body_map[id];
+	Body& body = active_bodies[active_bodies.size()-1];
 
 	root.add_body(body);
 
@@ -140,12 +149,11 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 {
 	int id = generated_bodies;
 
-	body_map[id] = { id, sat_dist, ecc, orbiting, GRAV_CONST, mass };
+	active_bodies.emplace_back( id, sat_dist, ecc, orbiting, GRAV_CONST, mass );
 
-	++cur_bodies;
 	++generated_bodies;
 
-	Body& body = body_map[id];
+	Body& body = active_bodies[active_bodies.size() - 1];
 
 	root.add_body(body);
 
@@ -159,12 +167,11 @@ Body& Universe::create_rand_body()
 	float y = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE);
 	long mass = randi(1, RAND_MASS);
 
-	body_map[id] = { id, x, y, mass };
+	active_bodies.emplace_back (id, x, y, mass);
 
-	++cur_bodies;
 	++generated_bodies;
 
-	Body& body = body_map[id];
+	Body& body = active_bodies[active_bodies.size() - 1];
 
 	root.add_body(body);
 
@@ -180,17 +187,15 @@ Body& Universe::create_rand_system()
 	// rand_mass*100 applies only to max
 
 	//int num_planets = (rand() % 10) + 1; // at least 1 planet, up to 10.
-	constexpr int MIN_PLANETS = 100;
-	constexpr int MAX_PLANETS = 300;
+	constexpr int MIN_PLANETS = 500; // 100 - 300 was
+	constexpr int MAX_PLANETS = MIN_PLANETS;
 
 	int num_planets = randi(MIN_PLANETS, MAX_PLANETS); // at least 1 planet, up to 10.
 	//std::cout << num_planets << '\n';
 	constexpr float star_mass_ratio = .8f;
 	constexpr float remaining_mass = 1 - star_mass_ratio;
 
-	//std::unique_ptr<float[]> mass_ratios(new float[num_planets]);
-	float* mass_ratios = (float*)malloc(num_planets * sizeof(float));
-	gen_rand_portions(mass_ratios, num_planets);
+	
 
 
 
@@ -200,6 +205,8 @@ Body& Universe::create_rand_system()
 	long star_mass = star_mass_ratio * system_mass;
 
 	Body& star = create_body(star_x, star_y, star_mass);
+	
+	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
 
 	for (int i = 0; i < num_planets; ++i) {
 		Body& planet = create_satellite(star, randf(), mass_ratios[i] * system_mass);
@@ -208,9 +215,6 @@ Body& Universe::create_rand_system()
 		}
 		// rand num moons (distribution based on mass maybe)
 	}
-
-
-	free(mass_ratios);
 
 	return star;
 }
