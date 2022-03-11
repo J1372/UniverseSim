@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include <cmath>
+#include <array>
 
 
 enum class Type : int {
@@ -85,9 +86,6 @@ public:
 	Body(int id, float x, float y, long mass) : id(id), x(x), y(y), mass(std::max(1l, mass))
 	{
 		type = &ASTEROID_TYPE;
-		//radius = (float)mass;
-
-		//texture = nullptr;
 
 		upgrade_update();
 
@@ -97,9 +95,6 @@ public:
 
 	Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_const, long mass);
 
-	void distv_body(const Body&, float(&)[2]) const;
-
-	float dist_body(const Body&) const;
 
 	bool can_eat(const Body&) const;
 
@@ -113,9 +108,12 @@ public:
 
 	bool check_col(const Body&) const;
 
-	void grav_pull(const float(&)[2]);
+	void grav_pull(std::array<float, 2>);
 
-	void get_momentum(float(&)[2]);
+	std::array<float, 2> get_momentum();
+
+	std::array<float, 2> distv_body(const Body&) const;
+	float dist_body(const Body&) const;
 
 	// grav_pull more efficient to do to both at same time. but that handled by universe not body.
 	// could have Body.grav_pull just take a force. and universe calls both bodies

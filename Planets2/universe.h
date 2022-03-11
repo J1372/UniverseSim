@@ -4,6 +4,7 @@
 #include <memory>
 #include "QuadTree.h"
 #include <limits>
+#include <iostream>
 
 
 //const double GRAV_CONST = 0.00000000006743
@@ -12,7 +13,7 @@
 class Universe {
 	//static constexpr int UNIVERSE_CAPACITY = 2000;
 	static constexpr double GRAV_CONST = 0.75;
-	static constexpr int UNIVERSE_START_SIZE = 10000;
+	static constexpr int UNIVERSE_START_SIZE = 1000;
 	static constexpr long RAND_MASS = 100;
 	static constexpr int MASS_SCALING = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
 
@@ -41,6 +42,8 @@ public:
 
 	Universe() {
 		active_bodies.reserve(1000);
+
+		//std::cout << std::thread::hardware_concurrency();
 	};
 
 	bool can_create_body() const;

@@ -99,10 +99,9 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 
 }
 
-void Body::distv_body(const Body& other, float(&vectors)[2]) const
+std::array<float, 2> Body::distv_body(const Body& other) const
 {
-	vectors[0] = other.x - x;
-	vectors[1] = other.y - y;
+	return { other.x - x , other.y - y };
 }
 
 float Body::dist_body(const Body& other) const
@@ -126,12 +125,9 @@ void Body::absorb(Body& other)
 
 	long combined_mass = mass + other.mass;
 
-	float mom[2];
-	float other_mom[2];
-	float combined_mom[2];
-
-	get_momentum(mom);
-	other.get_momentum(other_mom);
+	std::array<float, 2> mom = get_momentum();
+	std::array<float, 2> other_mom = other.get_momentum();
+	std::array<float, 2> combined_mom;
 
 	combined_mom[0] = mom[0] + other_mom[0];
 	combined_mom[1] = mom[1] + other_mom[1];
@@ -217,7 +213,7 @@ bool Body::check_col(const Body& other) const
 }
 
 
-void Body::grav_pull(const float(&force)[2]) // force = vectors (x, y)
+void Body::grav_pull(std::array<float, 2> force) // force = vectors (x, y)
 {
 
 	// calc net acceleration for both vectors.
@@ -230,12 +226,10 @@ void Body::grav_pull(const float(&force)[2]) // force = vectors (x, y)
 
 }
 
-void Body::get_momentum(float(&to_set)[2])
+std::array<float, 2> Body::get_momentum()
 {
-	to_set[0] = mass * vel_x;
-	to_set[1] = mass * vel_y;
+	return { mass * vel_x , mass * vel_y };
 
 	//std::cout << "X_mom: " << to_set[0] << '\n';
 	//std::cout << "Y_mom: " << to_set[1] << "\n\n";
-
 }

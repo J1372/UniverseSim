@@ -187,12 +187,12 @@ Body& Universe::create_rand_system()
 	// rand_mass*100 applies only to max
 
 	//int num_planets = (rand() % 10) + 1; // at least 1 planet, up to 10.
-	constexpr int MIN_PLANETS = 500; // 100 - 300 was
-	constexpr int MAX_PLANETS = MIN_PLANETS;
+	constexpr int MIN_PLANETS = 100; // 100 - 300 was
+	constexpr int MAX_PLANETS = 300;
 
 	int num_planets = randi(MIN_PLANETS, MAX_PLANETS); // at least 1 planet, up to 10.
 	//std::cout << num_planets << '\n';
-	constexpr float star_mass_ratio = .8f;
+	constexpr float star_mass_ratio = .95f;
 	constexpr float remaining_mass = 1 - star_mass_ratio;
 
 	
@@ -229,7 +229,7 @@ Body& Universe::create_satellite(const Body& orbiting, float ecc, long mass)
 	// maybe perform the check in the create_system call
 
 	constexpr float MIN_DIST = 1.1F;
-	constexpr float MAX_DIST = 30;
+	constexpr float MAX_DIST = 40;
 	float sat_dist = randf() * (MAX_DIST - MIN_DIST) + MIN_DIST; // sat_dist in range 1.5 to 10.0
 
 
@@ -292,8 +292,7 @@ void Universe::grav_pull(Body& body1, Body& body2) const
 	//std::cout << "Grav pull: " << body1.id << ", " << body2.id << '\n';
 	//std::cout << "\tForce - " << force << "\n";
 
-	float dist_v[2];
-	body1.distv_body(body2, dist_v);
+	std::array<float, 2> dist_v = body1.distv_body(body2);
 
 	//std::cout << "\tdist_x - " << dist_v[0] << "\n";
 	//std::cout << "\tdist_y - " << dist_v[1] << "\n\n";
@@ -308,7 +307,7 @@ void Universe::grav_pull(Body& body1, Body& body2) const
 
 	// calc net (x, y) force vectors for both. are they the same / reversed?
 
-	float force_vectors[2]{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
+	std::array<float, 2> force_vectors { (float)(force * sin(theta)), (float)(force * cos(theta)) };
 
 	//std::cout << "\tForce_x = " << force_vectors[0] << '\n';
 	//std::cout << "\tForce_y = " << force_vectors[1] << "\n\n";

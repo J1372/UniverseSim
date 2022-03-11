@@ -62,6 +62,7 @@ void processInput(Universe& universe, Camera2D& camera) {
 	}
 	else if (wheel_move > 0) {
 		camera.zoom *= 2;
+
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
 
@@ -174,13 +175,13 @@ int main() {
 		}
 
 		BeginDrawing();
-		ClearBackground(BLACK); // maybe better to have before beginmode2d?
+			ClearBackground(BLACK); // maybe better to have before beginmode2d?
 
-		DrawFPS(50, 50);
+			DrawFPS(50, 50);
 
-		BeginMode2D(camera);
-		render_system(universe, camera);
-		EndMode2D();
+			BeginMode2D(camera);
+				render_system(universe, camera);
+			EndMode2D();
 
 		EndDrawing();
 	}
