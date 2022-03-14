@@ -8,14 +8,14 @@
 //#define MY_DEBUG
 //#define RENDER_QUAD_TREE
 
-float screenWidth = 1700.0;
-float screenHeight = 900.0;
+float screen_width = 1700.0;
+float screen_height = 900.0;
 //const int boardStartX = 100; maybe in GameScene
 //const int boardStartY = 100;
 
 bool running;
 
-void processInput(Universe& universe, Camera2D& camera) {
+void process_input(Universe& universe, Camera2D& camera) {
 	static int multiplier = 16;
 	static float cam_speed = 5 * multiplier / camera.zoom;
 
@@ -73,20 +73,19 @@ bool on_screen(Vector2 screen_pos, Camera2D& camera) {
 }
 
 #ifdef RENDER_QUAD_TREE
-void draw_quad(const QuadTree* cur) {
-	Rectangle rec{ cur->x, cur->y, cur->get_width(), cur->get_height() };
+void draw_quad(const QuadTree& cur) {
+	Rectangle rec{ cur.x, cur.y, cur.get_width(), cur.get_height() };
 
-	//DrawRectangleLines(cur->x, cur->y, cur->get_width(), cur->get_height(), RAYWHITE);
+	//DrawRectangleLines(cur.x, cur.y, cur.get_width(), cur.get_height(), RAYWHITE);
 
 	DrawRectangleLinesEx(rec, 10, RAYWHITE);
 
 
-	if (!cur->is_leaf()) {
-		const QuadTree* quads[4];
-		cur->get_quads(quads);
+	if (!cur.is_leaf()) {
+		const std::array<QuadTree*, 4> quads = cur.get_quads();
 
-		for (int i = 0; i < 4; ++i) {
-			draw_quad(quads[i]);
+		for (int i = 0; i < 4; i++) {
+			draw_quad(*quads[i]);
 		}
 	}
 }
@@ -97,7 +96,7 @@ void render_system(Universe& universe, Camera2D& camera) {
 
 #ifdef RENDER_QUAD_TREE
 
-	const QuadTree* cur = universe.get_quad_root();
+	const QuadTree& cur = universe.get_quad_root();
 
 	draw_quad(cur);
 
@@ -138,7 +137,7 @@ int main() {
 	std::ios_base::sync_with_stdio(false);
 
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-	InitWindow(screenWidth, screenHeight, "Game");
+	InitWindow(screen_width, screen_height, "Game");
 	SetExitKey(KEY_NULL);
 
 	Universe universe;
@@ -168,7 +167,7 @@ int main() {
 
 		}
 
-		processInput(universe, camera);
+		process_input(universe, camera);
 
 		if (running) {
 			universe.update();

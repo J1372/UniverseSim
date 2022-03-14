@@ -42,7 +42,7 @@ public:
 			check_y >= y && check_y < end_y;
 	}
 
-	void get_quads(const QuadTree* (&)[4]) const;
+	const std::array<QuadTree*, 4> get_quads() const;
 
 	float get_width() const { return end_x - x; }
 	float get_height() const { return end_y - y; }

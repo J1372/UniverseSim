@@ -105,13 +105,9 @@ bool QuadTree::rem_body(const Body& body)
 	return false;
 }
 
-void QuadTree::get_quads(const QuadTree* (&ret)[4]) const
+const std::array < QuadTree*, 4> QuadTree::get_quads() const
 {
-	ret[0] = UL.get();
-	ret[1] = UR.get();
-	ret[2] = LL.get();
-	ret[3] = LR.get();
-
+	return { UL.get(), UR.get(), LL.get(), LR.get() };
 }
 
 void QuadTree::update_pos()
