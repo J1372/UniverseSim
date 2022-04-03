@@ -5,7 +5,6 @@ void QuadTree::perform_collision_check(std::vector<int>& to_remove)
 {
 	if (is_leaf()) {
 		std::unordered_map<int, Body*>::iterator it = quad_bodies.begin();
-		//bool curr_eaten = false;
 		while (it != quad_bodies.end()) {
 			handle_collision(it, to_remove);
 		}
@@ -15,6 +14,11 @@ void QuadTree::perform_collision_check(std::vector<int>& to_remove)
 		UR->perform_collision_check(to_remove);
 		LL->perform_collision_check(to_remove);
 		LR->perform_collision_check(to_remove);
+
+		// Child methods may have removed objects.
+		if (has_room()) {
+			concatenate();
+		}
 	}
 }
 
@@ -93,7 +97,7 @@ bool QuadTree::rem_body(const Body& body)
 
 	if (!is_leaf()) {
 
-		if (quad_bodies.size() < MAX_BODIES) {
+		if (has_room()) {
 			concatenate();
 			return true;
 		}
@@ -105,7 +109,7 @@ bool QuadTree::rem_body(const Body& body)
 	return false;
 }
 
-const std::array < QuadTree*, 4> QuadTree::get_quads() const
+const std::array <QuadTree*, 4> QuadTree::get_quads() const
 {
 	return { UL.get(), UR.get(), LL.get(), LR.get() };
 }
@@ -113,46 +117,20 @@ const std::array < QuadTree*, 4> QuadTree::get_quads() const
 void QuadTree::update_pos()
 {
 	if (is_leaf()) {
-
-		// need to make copies of our parent and our bodies so that if reinsert concatenates our quad,
-		// we can still call reinsert to parent for all our bodies.
-		QuadTree* parent_copy = parent;
-
-		int x = this->x;
-		int y = this->y;
-		int end_x = this->end_x;
-		int end_y = this->end_y;
-
-		std::vector<Body*> check_bodies;
-		check_bodies.reserve(quad_bodies.size());
-
-		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); ++it) {
+		for (auto it = quad_bodies.begin(); it != quad_bodies.end();) {
 			Body& body = *it->second;
 
 			body.pos_update();
 
-			check_bodies.push_back(&body);
-
-		}
-
-		bool still_exist = true;
-		for (int i = 0; i < check_bodies.size(); ++i) {
-			Body& body = *check_bodies[i];
-
-			// check if body moved to neighbor quad same parent or totally different quad.
-			if (still_exist) {
-				if (!in_bounds(body.x, body.y)) {
-					quad_bodies.erase(body.id);
-					still_exist = !parent->reinsert(body);
-				}
+			if (in_bounds(body.x, body.y)) {
+				it++;
 			}
 			else {
-
+				it = quad_bodies.erase(it);
+				parent->reinsert(body);
 			}
+
 		}
-
-
-
 
 	}
 	else {
@@ -160,6 +138,11 @@ void QuadTree::update_pos()
 		UR->update_pos();
 		LL->update_pos();
 		LR->update_pos();
+
+		// Child methods may have called reinsert on us.
+		if (has_room()) {
+			concatenate();
+		}
 	}
 }
 
@@ -244,13 +227,12 @@ void QuadTree::split()
 	}
 }
 
-bool QuadTree::reinsert(Body& body)
+void QuadTree::reinsert(Body& body)
 {
 	if (in_bounds(body.x, body.y)) {
 		// no rem_body or rem_child, sub nodes already took care of that (they know it's not in their quad).
 		// don't have to remove from mine, because it is still in my quad.
 		add_to_child(body); // add to correct quad.
-		return false; // no body removed from my quads, no concatenation.
 	}
 	else {
 		quad_bodies.erase(body.id);
@@ -261,14 +243,8 @@ bool QuadTree::reinsert(Body& body)
 		}
 		else {
 			parent->reinsert(body);
-
-			if (has_room()) {
-				concatenate();
-				return true; // will stop updating positions and checking if reinserts needed.
-			}
 		}
 	}
-	return false;
 }
 
 void QuadTree::expand(Body& out_of_bounds_body)

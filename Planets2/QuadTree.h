@@ -68,9 +68,9 @@ private:
 	void concatenate();
 	void split();
 
-	bool reinsert(Body&);
+	void reinsert(Body& body);
 
 	// root only method !!!
-	void expand(Body&);
+	void expand(Body& body);
 
 };
