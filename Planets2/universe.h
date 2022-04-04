@@ -48,13 +48,13 @@ public:
 
 	bool can_create_body() const;
 
-	Body& create_body(float, float, long);
+	Body& create_body(float x, float y, long mass);
 	Body& create_body(float sat_dist, const Body& orbiting, float ecc, long mass);
-	Body& create_satellite(const Body&, float, long);
+	Body& create_satellite(const Body& orbiting, float ecc, long mass);
 
 	Body& create_rand_body();
 	Body& create_rand_system();
-	Body& create_rand_satellite(const Body&);
+	Body& create_rand_satellite(const Body& orbiting);
 
 	const std::vector<Body>& get_bodies() const { return active_bodies; }
 

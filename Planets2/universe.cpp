@@ -140,7 +140,7 @@ Body& Universe::create_body(float x, float y, long mass)
 
 	Body& body = active_bodies[active_bodies.size()-1];
 
-	root.add_body(body);
+	//root.add_body(body);
 
 	return body;
 }
@@ -155,7 +155,7 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 
 	Body& body = active_bodies[active_bodies.size() - 1];
 
-	root.add_body(body);
+	//root.add_body(body);
 
 	return body;
 }
@@ -167,13 +167,13 @@ Body& Universe::create_rand_body()
 	float y = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE);
 	long mass = randi(1, RAND_MASS);
 
-	active_bodies.emplace_back (id, x, y, mass);
+	active_bodies.emplace_back(id, x, y, mass);
 
 	++generated_bodies;
 
 	Body& body = active_bodies[active_bodies.size() - 1];
 
-	root.add_body(body);
+	//root.add_body(body);
 
 	return body;
 }
@@ -227,6 +227,8 @@ Body& Universe::create_satellite(const Body& orbiting, float ecc, long mass)
 
 	// Performs no checks on whether its initial position collides with another satellite of the body.
 	// maybe perform the check in the create_system call
+	static int num_created = 1;
+	
 
 	constexpr float MIN_DIST = 1.1F;
 	constexpr float MAX_DIST = 40;
@@ -235,6 +237,9 @@ Body& Universe::create_satellite(const Body& orbiting, float ecc, long mass)
 
 	Body& sat = create_body(sat_dist, orbiting, ecc, mass); // create body first to have it calculate its size for us for periapsis.
 
+	num_created++;
+
+	std::cout << num_created << '\n';
 
 	return sat;
 
@@ -244,36 +249,39 @@ Body& Universe::create_rand_satellite(const Body& orbiting)
 {
 	// create a satellite in range of 1.5-10 sat_dist size distance from orbited body.
 	// 1 sat_dist = orbiting.size + my_size
-	// 1 size away == touch edge of orbiting body
+	// if sat_dist = 1, then edges touching.
+	// if sat_dist < 1, immediate collision.
 
 	// Performs no checks on whether its initial position collides with another satellite of the body.
-	// maybe perform the check in the create_system call
 
 	float sat_dist = randf() * 8.5f + 1.5f; // need to be float, this is int. and goes up to 10.5
 
 	//long mass = std::max((rand() % orbiting.mass) / 2, 1l);
 	long mass = randi(1, (int)(orbiting.mass / 2)); // randi is 32-bit oops
-	// randf might return a 1 maybe ?
+
 	float ecc = randf(); // needs to be random in between 0 and 0.99. cannot be 1 unless use different calculation.
 	Body& sat = create_body(0, 0, mass);
 
+
+	// Calculating position of satellite at its periapsis (closest point to the body it orbits).
 	float periapsis = sat_dist * (orbiting.radius + sat.radius);
 	float periapsis_angle = (randf() * 2) * std::numbers::pi; // angle from orbiting body where periapsis is.
 	float periapsis_v[2] = { periapsis * std::sin(periapsis_angle), periapsis * std::cos(periapsis_angle) };
 
+	sat.x = orbiting.x + periapsis_v[0];
+	sat.y = orbiting.y + periapsis_v[1];
+
+
+
+	// Calculating velocity of satellite at its periapsis.
 	float apoapsis = periapsis * (1 + ecc) / (1 - ecc);
 	float semi_major_axis = (periapsis + apoapsis) / 2;
 
-	int x = periapsis_v[0] + orbiting.x;
-	int y = periapsis_v[1] + orbiting.y;
-	sat.x = x;
-	sat.y = y;
+	float numerator = (1 + ecc) * GRAV_CONST * mass;
+	float denominator = (1 - ecc) * semi_major_axis;
+	float periapsis_vel = std::sqrt(numerator / denominator);
 
-	float nom = (1 + ecc) * GRAV_CONST * mass;
-	float den = (1 - ecc) * semi_major_axis;
-	float v_per = std::sqrt(nom / den);
-
-	float vel_v[2] = { v_per * sin(periapsis_angle), v_per * cos(periapsis_angle) };
+	float vel_v[2] = { periapsis_vel * sin(periapsis_angle), periapsis_vel * cos(periapsis_angle) };
 
 	sat.vel_x = vel_v[0];
 	sat.vel_y = vel_v[1];

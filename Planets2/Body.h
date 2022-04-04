@@ -96,7 +96,7 @@ public:
 	Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_const, long mass);
 
 
-	bool can_eat(const Body&) const;
+	bool can_eat(const Body& other) const;
 
 	void absorb(Body&);
 
@@ -106,17 +106,14 @@ public:
 
 	void pos_update();
 
-	bool check_col(const Body&) const;
+	bool check_col(const Body& other) const;
 
-	void grav_pull(std::array<float, 2>);
+	void grav_pull(std::array<float, 2> force_vector);
 
 	std::array<float, 2> get_momentum();
 
-	std::array<float, 2> distv_body(const Body&) const;
-	float dist_body(const Body&) const;
-
-	// grav_pull more efficient to do to both at same time. but that handled by universe not body.
-	// could have Body.grav_pull just take a force. and universe calls both bodies
+	std::array<float, 2> distv_body(const Body& other) const;
+	float dist_body(const Body& other) const;
 
 };
 

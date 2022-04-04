@@ -213,13 +213,13 @@ bool Body::check_col(const Body& other) const
 }
 
 
-void Body::grav_pull(std::array<float, 2> force) // force = vectors (x, y)
+void Body::grav_pull(std::array<float, 2> force_vector)
 {
 
 	// calc net acceleration for both vectors.
 
-	float d_acc_x = force[0] / mass;
-	float d_acc_y = force[1] / mass;
+	float d_acc_x = force_vector[0] / mass;
+	float d_acc_y = force_vector[1] / mass;
 
 	acc_x += d_acc_x;
 	acc_y += d_acc_y;
