@@ -18,24 +18,23 @@ class QuadTree {
 public:
 	QuadTree* parent = nullptr;
 
-	float x;
-	float y;
-	float end_x;
-	float end_y;
+	const float x;
+	const float y;
+	const float end_x;
+	const float end_y;
 
 
 	QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end_x(end_x), end_y(end_y)
 	{
-		//quad_bodies.reserve(10 * MAX_BODIES); // I think it's already 100 by default
+		//quad_bodies.reserve(10 * MAX_BODIES);
 	}
 
-	void perform_collision_check(std::vector<int>&);
+	void perform_collision_check(std::vector<int>& to_remove);
 
-	void handle_collision(std::unordered_map<int, Body*>::iterator& it, std::vector<int>&);
 
-	void add_body(Body&);
-	bool rem_body(const Body&);
-	bool is_leaf() const { return UL == nullptr; }
+	void add_body(Body& body);
+	bool rem_body(const Body& body);
+	bool is_leaf() const { return UL == nullptr; } // Non-leaf nodes always have all 4 quads.
 
 	bool in_bounds(int check_x, int check_y) const {
 		return check_x >= x && check_x < end_x&&
@@ -51,8 +50,7 @@ public:
 
 private:
 
-	int get_total_size() const;
-
+	void handle_collision(std::unordered_map<int, Body*>::iterator& it, std::vector<int>& to_remove);
 
 	bool is_root() const { return parent == nullptr; }
 
@@ -62,8 +60,8 @@ private:
 	bool is_full() const { return quad_bodies.size() >= MAX_BODIES; }
 
 
-	void add_to_child(Body&);
-	void rem_from_child(const Body&);
+	void add_to_child(Body& body);
+	void rem_from_child(const Body& body);
 
 	void concatenate();
 	void split();
@@ -71,6 +69,6 @@ private:
 	void reinsert(Body& body);
 
 	// root only method !!!
-	void expand(Body& body);
+	void expand(Body& out_of_bounds_body);
 
 };

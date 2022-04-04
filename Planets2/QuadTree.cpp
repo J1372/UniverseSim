@@ -10,10 +10,18 @@ void QuadTree::perform_collision_check(std::vector<int>& to_remove)
 		}
 	}
 	else {
+		int prev_size = to_remove.size();
+
 		UL->perform_collision_check(to_remove);
 		UR->perform_collision_check(to_remove);
 		LL->perform_collision_check(to_remove);
 		LR->perform_collision_check(to_remove);
+
+		int children_removed = to_remove.size() - prev_size;
+
+		for (int i = prev_size; i < to_remove.size(); i++) {
+			quad_bodies.erase(to_remove[i]);
+		}
 
 		// Child methods may have removed objects.
 		if (has_room()) {
@@ -52,11 +60,11 @@ void QuadTree::handle_collision(std::unordered_map<int, Body*>::iterator& it, st
 			}
 		}
 		else { // no collision. move to next check.
-			++it2;
+			it2++;
 		}
 
 	}
-	++it;
+	it++;
 }
 
 void QuadTree::add_body(Body& new_body)
@@ -109,7 +117,7 @@ bool QuadTree::rem_body(const Body& body)
 	return false;
 }
 
-const std::array <QuadTree*, 4> QuadTree::get_quads() const
+const std::array<QuadTree*, 4> QuadTree::get_quads() const
 {
 	return { UL.get(), UR.get(), LL.get(), LR.get() };
 }
@@ -120,7 +128,7 @@ void QuadTree::update_pos()
 		for (auto it = quad_bodies.begin(); it != quad_bodies.end();) {
 			Body& body = *it->second;
 
-			body.pos_update();
+			body.pos_update(); // Want to do this on all bodies. can move this out into Universe.
 
 			if (in_bounds(body.x, body.y)) {
 				it++;
@@ -144,20 +152,6 @@ void QuadTree::update_pos()
 			concatenate();
 		}
 	}
-}
-
-int QuadTree::get_total_size() const  // this doesn't make sense, quad_bodies.size() includes the others
-{
-	int size = quad_bodies.size();
-
-	if (!is_leaf()) {
-		size += UL->get_total_size();
-		size += UR->get_total_size();
-		size += LL->get_total_size();
-		size += LR->get_total_size();
-	}
-
-	return size;
 }
 
 void QuadTree::add_to_child(Body& new_body)
