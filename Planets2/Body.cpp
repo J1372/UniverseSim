@@ -8,18 +8,20 @@
 
 void Body::do_wraparound(float wraparound_val)
 {
+	float reset_val = 2 * wraparound_val;
+
 	if (x > wraparound_val) {
-		x = -wraparound_val + x;
+		x = -reset_val + x;
 	}
 	else if (x < -wraparound_val) {
-		x = wraparound_val - x;
+		x = reset_val - x;
 	}
 
 	if (y > wraparound_val) {
-		y = -wraparound_val + y;
+		y = -reset_val + y;
 	}
 	else if (y < -wraparound_val) {
-		y = wraparound_val - y;
+		y = reset_val - y;
 	}
 }
 
