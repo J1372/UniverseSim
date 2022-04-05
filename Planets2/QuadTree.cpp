@@ -242,14 +242,3 @@ void QuadTree::reinsert(Body& body)
 		}
 	}
 }
-
-void QuadTree::expand(Body& out_of_bounds_body)
-{
-	if (out_of_bounds_body.x < x) { // to the left, (determing if curr quad copy will be LR or UR)
-
-	}
-
-	if (out_of_bounds_body.y < y) { // to the top, determine if curr quad copy will be LL or LR
-
-	}
-}

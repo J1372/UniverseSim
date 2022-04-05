@@ -70,7 +70,4 @@ private:
 
 	void reinsert(Body& body);
 
-	// root only method !!!
-	void expand(Body& out_of_bounds_body);
-
 };

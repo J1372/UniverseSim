@@ -13,7 +13,7 @@
 class Universe {
 	static constexpr int UNIVERSE_CAPACITY = 1000;
 	static constexpr int UNIVERSE_SIZE_START = 1000;
-	static constexpr float UNIVERSE_SIZE_MAX = 100000; // delete if go out of bounds or wraparound.
+	static constexpr float UNIVERSE_SIZE_MAX = 10000; // delete if go out of bounds or wraparound.
 	static constexpr long RAND_MASS = 100;
 	static constexpr double GRAV_CONST = 0.75;
 	static constexpr int MASS_SCALING = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
@@ -52,7 +52,7 @@ public:
 
 	void grav_pull(Body& body1, Body& body2) const;
 
-	const QuadTree* get_quad_root() const { return &root; }
+	const QuadTree& get_quad_root() const { return root; }
 
 
 	//~Universe() not needed because the map frees itself.

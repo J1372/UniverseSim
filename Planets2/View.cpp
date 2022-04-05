@@ -6,7 +6,7 @@
 #include "universe.h"
 
 //#define MY_DEBUG
-//#define RENDER_QUAD_TREE
+#define RENDER_QUAD_TREE
 
 float screen_width = 1700.0;
 float screen_height = 900.0;
