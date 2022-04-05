@@ -7,7 +7,7 @@ class QuadTree {
 
 	static constexpr int MAX_BODIES = 10;
 
-	std::unordered_map<int, Body*> quad_bodies;
+	std::vector<int> quad_bodies;
 
 
 	std::unique_ptr<QuadTree> UL = nullptr;
@@ -48,9 +48,11 @@ public:
 
 	void update_pos();
 
+	void update_removed(const std::vector<int> &indices_removed);
+
 private:
 
-	void handle_collision(std::unordered_map<int, Body*>::iterator& it, std::vector<int>& to_remove);
+	void handle_collision(const std::vector<Body> &bodies, int it, std::vector<int>& to_remove);
 
 	bool is_root() const { return parent == nullptr; }
 

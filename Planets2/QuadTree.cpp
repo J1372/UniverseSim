@@ -4,7 +4,7 @@
 void QuadTree::perform_collision_check(std::vector<int>& to_remove)
 {
 	if (is_leaf()) {
-		std::unordered_map<int, Body*>::iterator it = quad_bodies.begin();
+		std::vector<int>::iterator it = quad_bodies.begin();
 		while (it != quad_bodies.end()) {
 			handle_collision(it, to_remove);
 		}
@@ -30,9 +30,9 @@ void QuadTree::perform_collision_check(std::vector<int>& to_remove)
 	}
 }
 
-void QuadTree::handle_collision(std::unordered_map<int, Body*>::iterator& it, std::vector<int>& to_remove)
+void QuadTree::handle_collision(std::vector<int>::iterator& it, std::vector<int>& to_remove)
 {
-	Body& body1 = *it->second;
+	Body& body1 = *it;
 	auto it2 = std::next(it, 1);
 	while (it2 != quad_bodies.end()) {
 		////std::cout << "\t\tCollision check against " << it2->first << "\n\n";

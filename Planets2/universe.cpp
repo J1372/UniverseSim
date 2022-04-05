@@ -163,8 +163,8 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 Body& Universe::create_rand_body()
 {
 	int id = generated_bodies;
-	float x = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE); // might be more efficient to randf * start_size
-	float y = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE);
+	float x = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START); // might be more efficient to randf * start_size
+	float y = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
 	long mass = randi(1, RAND_MASS);
 
 	active_bodies.emplace_back(id, x, y, mass);
@@ -199,8 +199,8 @@ Body& Universe::create_rand_system()
 
 
 
-	float star_x = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE);
-	float star_y = randi(-UNIVERSE_START_SIZE, UNIVERSE_START_SIZE);
+	float star_x = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
+	float star_y = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
 	//std::cout << RAND_MAX << '\n';
 	long star_mass = star_mass_ratio * system_mass;
 

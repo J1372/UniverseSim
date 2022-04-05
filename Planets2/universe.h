@@ -11,18 +11,19 @@
 //const double GRAV_CONST = 1;
 
 class Universe {
-	//static constexpr int UNIVERSE_CAPACITY = 2000;
-	static constexpr double GRAV_CONST = 0.75;
-	static constexpr int UNIVERSE_START_SIZE = 1000;
+	static constexpr int UNIVERSE_CAPACITY = 1000;
+	static constexpr int UNIVERSE_SIZE_START = 1000;
+	static constexpr float UNIVERSE_SIZE_MAX = 100000; // delete if go out of bounds or wraparound.
 	static constexpr long RAND_MASS = 100;
+	static constexpr double GRAV_CONST = 0.75;
 	static constexpr int MASS_SCALING = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
 
 	std::vector<Body> active_bodies;
 
-	QuadTree root{ -std::numeric_limits<float>::max(),
-		-std::numeric_limits<float>::max(),
-		std::numeric_limits<float>::max(),
-		std::numeric_limits<float>::max() };
+	QuadTree root{ -UNIVERSE_SIZE_MAX,
+		-UNIVERSE_SIZE_MAX,
+		UNIVERSE_SIZE_MAX,
+		UNIVERSE_SIZE_MAX };
 
 	/*QuadTree root{ -4 * UNIVERSE_START_SIZE,
 		-4 * UNIVERSE_START_SIZE,
@@ -41,7 +42,7 @@ class Universe {
 public:
 
 	Universe() {
-		active_bodies.reserve(1000);
+		active_bodies.reserve(UNIVERSE_CAPACITY);
 
 		//std::cout << std::thread::hardware_concurrency();
 	};
