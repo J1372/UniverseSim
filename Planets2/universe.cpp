@@ -227,8 +227,6 @@ Body& Universe::create_satellite(const Body& orbiting, float ecc, long mass)
 
 	// Performs no checks on whether its initial position collides with another satellite of the body.
 	// maybe perform the check in the create_system call
-	static int num_created = 1;
-	
 
 	constexpr float MIN_DIST = 1.1F;
 	constexpr float MAX_DIST = 40;
@@ -237,9 +235,6 @@ Body& Universe::create_satellite(const Body& orbiting, float ecc, long mass)
 
 	Body& sat = create_body(sat_dist, orbiting, ecc, mass); // create body first to have it calculate its size for us for periapsis.
 
-	num_created++;
-
-	std::cout << num_created << '\n';
 
 	return sat;
 
