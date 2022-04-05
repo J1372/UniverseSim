@@ -59,6 +59,10 @@ class Body {
 	static const int hi = 0;*/
 
 
+
+	void do_wraparound(float wraparound_val);
+
+
 public:
 	int id = -1;
 	//int cur_type = 0;
@@ -104,7 +108,8 @@ public:
 
 	void upgrade_update();
 
-	void pos_update();
+	void pos_update(float wraparound_val);
+
 
 	bool check_col(const Body& other) const;
 

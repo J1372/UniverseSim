@@ -25,17 +25,6 @@ class Universe {
 		UNIVERSE_SIZE_MAX,
 		UNIVERSE_SIZE_MAX };
 
-	/*QuadTree root{ -4 * UNIVERSE_START_SIZE,
-		-4 * UNIVERSE_START_SIZE,
-		4 * UNIVERSE_START_SIZE,
-		4 * UNIVERSE_START_SIZE };*/
-
-
-		/*std::unique_ptr<QuadTree> root = std::make_unique<QuadTree>(-std::numeric_limits<float>::max(),
-			-std::numeric_limits<float>::max(),
-			std::numeric_limits<float>::max(),
-			std::numeric_limits<float>::max());*/
-
 
 	int generated_bodies = 0;
 

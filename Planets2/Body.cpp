@@ -6,6 +6,23 @@
 
 
 
+void Body::do_wraparound(float wraparound_val)
+{
+	if (x > wraparound_val) {
+		x = -wraparound_val + x;
+	}
+	else if (x < -wraparound_val) {
+		x = wraparound_val - x;
+	}
+
+	if (y > wraparound_val) {
+		y = -wraparound_val + y;
+	}
+	else if (y < -wraparound_val) {
+		y = wraparound_val - y;
+	}
+}
+
 Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_const, long mass)
 {
 	this->id = id;
@@ -190,7 +207,7 @@ void Body::upgrade_update()
 	// color = type.color or store color  in type and make type a pointer to a static type and make a static type array ( but what if we dont want every type to be 
 }
 
-void Body::pos_update()
+void Body::pos_update(float wraparound_val)
 {
 	vel_x += acc_x;
 	vel_y += acc_y;
@@ -200,6 +217,8 @@ void Body::pos_update()
 
 	acc_x = 0; // set accelerations to 0 for next tick
 	acc_y = 0;
+
+	do_wraparound(wraparound_val);
 
 }
 
