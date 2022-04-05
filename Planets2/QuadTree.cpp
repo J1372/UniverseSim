@@ -103,7 +103,7 @@ void QuadTree::add_body(Body& new_body)
 
 bool QuadTree::rem_body(const Body& body)
 {
-	quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), body));
+	quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), &body));
 
 	if (!is_leaf()) {
 
@@ -231,7 +231,7 @@ void QuadTree::reinsert(Body& body)
 		add_to_child(body); // add to correct quad.
 	}
 	else {
-		quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), body));
+		quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), &body));
 		if (is_root()) {
 			// expand and add_to_child()
 			// expand(body);
