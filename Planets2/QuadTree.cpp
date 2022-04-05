@@ -1,10 +1,10 @@
 #include "QuadTree.h"
 #include <iostream>
 
-void QuadTree::perform_collision_check(std::vector<int>& to_remove)
+void QuadTree::perform_collision_check(std::vector<Body*>& to_remove)
 {
 	if (is_leaf()) {
-		std::vector<int>::iterator it = quad_bodies.begin();
+		std::vector<Body*>::iterator it = quad_bodies.begin();
 		while (it != quad_bodies.end()) {
 			handle_collision(it, to_remove);
 		}
@@ -20,7 +20,9 @@ void QuadTree::perform_collision_check(std::vector<int>& to_remove)
 		int children_removed = to_remove.size() - prev_size;
 
 		for (int i = prev_size; i < to_remove.size(); i++) {
-			quad_bodies.erase(to_remove[i]);
+			Body* body = to_remove[i];
+
+			quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), body));
 		}
 
 		// Child methods may have removed objects.
@@ -30,13 +32,13 @@ void QuadTree::perform_collision_check(std::vector<int>& to_remove)
 	}
 }
 
-void QuadTree::handle_collision(std::vector<int>::iterator& it, std::vector<int>& to_remove)
+void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>& to_remove)
 {
-	Body& body1 = *it;
+	Body& body1 = **it;
 	auto it2 = std::next(it, 1);
 	while (it2 != quad_bodies.end()) {
 		////std::cout << "\t\tCollision check against " << it2->first << "\n\n";
-		Body& body2 = *it2->second;
+		Body& body2 = **it2;
 
 		if (body1.check_col(body2)) { // there is a collision
 			////std::cout << "\t\t\tCollision!" << '\n';
@@ -46,14 +48,14 @@ void QuadTree::handle_collision(std::vector<int>::iterator& it, std::vector<int>
 			if (body1.can_eat(body2)) { // it1 eats it2
 				body1.absorb(body2);
 
-				to_remove.push_back(body2.id);
+				to_remove.push_back(&body2);
 
 				it2 = quad_bodies.erase(it2); // move to next check
 			}
 			else { // it2 eats it1
 				body2.absorb(body1);
 
-				to_remove.push_back(body1.id);
+				to_remove.push_back(&body1);
 
 				it = quad_bodies.erase(it); // it1 no longer exists, no more checks on other it2s.
 				return;
@@ -101,7 +103,7 @@ void QuadTree::add_body(Body& new_body)
 
 bool QuadTree::rem_body(const Body& body)
 {
-	quad_bodies.erase(body.id);
+	quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), body));
 
 	if (!is_leaf()) {
 
@@ -126,7 +128,7 @@ void QuadTree::update_pos()
 {
 	if (is_leaf()) {
 		for (auto it = quad_bodies.begin(); it != quad_bodies.end();) {
-			Body& body = *it->second;
+			Body& body = **it;
 
 			body.pos_update(); // Want to do this on all bodies. can move this out into Universe.
 
@@ -215,9 +217,9 @@ void QuadTree::split()
 	// add bodies to respective quads
 
 	for (auto it = quad_bodies.begin(); it != quad_bodies.end(); ++it) { //&& ref
-		Body* body = it->second;
+		Body& body = **it;
 
-		add_to_child(*body);
+		add_to_child(body);
 	}
 }
 
@@ -229,7 +231,7 @@ void QuadTree::reinsert(Body& body)
 		add_to_child(body); // add to correct quad.
 	}
 	else {
-		quad_bodies.erase(body.id);
+		quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), body));
 		if (is_root()) {
 			// expand and add_to_child()
 			// expand(body);

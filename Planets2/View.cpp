@@ -102,7 +102,7 @@ void draw_quad(const QuadTree& cur) {
 #endif
 
 void render_system(Universe& universe, Camera2D& camera) {
-	const std::vector<Body>& bodies = universe.get_bodies();
+	const std::vector<std::unique_ptr<Body>>& bodies = universe.get_bodies();
 
 #ifdef RENDER_QUAD_TREE
 
@@ -112,7 +112,9 @@ void render_system(Universe& universe, Camera2D& camera) {
 
 #endif
 
-	for (const Body &body : bodies) {
+	for (const auto &body_ptr : bodies) {
+		const Body& body = *body_ptr;
+
 		if (on_screen(body, camera)) {
 			Color planet_color = body.type->color; // not a reference
 			DrawCircle(body.x, body.y, body.radius, planet_color);

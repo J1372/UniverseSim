@@ -7,7 +7,7 @@ class QuadTree {
 
 	static constexpr int MAX_BODIES = 10;
 
-	std::vector<int> quad_bodies;
+	std::vector<Body*> quad_bodies;
 
 
 	std::unique_ptr<QuadTree> UL = nullptr;
@@ -29,7 +29,7 @@ public:
 		//quad_bodies.reserve(10 * MAX_BODIES);
 	}
 
-	void perform_collision_check(std::vector<int>& to_remove);
+	void perform_collision_check(std::vector<Body*>& to_remove);
 
 
 	void add_body(Body& body);
@@ -52,7 +52,7 @@ public:
 
 private:
 
-	void handle_collision(const std::vector<Body> &bodies, int it, std::vector<int>& to_remove);
+	void handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>& to_remove);
 
 	bool is_root() const { return parent == nullptr; }
 

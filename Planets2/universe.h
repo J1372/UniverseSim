@@ -18,7 +18,7 @@ class Universe {
 	static constexpr double GRAV_CONST = 0.75;
 	static constexpr int MASS_SCALING = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
 
-	std::vector<Body> active_bodies;
+	std::vector<std::unique_ptr<Body>> active_bodies;
 
 	QuadTree root{ -UNIVERSE_SIZE_MAX,
 		-UNIVERSE_SIZE_MAX,
@@ -57,7 +57,7 @@ public:
 	Body& create_rand_system();
 	Body& create_rand_satellite(const Body& orbiting);
 
-	const std::vector<Body>& get_bodies() const { return active_bodies; }
+	const std::vector<std::unique_ptr<Body>>& get_bodies() const { return active_bodies; }
 
 	void update();
 

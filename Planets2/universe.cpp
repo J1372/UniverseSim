@@ -40,11 +40,11 @@ void Universe::handle_collisions()
 
 bool Universe::handle_collision(int it)
 {
-	Body& body1 = active_bodies[it];
+	Body& body1 = *active_bodies[it];
 	int it2 = it + 1;
 	while (it2 < active_bodies.size()) {
 		////std::cout << "\t\tCollision check against " << it2->first << "\n\n";
-		Body& body2 = active_bodies[it2];
+		Body& body2 = *active_bodies[it2];
 
 		if (body1.check_col(body2)) { // there is a collision
 			////std::cout << "\t\t\tCollision!" << '\n';
@@ -78,9 +78,9 @@ void Universe::handle_gravity()
 	// maybe set all acc to 0
 	// std::unordered_map<int, Body>::iterator
 	for (int i = 0; i < active_bodies.size() - 1; i++) {
-		Body& body1 = active_bodies[i];
+		Body& body1 = *active_bodies[i];
 		for (int j = i + 1; j < active_bodies.size(); j++) {
-			Body& body2 = active_bodies[j];
+			Body& body2 = *active_bodies[j];
 
 			grav_pull(body1, body2);
 
@@ -91,7 +91,7 @@ void Universe::handle_gravity()
 void Universe::update_pos()
 {
 	for (int i = 0; i < active_bodies.size(); i++) {
-		Body& body = active_bodies[i];
+		Body& body = *active_bodies[i];
 
 		body.pos_update();
 	}
@@ -134,11 +134,11 @@ Body& Universe::create_body(float x, float y, long mass)
 {
 	int id = generated_bodies;
 
-	active_bodies.emplace_back( id, x, y, mass );
+	active_bodies.emplace_back(std::make_unique<Body>(id, x, y, mass));
 
 	++generated_bodies;
 
-	Body& body = active_bodies[active_bodies.size()-1];
+	Body& body = *active_bodies[active_bodies.size()-1];
 
 	//root.add_body(body);
 
@@ -149,11 +149,11 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 {
 	int id = generated_bodies;
 
-	active_bodies.emplace_back( id, sat_dist, ecc, orbiting, GRAV_CONST, mass );
+	active_bodies.emplace_back(std::make_unique<Body>(id, sat_dist, ecc, orbiting, GRAV_CONST, mass));
 
 	++generated_bodies;
 
-	Body& body = active_bodies[active_bodies.size() - 1];
+	Body& body = *active_bodies[active_bodies.size() - 1];
 
 	//root.add_body(body);
 
@@ -167,11 +167,11 @@ Body& Universe::create_rand_body()
 	float y = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
 	long mass = randi(1, RAND_MASS);
 
-	active_bodies.emplace_back(id, x, y, mass);
+	active_bodies.emplace_back(std::make_unique<Body>(id, x, y, mass));
 
 	++generated_bodies;
 
-	Body& body = active_bodies[active_bodies.size() - 1];
+	Body& body = *active_bodies[active_bodies.size() - 1];
 
 	//root.add_body(body);
 
