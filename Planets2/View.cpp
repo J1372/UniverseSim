@@ -187,11 +187,17 @@ int main() {
 		BeginDrawing();
 			ClearBackground(BLACK); // maybe better to have before beginmode2d?
 
-			DrawFPS(50, 50);
+			
 
 			BeginMode2D(camera);
 				render_system(universe, camera);
 			EndMode2D();
+
+			DrawFPS(50, 50);
+
+			std::string num_bodies_str = "Number bodies: " + std::to_string(universe.get_num_bodies());
+
+			DrawText(num_bodies_str.c_str(), 50, 70, 20, RAYWHITE);
 
 		EndDrawing();
 	}

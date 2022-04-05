@@ -47,6 +47,7 @@ public:
 	Body& create_rand_satellite(const Body& orbiting);
 
 	const std::vector<std::unique_ptr<Body>>& get_bodies() const { return active_bodies; }
+	int get_num_bodies() const { return active_bodies.size(); }
 
 	void update();
 
