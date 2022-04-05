@@ -68,8 +68,18 @@ void process_input(Universe& universe, Camera2D& camera) {
 
 }
 
-bool on_screen(Vector2 screen_pos, Camera2D& camera) {
-	return screen_pos.x >= 0 && screen_pos.y >= 0 && screen_pos.x < GetScreenWidth() && screen_pos.y < GetScreenHeight();
+bool on_screen(const Body& body, Camera2D& camera) {
+	Vector2 screen_pos = GetWorldToScreen2D({ body.x, body.y }, camera);
+
+	float leftmost = screen_pos.x - body.radius;
+	float rightmost = screen_pos.x + body.radius;
+
+	float lowest = screen_pos.y + body.radius;
+	float highest = screen_pos.y - body.radius;
+
+	// can optimize : screen_pos.x >= -body.radius && screen_pos.y >= -body.radius
+
+	return rightmost >= 0 and lowest >= 0 and leftmost < GetScreenWidth() and highest < GetScreenHeight();
 }
 
 #ifdef RENDER_QUAD_TREE
@@ -103,8 +113,7 @@ void render_system(Universe& universe, Camera2D& camera) {
 #endif
 
 	for (const Body &body : bodies) {
-		Vector2 screen_pos = GetWorldToScreen2D({ body.x, body.y }, camera);
-		if (on_screen(screen_pos, camera)) {
+		if (on_screen(body, camera)) {
 			Color planet_color = body.type->color; // not a reference
 			DrawCircle(body.x, body.y, body.radius, planet_color);
 
