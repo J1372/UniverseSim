@@ -241,3 +241,20 @@ void QuadTree::reinsert(Body& body)
 		parent->reinsert(body);
 	}
 }
+
+
+void QuadTree::draw_debug(const Camera2D &camera) const {
+
+	if (is_leaf()) {
+		Rectangle rec{ x, y, get_width(), get_height() };
+
+		DrawRectangleLinesEx(rec, 50, RAYWHITE);
+	}
+	else {
+		UL->draw_debug(camera);
+		UR->draw_debug(camera);
+		LL->draw_debug(camera);
+		LR->draw_debug(camera);
+	}
+	
+}

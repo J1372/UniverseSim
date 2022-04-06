@@ -5,29 +5,18 @@
 #include "SpatialPartitioning.h"
 
 class QuadTree : public SpatialPartitioning {
-
-	static constexpr int MAX_BODIES = 10;
-
-	std::vector<Body*> quad_bodies;
-
-	std::unique_ptr<QuadTree> UL = nullptr;
-	std::unique_ptr<QuadTree> UR = nullptr;
-	std::unique_ptr<QuadTree> LL = nullptr;
-	std::unique_ptr<QuadTree> LR = nullptr;
-
 public:
-	QuadTree* parent = nullptr;
 
 	const float x;
 	const float y;
 	const float end_x;
 	const float end_y;
 
+	QuadTree(float size) : x(-size), y(-size), end_x(size), end_y(size)
+	{}
 
 	QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end_x(end_x), end_y(end_y)
-	{
-		//quad_bodies.reserve(10 * MAX_BODIES);
-	}
+	{}
 
 	void collision_check(std::vector<Body*>& to_remove);
 
@@ -43,14 +32,30 @@ public:
 
 	const std::array<QuadTree*, 4> get_quads() const;
 
-	float get_width() const { return end_x - x; }
-	float get_height() const { return end_y - y; }
+	float get_width() const { return end_x - x + 1; }
+	float get_height() const { return end_y - y + 1; }
 
 	void update();
+	void draw_debug(const Camera2D& camera) const;
+
+	~QuadTree() = default;
 
 	//void update_removed(const std::vector<int> &indices_removed);
 
+
 private:
+
+	
+
+	static constexpr int MAX_BODIES = 10;
+
+	std::vector<Body*> quad_bodies;
+
+	QuadTree* parent = nullptr;
+	std::unique_ptr<QuadTree> UL = nullptr;
+	std::unique_ptr<QuadTree> UR = nullptr;
+	std::unique_ptr<QuadTree> LL = nullptr;
+	std::unique_ptr<QuadTree> LR = nullptr;
 
 	void handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>& to_remove);
 

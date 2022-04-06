@@ -125,7 +125,7 @@ void Universe::update()
 	// remove collided objects. on collision, performs body type upgrade maybe.
 	// handle_collisions();
 	std::vector<Body*> to_remove;
-	root.perform_collision_check(to_remove);
+	partitioning_method->collision_check(to_remove);
 
 	for (Body* body : to_remove) {
 
@@ -134,7 +134,7 @@ void Universe::update()
 			}));
 	}
 
-	root.update_after_move();
+	partitioning_method->update();
 }
 
 Body& Universe::create_body(float x, float y, long mass)
@@ -147,7 +147,7 @@ Body& Universe::create_body(float x, float y, long mass)
 
 	Body& body = *active_bodies[active_bodies.size()-1];
 
-	root.add_body(body);
+	partitioning_method->add_body(body);
 
 	return body;
 }
@@ -162,7 +162,7 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 
 	Body& body = *active_bodies[active_bodies.size() - 1];
 
-	root.add_body(body);
+	partitioning_method->add_body(body);
 
 	return body;
 }
@@ -180,7 +180,7 @@ Body& Universe::create_rand_body()
 
 	Body& body = *active_bodies[active_bodies.size() - 1];
 
-	root.add_body(body);
+	partitioning_method->add_body(body);
 
 	return body;
 }

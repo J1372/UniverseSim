@@ -6,12 +6,12 @@
 #include "universe.h"
 
 //#define MY_DEBUG
-#define RENDER_QUAD_TREE
 
 float screen_width = 1700.0;
 float screen_height = 900.0;
 
 bool running;
+bool show_spatial_partitioning = false;
 
 void zoom_in(Camera2D& camera) {
 	camera.zoom *= 2;
@@ -42,6 +42,13 @@ void process_input(Universe& universe, Camera2D& camera) {
 	if (IsKeyPressed(KEY_SPACE)) {
 		running = !running;
 	}
+
+
+
+	if (IsKeyPressed(KEY_ONE)) {
+		show_spatial_partitioning = !show_spatial_partitioning;
+	}
+
 
 	if (IsKeyPressed(KEY_COMMA)) {
 		zoom_out(camera);
@@ -85,33 +92,8 @@ bool on_screen(const Body& body, Camera2D& camera) {
 	return rightmost.x >= 0 and lowest.y >= 0 and leftmost.x < GetScreenWidth() and highest.y < GetScreenHeight();
 }
 
-#ifdef RENDER_QUAD_TREE
-void draw_quad(const QuadTree& cur) {
-	Rectangle rec{ cur.x, cur.y, cur.get_width(), cur.get_height() };
-
-	DrawRectangleLinesEx(rec, 50, RAYWHITE);
-
-
-	if (!cur.is_leaf()) {
-		const std::array<QuadTree*, 4> quads = cur.get_quads();
-
-		for (int i = 0; i < 4; i++) {
-			draw_quad(*quads[i]);
-		}
-	}
-}
-#endif
-
 void render_system(Universe& universe, Camera2D& camera) {
 	const std::vector<std::unique_ptr<Body>>& bodies = universe.get_bodies();
-
-#ifdef RENDER_QUAD_TREE
-
-	const QuadTree& cur = universe.get_quad_root();
-
-	draw_quad(cur);
-
-#endif
 
 	for (const auto &body_ptr : bodies) {
 		const Body& body = *body_ptr;
@@ -191,7 +173,16 @@ int main() {
 			
 
 			BeginMode2D(camera);
+
 				render_system(universe, camera);
+
+				if (show_spatial_partitioning) {
+					const SpatialPartitioning* partitioning = universe.get_partitioning();
+					if (partitioning) {
+						partitioning->draw_debug(camera);
+					}
+				}
+
 			EndMode2D();
 
 			DrawFPS(50, 50);
