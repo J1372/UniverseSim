@@ -91,10 +91,10 @@ void QuadTree::add_body(Body& new_body)
 
 		// add to self
 
-		quad_bodies[new_body.id] = &new_body;
+		quad_bodies.push_back(&new_body);
 	}
 	else { // has 4 quads, add to 1 of them
-		quad_bodies[new_body.id] = &new_body;
+		quad_bodies.push_back(&new_body);
 
 		add_to_child(new_body);
 

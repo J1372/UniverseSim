@@ -121,9 +121,20 @@ void Universe::update()
 {
 	handle_gravity(); // do grav pulls (update acceleration)
 	update_pos(); // update velocities and positions
-	handle_collisions(); // remove collided objects. on collision, performs body type upgrade maybe.
 
-	// update quadtree after update_pos()
+	// remove collided objects. on collision, performs body type upgrade maybe.
+	// handle_collisions();
+	std::vector<Body*> to_remove;
+	root.perform_collision_check(to_remove);
+
+	for (Body* body : to_remove) {
+
+		active_bodies.erase(std::find_if(active_bodies.begin(), active_bodies.end(), [body](std::unique_ptr<Body> &other) {
+			return body == other.get();
+			}));
+	}
+
+	root.update_after_move();
 }
 
 Body& Universe::create_body(float x, float y, long mass)
@@ -136,7 +147,7 @@ Body& Universe::create_body(float x, float y, long mass)
 
 	Body& body = *active_bodies[active_bodies.size()-1];
 
-	//root.add_body(body);
+	root.add_body(body);
 
 	return body;
 }
@@ -151,7 +162,7 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 
 	Body& body = *active_bodies[active_bodies.size() - 1];
 
-	//root.add_body(body);
+	root.add_body(body);
 
 	return body;
 }
@@ -169,7 +180,7 @@ Body& Universe::create_rand_body()
 
 	Body& body = *active_bodies[active_bodies.size() - 1];
 
-	//root.add_body(body);
+	root.add_body(body);
 
 	return body;
 }
