@@ -10,8 +10,6 @@
 
 float screen_width = 1700.0;
 float screen_height = 900.0;
-//const int boardStartX = 100; maybe in GameScene
-//const int boardStartY = 100;
 
 bool running;
 
@@ -76,7 +74,6 @@ void process_input(Universe& universe, Camera2D& camera) {
 }
 
 bool on_screen(const Body& body, Camera2D& camera) {
-
 	Vector2 leftmost = GetWorldToScreen2D({ body.x - body.radius, body.y }, camera);
 	Vector2 rightmost = GetWorldToScreen2D({ body.x + body.radius, body.y }, camera);
 
