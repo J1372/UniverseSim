@@ -86,9 +86,7 @@ bool on_screen(const Body& body, Camera2D& camera) {
 void draw_quad(const QuadTree& cur) {
 	Rectangle rec{ cur.x, cur.y, cur.get_width(), cur.get_height() };
 
-	//DrawRectangleLines(cur.x, cur.y, cur.get_width(), cur.get_height(), RAYWHITE);
-
-	DrawRectangleLinesEx(rec, 10, RAYWHITE);
+	DrawRectangleLinesEx(rec, 50, RAYWHITE);
 
 
 	if (!cur.is_leaf()) {
