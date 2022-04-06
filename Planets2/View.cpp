@@ -15,6 +15,17 @@ float screen_height = 900.0;
 
 bool running;
 
+void zoom_in(Camera2D& camera) {
+	camera.zoom *= 2;
+
+	
+
+}
+
+void zoom_out(Camera2D& camera) {
+	camera.zoom /= 2;
+}
+
 void process_input(Universe& universe, Camera2D& camera) {
 	static int multiplier = 8;
 	static float cam_speed = 5 * multiplier / camera.zoom;
@@ -38,11 +49,11 @@ void process_input(Universe& universe, Camera2D& camera) {
 	}
 
 	if (IsKeyPressed(KEY_COMMA)) {
-		camera.zoom /= 2;
+		zoom_out(camera);
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
 	else if (IsKeyPressed(KEY_PERIOD)) {
-		camera.zoom *= 2;
+		zoom_in(camera);
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
 	else if (IsKeyPressed(KEY_MINUS)) {
@@ -57,12 +68,11 @@ void process_input(Universe& universe, Camera2D& camera) {
 	float wheel_move = GetMouseWheelMove();
 
 	if (wheel_move < 0) {
-		camera.zoom /= 2;
+		zoom_out(camera);
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
 	else if (wheel_move > 0) {
-		camera.zoom *= 2;
-
+		zoom_in(camera);
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
 
@@ -152,10 +162,10 @@ int main() {
 	Universe universe;
 
 	Camera2D camera;
-	camera.offset = { 0,0 };
+	camera.offset = { static_cast<float>(GetScreenWidth()) / 2, static_cast<float>(GetScreenHeight()) / 2 };
 	camera.target = { 0, 0 };
 	camera.rotation = 0;
-	camera.zoom = 1;
+	camera.zoom = 1.0f;
 
 	int rand_planets = 0;
 	int systems = 1;
@@ -173,7 +183,7 @@ int main() {
 	while (!WindowShouldClose()) {
 
 		if (IsWindowResized()) {
-
+			camera.offset = { static_cast<float>(GetScreenWidth()) / 2, static_cast<float>(GetScreenHeight()) / 2 };
 		}
 
 		process_input(universe, camera);
