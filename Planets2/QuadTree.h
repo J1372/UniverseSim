@@ -46,7 +46,7 @@ public:
 	float get_width() const { return end_x - x; }
 	float get_height() const { return end_y - y; }
 
-	void update_pos(float wraparound_val); // Likely will be removed. We update every body's position every tick. Can just do this in universe. Will become a 'still in quad' check.
+	void update_after_move();
 
 	//void update_removed(const std::vector<int> &indices_removed);
 

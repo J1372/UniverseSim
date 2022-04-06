@@ -124,13 +124,12 @@ const std::array<QuadTree*, 4> QuadTree::get_quads() const
 	return { UL.get(), UR.get(), LL.get(), LR.get() };
 }
 
-void QuadTree::update_pos(float wraparound_val)
+void QuadTree::update_after_move()
 {
+	// After body position update tick, update the quad with new positions.
 	if (is_leaf()) {
 		for (auto it = quad_bodies.begin(); it != quad_bodies.end();) {
 			Body& body = **it;
-
-			body.pos_update(wraparound_val); // Want to do this on all bodies. can move this out into Universe.
 
 			if (in_bounds(body.x, body.y)) {
 				it++;
@@ -144,10 +143,10 @@ void QuadTree::update_pos(float wraparound_val)
 
 	}
 	else {
-		UL->update_pos(wraparound_val);
-		UR->update_pos(wraparound_val);
-		LL->update_pos(wraparound_val);
-		LR->update_pos(wraparound_val);
+		UL->update_after_move();
+		UR->update_after_move();
+		LL->update_after_move();
+		LR->update_after_move();
 
 		// Child methods may have called reinsert on us.
 		if (has_room()) {
