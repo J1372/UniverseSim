@@ -119,15 +119,11 @@ std::vector<float> Universe::gen_rand_portions(int num_slots) const
 
 void Universe::update()
 {
-	// handle_collisions first because we don't want to update bodies that we are just going to destroy.
-	static int tick = 0;
-	//std::cout << "Update #" << tick << '\n';
-	handle_collisions(); // remove collided objects. on collision, performs body type upgrade maybe.
 	handle_gravity(); // do grav pulls (update acceleration)
 	update_pos(); // update velocities and positions
+	handle_collisions(); // remove collided objects. on collision, performs body type upgrade maybe.
 
 	// update quadtree after update_pos()
-	++tick;
 }
 
 Body& Universe::create_body(float x, float y, long mass)
