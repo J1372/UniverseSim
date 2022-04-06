@@ -166,11 +166,18 @@ void QuadTree::add_to_child(Body& new_body)
 	else if (LL->in_bounds(new_body.x, new_body.y)) {
 		LL->add_body(new_body);
 	}
-	else if (LR->in_bounds(new_body.x, new_body.y)) { // LR
+	else if (LR->in_bounds(new_body.x, new_body.y)) {
 		LR->add_body(new_body);
 	}
 	else {
 		std::cout << "add_to_child added nothing to nowhere !!!" << '\n';
+		std::cout << "\tBody Position: (" << new_body.x << ", " << new_body.y << ")\n";
+		std::cout << "\tQuad Dimensions:\n";
+		std::cout << "\t\tx:\t" << x << '\n';
+		std::cout << "\t\ty:\t" << y << '\n';
+		std::cout << "\t\tend_x:\t" << end_x << '\n';
+		std::cout << "\t\tend_y:\t" << end_y << '\n';
+
 	}
 }
 
@@ -231,13 +238,6 @@ void QuadTree::reinsert(Body& body)
 	}
 	else {
 		quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), &body));
-		if (is_root()) {
-			// expand and add_to_child()
-			// expand(body);
-			add_to_child(body); // don't need to add_body, it is already in my quad.
-		}
-		else {
-			parent->reinsert(body);
-		}
+		parent->reinsert(body);
 	}
 }
