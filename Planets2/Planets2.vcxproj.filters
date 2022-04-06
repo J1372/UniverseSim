@@ -27,6 +27,9 @@
     <ClInclude Include="rand_float.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SpatialPartitioning.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="View.cpp">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="universe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialPartitioning.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

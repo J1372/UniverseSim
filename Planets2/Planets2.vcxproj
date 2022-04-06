@@ -146,12 +146,14 @@
     <ClInclude Include="Body.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="rand_float.h" />
+    <ClInclude Include="SpatialPartitioning.h" />
     <ClInclude Include="universe.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="rand_float.cpp" />
+    <ClCompile Include="SpatialPartitioning.cpp" />
     <ClCompile Include="universe.cpp" />
     <ClCompile Include="View.cpp" />
   </ItemGroup>
