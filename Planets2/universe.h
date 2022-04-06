@@ -6,6 +6,7 @@
 #include <limits>
 #include <iostream>
 
+class SpatialPartitioning;
 
 //const double GRAV_CONST = 0.00000000006743
 //const double GRAV_CONST = 1;
@@ -17,6 +18,8 @@ class Universe {
 	static constexpr long RAND_MASS = 100;
 	static constexpr double GRAV_CONST = 0.75;
 	static constexpr int MASS_SCALING = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
+
+	std::unique_ptr<SpatialPartitioning> partitioning_method = nullptr;
 
 	std::vector<std::unique_ptr<Body>> active_bodies;
 
@@ -54,9 +57,6 @@ public:
 	void grav_pull(Body& body1, Body& body2) const;
 
 	const QuadTree& get_quad_root() const { return root; }
-
-
-	//~Universe() not needed because the map frees itself.
 
 private:
 

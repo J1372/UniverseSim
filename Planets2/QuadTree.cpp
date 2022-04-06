@@ -1,7 +1,7 @@
 #include "QuadTree.h"
 #include <iostream>
 
-void QuadTree::perform_collision_check(std::vector<Body*>& to_remove)
+void QuadTree::collision_check(std::vector<Body*>& to_remove)
 {
 	if (is_leaf()) {
 		std::vector<Body*>::iterator it = quad_bodies.begin();
@@ -12,10 +12,10 @@ void QuadTree::perform_collision_check(std::vector<Body*>& to_remove)
 	else {
 		int prev_size = to_remove.size();
 
-		UL->perform_collision_check(to_remove);
-		UR->perform_collision_check(to_remove);
-		LL->perform_collision_check(to_remove);
-		LR->perform_collision_check(to_remove);
+		UL->collision_check(to_remove);
+		UR->collision_check(to_remove);
+		LL->collision_check(to_remove);
+		LR->collision_check(to_remove);
 
 		int children_removed = to_remove.size() - prev_size;
 
@@ -124,7 +124,7 @@ const std::array<QuadTree*, 4> QuadTree::get_quads() const
 	return { UL.get(), UR.get(), LL.get(), LR.get() };
 }
 
-void QuadTree::update_after_move()
+void QuadTree::update()
 {
 	// After body position update tick, update the quad with new positions.
 	if (is_leaf()) {
@@ -143,10 +143,10 @@ void QuadTree::update_after_move()
 
 	}
 	else {
-		UL->update_after_move();
-		UR->update_after_move();
-		LL->update_after_move();
-		LR->update_after_move();
+		UL->update();
+		UR->update();
+		LL->update();
+		LR->update();
 
 		// Child methods may have called reinsert on us.
 		if (has_room()) {

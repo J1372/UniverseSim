@@ -2,13 +2,13 @@
 #include <unordered_map>
 #include <memory>
 #include "Body.h"
+#include "SpatialPartitioning.h"
 
-class QuadTree {
+class QuadTree : public SpatialPartitioning {
 
 	static constexpr int MAX_BODIES = 10;
 
 	std::vector<Body*> quad_bodies;
-
 
 	std::unique_ptr<QuadTree> UL = nullptr;
 	std::unique_ptr<QuadTree> UR = nullptr;
@@ -29,7 +29,7 @@ public:
 		//quad_bodies.reserve(10 * MAX_BODIES);
 	}
 
-	void perform_collision_check(std::vector<Body*>& to_remove);
+	void collision_check(std::vector<Body*>& to_remove);
 
 
 	void add_body(Body& body);
@@ -46,7 +46,7 @@ public:
 	float get_width() const { return end_x - x; }
 	float get_height() const { return end_y - y; }
 
-	void update_after_move();
+	void update();
 
 	//void update_removed(const std::vector<int> &indices_removed);
 
