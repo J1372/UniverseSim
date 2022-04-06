@@ -16,7 +16,7 @@ float screen_height = 900.0;
 bool running;
 
 void process_input(Universe& universe, Camera2D& camera) {
-	static int multiplier = 16;
+	static int multiplier = 8;
 	static float cam_speed = 5 * multiplier / camera.zoom;
 
 

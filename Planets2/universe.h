@@ -11,7 +11,6 @@
 //const double GRAV_CONST = 1;
 
 class Universe {
-	// these settings were fun.
 	static constexpr int UNIVERSE_CAPACITY = 1000;
 	static constexpr int UNIVERSE_SIZE_START = 1000;
 	static constexpr float UNIVERSE_SIZE_MAX = 10000; // delete if go out of bounds or wraparound.
