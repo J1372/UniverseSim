@@ -17,9 +17,6 @@ bool running;
 
 void zoom_in(Camera2D& camera) {
 	camera.zoom *= 2;
-
-	
-
 }
 
 void zoom_out(Camera2D& camera) {
@@ -79,17 +76,16 @@ void process_input(Universe& universe, Camera2D& camera) {
 }
 
 bool on_screen(const Body& body, Camera2D& camera) {
-	Vector2 screen_pos = GetWorldToScreen2D({ body.x, body.y }, camera);
 
-	float leftmost = screen_pos.x - body.radius;
-	float rightmost = screen_pos.x + body.radius;
+	Vector2 leftmost = GetWorldToScreen2D({ body.x - body.radius, body.y }, camera);
+	Vector2 rightmost = GetWorldToScreen2D({ body.x + body.radius, body.y }, camera);
 
-	float lowest = screen_pos.y + body.radius;
-	float highest = screen_pos.y - body.radius;
+	Vector2 lowest = GetWorldToScreen2D({ body.x, body.y + body.radius }, camera);
+	Vector2 highest = GetWorldToScreen2D({ body.x, body.y - body.radius }, camera);
 
 	// can optimize : screen_pos.x >= -body.radius && screen_pos.y >= -body.radius
 
-	return rightmost >= 0 and lowest >= 0 and leftmost < GetScreenWidth() and highest < GetScreenHeight();
+	return rightmost.x >= 0 and lowest.y >= 0 and leftmost.x < GetScreenWidth() and highest.y < GetScreenHeight();
 }
 
 #ifdef RENDER_QUAD_TREE
