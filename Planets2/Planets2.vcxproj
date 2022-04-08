@@ -160,7 +160,6 @@
     <ClCompile Include="CheckBoxList.cpp" />
     <ClCompile Include="SimulationScene.cpp" />
     <ClCompile Include="TextBox.cpp" />
-    <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="rand_float.cpp" />
     <ClCompile Include="Scene.cpp" />

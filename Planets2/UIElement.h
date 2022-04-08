@@ -1,13 +1,11 @@
 #pragma once
+class Vector2;
+
 class UIElement
 {
-	int x;
-	int y;
 	bool hidden = false;
 
 public:
-	UIElement(int x, int y) : x(x), y(y) {}
-
 
 	bool hide() { hidden = true; }
 	bool show() { hidden = false; }

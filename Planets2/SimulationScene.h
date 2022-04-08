@@ -1,15 +1,42 @@
 #pragma once
 #include "Scene.h"
+#include <raylib.h>
+
 class Universe;
+class Body;
 
 class SimulationScene : public Scene
 {
 
-	const Universe& universe;
+	Universe& universe;
+	Camera2D camera;
+
+	bool running = false;
+
+	void zoom_in() { camera.zoom *= 2; }
+
+	void zoom_out() { camera.zoom /= 2; }
+
+	void process_input();
+
+	bool on_screen(const Body& body) const;
+	void render_system() const;
+	void render() const;
 
 public:
 
-	SimulationScene(const Universe& universe) : universe(universe) {}
+	SimulationScene(int width, int height, Universe& universe) : Scene(width, height), universe(universe)
+	{
+		camera.offset = { static_cast<float>(screen_width) / 2, static_cast<float>(screen_height) / 2 };
+		camera.target = { 0, 0 };
+		camera.rotation = 0;
+		camera.zoom = 1.0f;
+	}
+
+	void resize(int width, int height);
+
+	Scene* update();
+
 
 
 };

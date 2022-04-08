@@ -10,7 +10,7 @@ class Button : public UIElement
 	std::string text;
 	int font_size;
 	int text_length_pixels;
-	double width_padding = 0.1;
+	float width_padding = 0.1;
 
 	Rectangle rect;
 
@@ -26,16 +26,14 @@ class Button : public UIElement
 
 public:
 
-	Button(const std::string& text, int x, int y) :
-		UIElement(x, y),
+	Button(const std::string& text, float x, float y) :
 		text(text),
 		font_size(12),
 		text_length_pixels(MeasureText(text.c_str(), font_size)),
 		rect{ x, y, text_length_pixels * (1+width_padding), 50}
 	{}
 
-	Button(const std::string &text, int x, int y, int font_size) :
-		UIElement(x, y),
+	Button(const std::string &text, float x, float y, int font_size) :
 		text(text),
 		font_size(font_size),
 		text_length_pixels(MeasureText(text.c_str(), font_size)),

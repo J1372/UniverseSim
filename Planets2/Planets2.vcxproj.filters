@@ -68,9 +68,6 @@
     <ClCompile Include="universe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UIElement.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="Button.cpp">
       <Filter>UI</Filter>
     </ClCompile>
