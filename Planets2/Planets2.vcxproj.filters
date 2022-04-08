@@ -47,8 +47,5 @@
     <ClCompile Include="universe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SpatialPartitioning.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
