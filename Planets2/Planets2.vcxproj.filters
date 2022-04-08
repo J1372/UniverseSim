@@ -36,13 +36,13 @@
     <ClInclude Include="UIElement.h">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="TextBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Button.h">
       <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="CheckBoxList.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TextBox.h">
       <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>

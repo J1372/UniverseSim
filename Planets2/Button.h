@@ -49,6 +49,11 @@ public:
 
 	void set_clickable(bool to_set) { clickable = to_set; }
 
+	bool contains_point(Vector2 point) const {
+		return point.x >= rect.x and point.x < rect.x + rect.width
+			and point.y >= rect.y and rect.y < rect.y + rect.height;
+	}
+
 	void render();
 };
 
