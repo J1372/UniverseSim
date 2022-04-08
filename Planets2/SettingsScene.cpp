@@ -27,6 +27,8 @@ void SettingsScene::render() const
 
 		start_button.render();
 		exit_button.render();
+		num_planets_input.render();
+		num_systems_input.render();
 
 	EndDrawing();
 }

@@ -9,8 +9,8 @@ class SettingsScene : public Scene
 	Button start_button { "Start", 500, 700 };
 	Button exit_button{ "Exit", 600, 700 };
 
-	TextBox num_planets_input { 300, 400, 50 };
-	TextBox num_systems_input { 300, 500, 50 };
+	TextBox num_planets_input { 300, 400, 500 };
+	TextBox num_systems_input { 300, 500, 500 };
 
 	TextBox* active_textbox = nullptr;
 

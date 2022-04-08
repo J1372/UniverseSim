@@ -16,7 +16,7 @@ class TextBox : public UIElement
 
 	Rectangle rect;
 
-	Color background_color = GRAY;
+	Color background_color = BLACK;
 	Color edge_color = DARKGRAY;
 
 	bool editable = false;
