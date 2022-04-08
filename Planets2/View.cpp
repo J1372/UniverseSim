@@ -4,6 +4,8 @@
 #include <string>
 
 #include "universe.h"
+#include "Scene.h"
+class SimulationScene;
 
 //#define MY_DEBUG
 #define RENDER_QUAD_TREE
@@ -172,6 +174,8 @@ int main() {
 	}
 
 	running = false;
+
+	std::unique_ptr<Scene> active_scene = std::make_unique<SimulationScene>(universe);
 
 	while (!WindowShouldClose()) {
 

@@ -16,6 +16,9 @@
     <Filter Include="UI">
       <UniqueIdentifier>{a0898e0d-6ff6-4814-a5db-1600482fa355}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scenes">
+      <UniqueIdentifier>{007586d7-eb64-41ee-b105-78f439fe3488}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="universe.h">
@@ -30,9 +33,6 @@
     <ClInclude Include="rand_float.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>UI</Filter>
-    </ClInclude>
     <ClInclude Include="UIElement.h">
       <Filter>UI</Filter>
     </ClInclude>
@@ -44,6 +44,12 @@
     </ClInclude>
     <ClInclude Include="TextBox.h">
       <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationScene.h">
+      <Filter>Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -62,9 +68,6 @@
     <ClCompile Include="universe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="UIElement.cpp">
       <Filter>UI</Filter>
     </ClCompile>
@@ -76,6 +79,12 @@
     </ClCompile>
     <ClCompile Include="TextBox.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationScene.cpp">
+      <Filter>Scenes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

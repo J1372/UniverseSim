@@ -13,5 +13,7 @@ public:
 
 	virtual Scene* update() = 0;
 	virtual void resize(int width, int height) = 0;
+
+	virtual ~Scene() = 0;
 };
 
