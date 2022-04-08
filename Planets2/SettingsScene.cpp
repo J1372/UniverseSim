@@ -4,6 +4,9 @@
 SettingsScene::SettingsScene(int width, int height) : Scene{ width, height } {
 	start_button.set_on_action([this]() { return_scene = new SimulationScene{ screen_width, screen_height, 0, 1 }; });
 	exit_button.set_on_action([this]() { return_scene = nullptr; });
+
+	start_button.set_min_width(100);
+	exit_button.set_min_width(100);
 }
 
 void SettingsScene::process_input()
@@ -21,8 +24,6 @@ void SettingsScene::render() const
 {
 	BeginDrawing();
 		ClearBackground(GRAY); // maybe better to have before beginmode2d?
-
-		DrawFPS(50, 50);
 
 		start_button.render();
 		exit_button.render();

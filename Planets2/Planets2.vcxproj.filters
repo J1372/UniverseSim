@@ -52,7 +52,7 @@
       <Filter>Scenes</Filter>
     </ClInclude>
     <ClInclude Include="SettingsScene.h">
-      <Filter>Header Files</Filter>
+      <Filter>Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -87,7 +87,7 @@
       <Filter>Scenes</Filter>
     </ClCompile>
     <ClCompile Include="SettingsScene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Scenes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@ class Button : public UIElement
 	std::string text;
 	int font_size;
 	int text_length_pixels;
-	float width_padding = 0.1;
+	float width_padding = 1;
 
 	Rectangle rect;
 
@@ -19,7 +19,7 @@ class Button : public UIElement
 
 
 	bool clickable = true;
-	static constexpr int edge_width = 10;
+	static constexpr int edge_width = 5;
 
 
 	std::function<void(void)> callback = nullptr;
@@ -41,6 +41,9 @@ public:
 	{}
 
 
+	void set_min_width(float min_width) {
+		rect.width = std::max(min_width, text_length_pixels * (1 + width_padding));
+	}
 
 	void set_on_action(std::function<void(void)> on_action) { callback = on_action; }
 	void click() { if (clickable) callback(); }
