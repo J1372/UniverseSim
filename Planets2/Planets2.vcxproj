@@ -144,14 +144,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Body.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="CheckBoxList.h" />
+    <ClInclude Include="TextBox.h" />
+    <ClInclude Include="UIElement.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="rand_float.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="universe.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Body.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="CheckBoxList.cpp" />
+    <ClCompile Include="TextBox.cpp" />
+    <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="rand_float.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="universe.cpp" />
     <ClCompile Include="View.cpp" />
   </ItemGroup>
