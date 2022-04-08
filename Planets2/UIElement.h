@@ -13,6 +13,6 @@ public:
 
 	virtual void click() = 0;
 	virtual bool contains_point(Vector2 point) const = 0;
-	virtual void render() = 0;
+	virtual void render() const = 0;
 };
 

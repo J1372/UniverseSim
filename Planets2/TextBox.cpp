@@ -9,7 +9,7 @@ void TextBox::click() {
 	active = true;
 }
 
-void TextBox::render() {
+void TextBox::render() const {
 	DrawRectangleRec(rect, background_color);
 	DrawRectangleLinesEx(rect, edge_width, edge_color);
 

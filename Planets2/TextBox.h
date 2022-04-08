@@ -10,9 +10,9 @@ class TextBox : public UIElement
 	std::string entered_text;
 	int cursor_pos = 0;
 
-	int font_size;
-	int text_length_pixels;
-	double width_padding = 0.1;
+	int font_size = 12;
+	int text_length_pixels = 0;
+	float width_padding = 0.1;
 
 	Rectangle rect;
 
@@ -27,6 +27,8 @@ class TextBox : public UIElement
 
 public:
 
+	TextBox(float x, float y, float width) : rect{ x, y, width, 50 } {}
+
 	void click();
 
 	bool contains_point(Vector2 point) const {
@@ -34,7 +36,7 @@ public:
 			and point.y >= rect.y and rect.y < rect.y + rect.height;
 	}
 
-	void render() = 0;
+	void render() const;
 
 	void send_keypress(int key);
 

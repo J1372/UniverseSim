@@ -146,6 +146,7 @@
     <ClInclude Include="Body.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CheckBoxList.h" />
+    <ClInclude Include="SettingsScene.h" />
     <ClInclude Include="SimulationScene.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="UIElement.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="CheckBoxList.cpp" />
+    <ClCompile Include="SettingsScene.cpp" />
     <ClCompile Include="SimulationScene.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="QuadTree.cpp" />

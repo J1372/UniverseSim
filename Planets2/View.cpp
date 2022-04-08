@@ -6,6 +6,7 @@
 #include "universe.h"
 #include "Scene.h"
 #include "SimulationScene.h"
+#include "SettingsScene.h"
 
 void process_input() {
 }
@@ -21,20 +22,7 @@ int main() {
 	InitWindow(start_width, start_height, "Game");
 	SetExitKey(KEY_NULL);
 
-	Universe universe;
-
-	int rand_planets = 0;
-	int systems = 1;
-
-	for (int i = 0; i < rand_planets; ++i) {
-		universe.create_rand_body();
-	}
-
-	for (int i = 0; i < systems; ++i) {
-		universe.create_rand_system();
-	}
-
-	std::unique_ptr<Scene> active_scene = std::make_unique<SimulationScene>(GetScreenWidth(), GetScreenHeight(), universe);
+	std::unique_ptr<Scene> active_scene = std::make_unique<SettingsScene>(GetScreenWidth(), GetScreenHeight());
 
 	while (!WindowShouldClose()) {
 

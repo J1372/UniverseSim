@@ -51,6 +51,9 @@
     <ClInclude Include="SimulationScene.h">
       <Filter>Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="SettingsScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="View.cpp">
@@ -82,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="SimulationScene.cpp">
       <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsScene.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

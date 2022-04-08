@@ -52,7 +52,7 @@ public:
 			and point.y >= rect.y and rect.y < rect.y + rect.height;
 	}
 
-	void render();
+	void render() const;
 };
 
 

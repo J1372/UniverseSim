@@ -2,13 +2,13 @@
 #include "Scene.h"
 #include <raylib.h>
 
-class Universe;
+#include "universe.h"
 class Body;
 
 class SimulationScene : public Scene
 {
 
-	Universe& universe;
+	Universe universe;
 	Camera2D camera;
 
 	bool running = false;
@@ -25,7 +25,7 @@ class SimulationScene : public Scene
 
 public:
 
-	SimulationScene(int width, int height, Universe& universe) : Scene(width, height), universe(universe)
+	SimulationScene(int width, int height, int num_planets, int num_systems) : Scene(width, height), universe{num_planets, num_systems}
 	{
 		camera.offset = { static_cast<float>(screen_width) / 2, static_cast<float>(screen_height) / 2 };
 		camera.target = { 0, 0 };
