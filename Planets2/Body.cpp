@@ -57,14 +57,14 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 	// for some reason x = sin and y = cos;
 	// this should be valid x and y for pos and negative. hope so :)
 
-	float apoapsis = periapsis * (1 + ecc) / (1 - ecc); // appoapsis on opposite end. pi radians degrees.
+	float apoapsis = periapsis * (1 + ecc) / (1 - ecc); // apoapsis on opposite end. pi radians degrees.
 	float semi_major_axis = (periapsis + apoapsis) / 2;
 
 	// this is a random degree from periapsis;
 	// for now, every planet starts at their periapsis. the periapsis is random.
 	// in the future, I'd like every planet to start at a random point on there orbit.
 
-	/*float true_anomaly = (randf() * 2) * std::numbers::pi; // THIS IS INT NOT FLOAT REEEE
+	/*float true_anomaly = (randf() * 2) * std::numbers::pi;
 	float dist_at_point = semi_major_axis * (1 - std::pow(ecc, 2)) / (1 + ecc * std::cos(true_anomaly));*/
 
 	// find x and y using dist_at_point and true_anomaly
@@ -77,8 +77,8 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 
 	// currently sets velocity for if they're at periapsis with no implementation for random point in there orbit.
 
-//periapsis_angle at periapsis_v[0][1];
-// all velocity at periapsis and apoapsis is tangental to body. 90 degrees = pi/2
+	//periapsis_angle at periapsis_v[0][1];
+	// all velocity at periapsis and apoapsis is tangental to body. 90 degrees = pi/2
 	float num = (1 + ecc) * grav_const * (orbiting.mass + mass); // orbiting.mass at least, possibly + mass
 	float den = (1 - ecc) * semi_major_axis;
 	float v_per = std::sqrt(num / den);
@@ -89,7 +89,8 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 
 	float vel_v[2] = { v_per * sin(v_angle), v_per * cos(v_angle) };
 
-	bool retrograde_roll = randf() < .12; // % chance to have retrograde orbit
+	constexpr double RETROGRADE_CHANCE = 0.12;
+	bool retrograde_roll = randf() < RETROGRADE_CHANCE;
 
 	if (retrograde_roll) {
 		vel_v[0] = -vel_v[0];
