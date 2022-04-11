@@ -16,19 +16,7 @@ bool Universe::can_create_body() const
 
 void Universe::handle_collisions()
 {
-	//std::vector<int> to_remove;
-	//to_remove.reserve(cur_bodies / 2);
-
-	//root.perform_collision_check(to_remove);
-
-	// hope map.erase calls its destructor but idk.
-	//for (int i = 0; i < to_remove.size(); ++i) {
-		//int id = to_remove[i];
-		//body_map.erase(id);
-	//}
-	
 	int index = 0;
-	//bool curr_eaten = false;
 	while (index < active_bodies.size()) {
 		bool removed = handle_collision(index);
 		if (!removed) {
@@ -43,13 +31,9 @@ bool Universe::handle_collision(int it)
 	Body& body1 = *active_bodies[it];
 	int it2 = it + 1;
 	while (it2 < active_bodies.size()) {
-		////std::cout << "\t\tCollision check against " << it2->first << "\n\n";
 		Body& body2 = *active_bodies[it2];
 
 		if (body1.check_col(body2)) { // there is a collision
-			////std::cout << "\t\t\tCollision!" << '\n';
-			////std::cout << "\t\t\t" << body1.x << ',' << body1.y << ',' << body1.radius << '\n';
-			////std::cout << "\t\t\t" << body2.x << ',' << body2.y << ',' << body2.radius << '\n';
 
 			if (body1.can_eat(body2)) { // it1 eats it2
 				body1.absorb(body2);
@@ -75,8 +59,6 @@ bool Universe::handle_collision(int it)
 
 void Universe::handle_gravity()
 {
-	// maybe set all acc to 0
-	// std::unordered_map<int, Body>::iterator
 	for (int i = 0; i < active_bodies.size() - 1; i++) {
 		Body& body1 = *active_bodies[i];
 		for (int j = i + 1; j < active_bodies.size(); j++) {
@@ -122,7 +104,7 @@ void Universe::update()
 	handle_gravity(); // do grav pulls (update acceleration)
 	update_pos(); // update velocities and positions
 
-	// remove collided objects. on collision, performs body type upgrade maybe.
+	// remove collided objects.
 	// handle_collisions();
 	std::vector<Body*> to_remove;
 	partitioning_method->collision_check(to_remove);
@@ -143,7 +125,7 @@ Body& Universe::create_body(float x, float y, long mass)
 
 	active_bodies.emplace_back(std::make_unique<Body>(id, x, y, mass));
 
-	++generated_bodies;
+	generated_bodies++;
 
 	Body& body = *active_bodies[active_bodies.size()-1];
 
@@ -158,7 +140,7 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 
 	active_bodies.emplace_back(std::make_unique<Body>(id, sat_dist, ecc, orbiting, GRAV_CONST, mass));
 
-	++generated_bodies;
+	generated_bodies++;
 
 	Body& body = *active_bodies[active_bodies.size() - 1];
 
@@ -170,13 +152,13 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 Body& Universe::create_rand_body()
 {
 	int id = generated_bodies;
-	float x = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START); // might be more efficient to randf * start_size
+	float x = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
 	float y = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
 	long mass = randi(1, RAND_MASS);
 
 	active_bodies.emplace_back(std::make_unique<Body>(id, x, y, mass));
 
-	++generated_bodies;
+	generated_bodies++;
 
 	Body& body = *active_bodies[active_bodies.size() - 1];
 
@@ -187,18 +169,12 @@ Body& Universe::create_rand_body()
 
 Body& Universe::create_rand_system()
 {
-	// might be useful to enforce a minimum
+	long system_mass = randi(1, RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
 
-	long system_mass = randi(1, RAND_MASS) * 5000; // rand_mass is max planet mass of random planet oops
-	// * 100 applies to min and max
-	// rand_mass*100 applies only to max
-
-	//int num_planets = (rand() % 10) + 1; // at least 1 planet, up to 10.
 	constexpr int MIN_PLANETS = 100; // 100 - 300 was
 	constexpr int MAX_PLANETS = 300;
 
-	int num_planets = randi(MIN_PLANETS, MAX_PLANETS); // at least 1 planet, up to 10.
-	//std::cout << num_planets << '\n';
+	int num_planets = randi(MIN_PLANETS, MAX_PLANETS); 
 	constexpr float star_mass_ratio = .95f;
 	constexpr float remaining_mass = 1 - star_mass_ratio;
 
@@ -208,7 +184,6 @@ Body& Universe::create_rand_system()
 
 	float star_x = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
 	float star_y = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
-	//std::cout << RAND_MAX << '\n';
 	long star_mass = star_mass_ratio * system_mass;
 
 	Body& star = create_body(star_x, star_y, star_mass);
@@ -299,28 +274,17 @@ void Universe::grav_pull(Body& body1, Body& body2) const
 	double force = GRAV_CONST * (1 * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
 	// this is the net force
 
-	//std::cout << "Grav pull: " << body1.id << ", " << body2.id << '\n';
-	//std::cout << "\tForce - " << force << "\n";
 
 	std::array<float, 2> dist_v = body1.distv_body(body2);
 
-	//std::cout << "\tdist_x - " << dist_v[0] << "\n";
-	//std::cout << "\tdist_y - " << dist_v[1] << "\n\n";
-
 	float theta = atan2(dist_v[0], dist_v[1]); // radians
-	//std::cout << "\trTheta - " << theta << '\n';
 	// float dtheta = (double)theta * 180 / std::numbers::pi; // degrees
-
-	//std::cout << "\tdTheta - " << dtheta << "\n\n";
 
 	// F = ma
 
 	// calc net (x, y) force vectors for both. are they the same / reversed?
 
 	std::array<float, 2> force_vectors { (float)(force * sin(theta)), (float)(force * cos(theta)) };
-
-	//std::cout << "\tForce_x = " << force_vectors[0] << '\n';
-	//std::cout << "\tForce_y = " << force_vectors[1] << "\n\n";
 
 	body1.grav_pull(force_vectors);
 
