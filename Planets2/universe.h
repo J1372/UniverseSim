@@ -36,6 +36,19 @@ public:
 		//std::cout << std::thread::hardware_concurrency();
 	};
 
+	Universe(int num_planets, int num_systems) {
+		active_bodies.reserve(UNIVERSE_CAPACITY);
+
+
+		for (int i = 0; i < num_planets; ++i) {
+			create_rand_body();
+		}
+
+		for (int i = 0; i < num_systems; ++i) {
+			create_rand_system();
+		}
+	};
+
 	bool can_create_body() const;
 
 	Body& create_body(float x, float y, long mass);
