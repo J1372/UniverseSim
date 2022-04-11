@@ -26,6 +26,10 @@
     <ClCompile Include="TextBox.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="GuiScene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="GuiComponentList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.h" />
@@ -58,6 +62,10 @@
     <ClInclude Include="UIElement.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="GuiScene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="GuiComponentList.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
