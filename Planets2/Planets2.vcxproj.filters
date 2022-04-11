@@ -1,95 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="UI">
-      <UniqueIdentifier>{a0898e0d-6ff6-4814-a5db-1600482fa355}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scenes">
-      <UniqueIdentifier>{007586d7-eb64-41ee-b105-78f439fe3488}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="universe.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Body.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QuadTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rand_float.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SpatialPartitioning.h">
-      <Filter>Header Files</Filter>
-    <ClInclude Include="UIElement.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="CheckBoxList.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="TextBox.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="SimulationScene.h">
-      <Filter>Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingsScene.h">
-      <Filter>Scenes</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="View.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Body.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QuadTree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rand_float.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="universe.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="Body.cpp" />
+    <ClCompile Include="rand_float.cpp" />
+    <ClCompile Include="universe.cpp" />
+    <ClCompile Include="View.cpp" />
     <ClCompile Include="Button.cpp">
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="CheckBoxList.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="TextBox.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="SimulationScene.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
     <ClCompile Include="SettingsScene.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="SimulationScene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadTree.cpp">
+      <Filter>Partitioning</Filter>
+    </ClCompile>
+    <ClCompile Include="TextBox.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Body.h" />
+    <ClInclude Include="rand_float.h" />
+    <ClInclude Include="universe.h" />
+    <ClInclude Include="Button.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckBoxList.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsScene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationScene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadTree.h">
+      <Filter>Partitioning</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialPartitioning.h">
+      <Filter>Partitioning</Filter>
+    </ClInclude>
+    <ClInclude Include="TextBox.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIElement.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="UI">
+      <UniqueIdentifier>{1abb6bb6-35cb-4c7f-bf7e-d0d2538743bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Partitioning">
+      <UniqueIdentifier>{d3442460-e4ff-4b0c-bd5b-1e1873f15dd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes">
+      <UniqueIdentifier>{be4d922f-a108-4669-ada8-d2cc4ea1c65b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

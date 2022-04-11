@@ -3,6 +3,7 @@ void TextBox::click() {
 	int mouse_x_in_box = GetMousePosition().x - rect.x;
 
 	// not perfect, but "functional"
+	// Better to do percentage on the text width, not textbox width
 	double mouse_pct = mouse_x_in_box / rect.width;
 	cursor_pos = mouse_pct * entered_text.size();
 
@@ -14,7 +15,7 @@ void TextBox::render() const {
 	DrawRectangleLinesEx(rect, edge_width, edge_color);
 
 	int start_x = rect.x + rect.width * (width_padding / 2);
-	int start_y = rect.height / 2;
+	int start_y = rect.y + rect.height / 2;
 
 	DrawText(entered_text.c_str(), start_x, start_y, font_size, WHITE);
 	
@@ -30,21 +31,21 @@ void TextBox::render() const {
 
 void TextBox::send_keypress(int key)
 {
-	// if is backspace
-	if (key == 8) {
-		if (entered_text.empty()) return;
+	constexpr int BACKSPACE_CODE = 8;
+
+	if (key == BACKSPACE_CODE) {
+		if (entered_text.empty())
+			return;
 
 		entered_text.erase(cursor_pos);
 		cursor_pos--;
-	}
-
-	// if key is invalid or backspace.
-	if (key < 32 or key > 126) {
 		return;
 	}
 
-
-
+	// if key is invalid.
+	if (key < 32 or key > 126) {
+		return;
+	}
 
 
 	entered_text += static_cast<char>(key);
