@@ -6,12 +6,6 @@
 #include <array>
 
 
-enum class Type : int {
-	ASTEROID = 0,
-	PLANET,
-	SUN
-};
-
 struct TypeExt {
 	int density;
 	long min_mass;
@@ -48,20 +42,12 @@ class Body {
 
 	int type_level = 0;
 
-	/*static constexpr int TYPE_MASSES[] { 0, 500, 2000, LONG_MAX };
-	static constexpr Color TYPE_COLORS[]{ RAYWHITE, SKYBLUE, GOLD, GRAY };
-	// LONG_MAX is an int.
-
-	static const int hi = 0;*/
-
-
 
 	void do_wraparound(float wraparound_val);
 
 
 public:
 	int id = -1;
-	//int cur_type = 0;
 
 	float x = 0.0;
 	float y = 0.0;
@@ -69,17 +55,10 @@ public:
 	float vel_y = 0;
 	float acc_x = 0;
 	float acc_y = 0;
-	//float acceleration;
 
 	float radius = 0.0; // in units. same as distance.
 	const TypeExt* type;
 	long mass = 0l; // in kg
-	//TypeExt *type;  // either makes render faster or slower due to cache/indirection but idk??
-
-	// mass/size increase -> camera increases #units shown (zoom out). pixel/unit decrease.
-
-	//Color color;
-	//const struct Texture2D* texture;
 
 	Body() = default;
 
