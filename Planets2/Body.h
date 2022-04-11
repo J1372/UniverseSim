@@ -57,8 +57,9 @@ public:
 	float acc_y = 0;
 
 	float radius = 0.0; // in units. same as distance.
-	const TypeExt* type;
 	long mass = 0l; // in kg
+
+	const TypeExt* type;
 
 	Body() = default;
 
@@ -70,12 +71,13 @@ public:
 
 	};
 
+	// satellite constructor
 	Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_const, long mass);
 
 
 	bool can_eat(const Body& other) const;
 
-	void absorb(Body&);
+	void absorb(const Body& other);
 
 	// void impact (struct Body * const, struct Body * const); partial absorb
 
@@ -88,7 +90,7 @@ public:
 
 	void grav_pull(std::array<float, 2> force_vector);
 
-	std::array<float, 2> get_momentum();
+	std::array<float, 2> get_momentum() const;
 
 	std::array<float, 2> distv_body(const Body& other) const;
 	float dist_body(const Body& other) const;

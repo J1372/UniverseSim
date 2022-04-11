@@ -79,9 +79,9 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 
 //periapsis_angle at periapsis_v[0][1];
 // all velocity at periapsis and apoapsis is tangental to body. 90 degrees = pi/2
-	float nom = (1 + ecc) * grav_const * (orbiting.mass + mass); // orbiting.mass at least, possibly + mass
+	float num = (1 + ecc) * grav_const * (orbiting.mass + mass); // orbiting.mass at least, possibly + mass
 	float den = (1 - ecc) * semi_major_axis;
-	float v_per = std::sqrt(nom / den);
+	float v_per = std::sqrt(num / den);
 
 	//float v_angle = periapsis_angle;
 	float v_angle = 2 * std::numbers::pi - periapsis_angle; // flip on y-axis
@@ -123,9 +123,6 @@ std::array<float, 2> Body::distv_body(const Body& other) const
 
 float Body::dist_body(const Body& other) const
 {
-	//float abs_x = fabs(body1->x - body2->x
-	// unsure if this is ever needed aside from debugging or printing maybe.
-	// everything should use distv. because force is a vector.
 	float c_squared = std::pow(std::abs(other.x - x), 2) + std::pow(std::abs(other.y - y), 2);
 	return std::sqrt(c_squared);
 }
@@ -135,13 +132,8 @@ bool Body::can_eat(const Body& other) const
 	return mass >= other.mass;
 }
 
-void Body::absorb(Body& other)
+void Body::absorb(const Body& other)
 {
-
-	//double mass_ratio = (double)other.mass / (double)mass; // not perfect yet
-
-	long combined_mass = mass + other.mass;
-
 	std::array<float, 2> mom = get_momentum();
 	std::array<float, 2> other_mom = other.get_momentum();
 	std::array<float, 2> combined_mom;
@@ -150,22 +142,9 @@ void Body::absorb(Body& other)
 	combined_mom[1] = mom[1] + other_mom[1];
 
 
-
-	//std::cout << "X_momf: " << combined_mom[0] << '\n';
-	//std::cout << "Y_momf: " << combined_mom[1] << "\n\n";
-
-	//float vel_x_add =// mass_ratio * other.vel_x;
-	//float vel_y_add = //mass_ratio * other.vel_y;
-
-
-
-	//float mass_ratio = other.mass / mass; // m1/(m1+m2)
-
+	long combined_mass = mass + other.mass;
 	float d_vel_x = combined_mom[0] / ((double)combined_mass); // vf , not delta
 	float d_vel_y = combined_mom[1] / ((double)combined_mass);
-
-	/*std::cout << "vel_f(X): " << d_vel_x << '\n';
-	std::cout << "vel_f(Y): " << d_vel_y << "\n\n";*/
 
 	vel_x = d_vel_x;
 	vel_y = d_vel_y;
@@ -174,8 +153,6 @@ void Body::absorb(Body& other)
 	// upgrade its type if it meets mass requirements.
 	mass = combined_mass;
 	upgrade_update();
-
-	//radius = mass / type->density;
 	radius = std::max(((float)mass) / type->density, 1.0f); // could be in upgrade_update
 
 	/*float force_x = other.mass / -other.vel_x;
@@ -188,11 +165,8 @@ void Body::absorb(Body& other)
 	vel_y += acc_y;*/
 	//vel_x += .3*other.vel_x; // this should be a portion of the force that other smacks u with.
 	//vel_y += .3*other.vel_y;
-	//free body2 if we decide to have it be dynamically allocated.
-	//upgrade_update(body1); < maybe part of check_col. or game loop.
 }
 
-// void impact (struct Body * const, struct Body * const){} partial absorb
 
 void Body::upgrade_update()
 {
@@ -221,10 +195,7 @@ void Body::pos_update(float wraparound_val)
 
 bool Body::check_col(const Body& other) const
 {
-	// speed hack bypass dist_body's sqrt
 	float c_squared = std::pow(std::abs(other.x - x), 2) + std::pow(std::abs(other.y - y), 2);
-	//////std::cout << "c^2 = " << c_squared << '\n';
-	////std::cout << "r^2 = " << std::pow((other.radius + radius), 2) << '\n';
 	return c_squared < std::pow((other.radius + radius), 2);
 }
 
@@ -233,7 +204,6 @@ void Body::grav_pull(std::array<float, 2> force_vector)
 {
 
 	// calc net acceleration for both vectors.
-
 	float d_acc_x = force_vector[0] / mass;
 	float d_acc_y = force_vector[1] / mass;
 
@@ -242,10 +212,7 @@ void Body::grav_pull(std::array<float, 2> force_vector)
 
 }
 
-std::array<float, 2> Body::get_momentum()
+std::array<float, 2> Body::get_momentum() const
 {
 	return { mass * vel_x , mass * vel_y };
-
-	//std::cout << "X_mom: " << to_set[0] << '\n';
-	//std::cout << "Y_mom: " << to_set[1] << "\n\n";
 }
