@@ -12,13 +12,7 @@ enum class Type : int {
 	SUN
 };
 
-// TypeExt in future will serve as a prototype instead of a reference to in Body
-// to speed up performance (no dereferencing to get color.
-// to add customizability to types (different colors / textures).
-// We aren't bottlenecked by memory, just speed.
 struct TypeExt {
-	int level; // in type array list sorted by min_mass
-
 	int density;
 	long min_mass;
 	Color color; // list of colors (may be weighted). Pick one from prototype.
@@ -37,11 +31,11 @@ class Body {
 	* 15
 	*
 	*/
-	static constexpr TypeExt ASTEROID_TYPE = { 0, 10, 0, RAYWHITE };
-	static constexpr TypeExt PLANET_TYPE = { 1, 14, 1000, SKYBLUE };
-	static constexpr TypeExt SUN_TYPE = { 2, 50, 6000, GOLD };
-	static constexpr TypeExt BLACK_HOLE_TYPE = { 3, 1000, 90000, DARKGRAY };
-	static constexpr TypeExt END_TYPE = { -1, -1, LONG_MAX, SKYBLUE };
+	static constexpr TypeExt ASTEROID_TYPE = { 10, 0, RAYWHITE };
+	static constexpr TypeExt PLANET_TYPE = { 14, 1000, SKYBLUE };
+	static constexpr TypeExt SUN_TYPE = { 50, 6000, GOLD };
+	static constexpr TypeExt BLACK_HOLE_TYPE = { 1000, 90000, DARKGRAY };
+	static constexpr TypeExt END_TYPE = { -1, LONG_MAX, SKYBLUE };
 
 	static constexpr TypeExt TYPES[] =
 	{
@@ -51,6 +45,8 @@ class Body {
 		BLACK_HOLE_TYPE,
 		END_TYPE
 	};
+
+	int type_level = 0;
 
 	/*static constexpr int TYPE_MASSES[] { 0, 500, 2000, LONG_MAX };
 	static constexpr Color TYPE_COLORS[]{ RAYWHITE, SKYBLUE, GOLD, GRAY };
@@ -76,7 +72,7 @@ public:
 	//float acceleration;
 
 	float radius = 0.0; // in units. same as distance.
-	const TypeExt* type = &ASTEROID_TYPE;
+	const TypeExt* type;
 	long mass = 0l; // in kg
 	//TypeExt *type;  // either makes render faster or slower due to cache/indirection but idk??
 
@@ -89,8 +85,6 @@ public:
 
 	Body(int id, float x, float y, long mass) : id(id), x(x), y(y), mass(std::max(1l, mass))
 	{
-		type = &ASTEROID_TYPE;
-
 		upgrade_update();
 
 		radius = std::max(((float)mass) / type->density, 1.0f);

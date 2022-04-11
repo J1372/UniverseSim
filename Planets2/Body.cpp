@@ -30,8 +30,6 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 	this->id = id;
 	this->mass = std::max(1l, mass);
 
-	type = &ASTEROID_TYPE;
-
 	upgrade_update();
 
 	radius = std::max(((float)mass) / type->density, 1.0f);
@@ -198,15 +196,12 @@ void Body::absorb(Body& other)
 
 void Body::upgrade_update()
 {
-	int cur_index = type->level;
-	//int cur_index = static_cast<int>(type);
-	while (mass >= TYPES[cur_index + 1].min_mass) {
+	while (mass >= TYPES[type_level + 1].min_mass) {
 
-		++cur_index;
+		type_level++;
 	}
-	type = &TYPES[cur_index];
-	// could just use TYPES as a prototype, and copy its density and color into bodies for faster access.
-	// color = type.color or store color  in type and make type a pointer to a static type and make a static type array ( but what if we dont want every type to be 
+
+	type = &TYPES[type_level];
 }
 
 void Body::pos_update(float wraparound_val)
