@@ -33,6 +33,8 @@
     <ClInclude Include="rand_float.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SpatialPartitioning.h">
+      <Filter>Header Files</Filter>
     <ClInclude Include="UIElement.h">
       <Filter>UI</Filter>
     </ClInclude>

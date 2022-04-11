@@ -152,6 +152,7 @@
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="rand_float.h" />
+    <ClInclude Include="SpatialPartitioning.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="universe.h" />
   </ItemGroup>

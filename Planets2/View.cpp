@@ -31,7 +31,6 @@ int main() {
 		}
 
 		//process_input();
-
 		Scene *next_scene = active_scene->update();
 
 		if (next_scene == nullptr) {
