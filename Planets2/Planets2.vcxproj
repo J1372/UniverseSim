@@ -157,6 +157,7 @@
     <ClInclude Include="SpatialPartitioning.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="universe.h" />
+    <ClInclude Include="UniverseSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Body.cpp" />

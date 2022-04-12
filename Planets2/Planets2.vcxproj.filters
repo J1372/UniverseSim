@@ -66,6 +66,7 @@
       <Filter>Scenes</Filter>
     </ClInclude>
     <ClInclude Include="GuiComponentList.h" />
+    <ClInclude Include="UniverseSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
