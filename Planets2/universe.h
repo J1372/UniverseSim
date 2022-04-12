@@ -25,6 +25,20 @@ class Universe {
 
 	int generated_bodies = 0;
 
+	// O(n^2)
+	void handle_collisions();
+
+	// O(1)
+	bool handle_collision(int it);
+
+	// O(n^2)
+	void handle_gravity();
+
+	// O(n)
+	void update_pos();
+
+	std::vector<float> gen_rand_portions(int num_slots) const;
+
 public:
 
 	Universe() {
@@ -64,21 +78,5 @@ public:
 	void update();
 
 	void grav_pull(Body& body1, Body& body2) const;
-
-private:
-
-	// O(n^2)
-	void handle_collisions();
-
-	// O(1)
-	bool handle_collision(int it);
-
-	// O(n^2)
-	void handle_gravity();
-
-	// O(n)
-	void update_pos();
-
-	std::vector<float> gen_rand_portions(int num_slots) const;
 
 };
