@@ -4,7 +4,7 @@
 template<typename T, typename... ArgTypes>
 T GuiComponentList::add(ArgTypes... args)
 {
-	T element{ args };
+	T element{ std::forward<ArgTypes>(args)... };
 
 	elements.push_back(&element);
 
