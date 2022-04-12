@@ -18,8 +18,8 @@ protected:
 
 	GuiScene(int width, int height) : Scene{ width, height } {}
 
-	template <typename T, typename... args>
-	T add_element() { return gui_elements.add<T>(args); }
+	template <typename T, typename... ArgTypes>
+	T add_element(ArgTypes... args) { return gui_elements.add<T>(args); }
 
 	UIElement* get_click_element(Vector2 point);
 

@@ -29,7 +29,9 @@
     <ClCompile Include="GuiScene.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="GuiComponentList.cpp" />
+    <ClCompile Include="GuiComponentList.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.h" />
@@ -65,8 +67,10 @@
     <ClInclude Include="GuiScene.h">
       <Filter>Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="GuiComponentList.h" />
     <ClInclude Include="UniverseSettings.h" />
+    <ClInclude Include="GuiComponentList.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

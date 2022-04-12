@@ -1,30 +1,18 @@
 #pragma once
-#include "Scene.h"
+#include "GuiScene.h"
 
 #include "TextBox.h"
 #include "Button.h"
 
-class SettingsScene : public Scene
+class SettingsScene : public GuiScene
 {
-	Button start_button { "Start", 500, 700 };
-	Button exit_button{ "Exit", 600, 700 };
+	Button start_button = add_element<Button>("Start", 500, 700);
+	Button exit_button = add_element<Button>("Exit", 600, 700);
 
-	TextBox num_planets_input { 300, 400, 500 };
-	TextBox num_systems_input { 300, 500, 500 };
-
-	TextBox* active_textbox = nullptr;
-
-	void process_input();
-
-	void render() const;
-
-	Scene* return_scene = this;
+	TextBox num_planets_input = add_element<TextBox>(300, 400, 500);
+	TextBox num_systems_input = add_element<TextBox>(300, 500, 500);
 
 public:
 	SettingsScene(int width, int height);
-	
-
-	Scene* update();
-
 };
 

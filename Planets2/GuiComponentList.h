@@ -13,8 +13,8 @@ class GuiComponentList
 
 public:
 
-	template <typename T, typename... args>
-	T add();
+	template <typename T, typename... ArgTypes>
+	T add(ArgTypes... args);
 
 	void render();
 

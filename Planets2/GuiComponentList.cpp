@@ -1,8 +1,8 @@
 #include "GuiComponentList.h"
 #include "raylib.h" // for Vector2
 
-template<typename T, typename... args>
-T GuiComponentList::add()
+template<typename T, typename... ArgTypes>
+T GuiComponentList::add(ArgTypes... args)
 {
 	T element{ args };
 
