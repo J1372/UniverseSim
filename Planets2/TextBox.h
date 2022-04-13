@@ -38,7 +38,7 @@ public:
 
 	void render() const;
 
-	void send_keypress(int key);
+	bool send_keypress(int key_code);
 
 	std::string get_text() const { return entered_text; }
 

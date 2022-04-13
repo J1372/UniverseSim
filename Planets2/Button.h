@@ -56,6 +56,7 @@ public:
 	}
 
 	void render() const;
+	bool send_keypress(int key_code);
 };
 
 

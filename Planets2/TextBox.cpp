@@ -29,24 +29,26 @@ void TextBox::render() const {
 	}
 }
 
-void TextBox::send_keypress(int key)
+bool TextBox::send_keypress(int key_code)
 {
 	constexpr int BACKSPACE_CODE = 8;
 
-	if (key == BACKSPACE_CODE) {
+	if (key_code == BACKSPACE_CODE) {
 		if (entered_text.empty())
-			return;
+			return true;
 
 		entered_text.erase(cursor_pos);
 		cursor_pos--;
-		return;
+		return true;
 	}
 
 	// if key is invalid.
-	if (key < 32 or key > 126) {
-		return;
+	if (key_code < 32 or key_code > 126) {
+		return false;
 	}
 
 
-	entered_text += static_cast<char>(key);
+	entered_text += static_cast<char>(key_code);
+
+	return true;
 }

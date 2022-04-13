@@ -10,3 +10,8 @@ void Button::render() const {
 
 	DrawText(text.c_str(), start_x, start_y, font_size, BLACK);
 }
+
+bool Button::send_keypress(int key_code)
+{
+	return false;
+}
