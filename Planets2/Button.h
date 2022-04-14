@@ -46,9 +46,10 @@ public:
 	}
 
 	void set_on_action(std::function<void(void)> on_action) { callback = on_action; }
-	void click() { if (clickable) callback(); }
 
 	void set_clickable(bool to_set) { clickable = to_set; }
+
+
 
 	bool contains_point(Vector2 point) const {
 		return point.x >= rect.x and point.x < rect.x + rect.width
@@ -56,6 +57,8 @@ public:
 	}
 
 	void render() const;
+
+	void click() { if (clickable) callback(); }
 	bool send_keypress(int key_code);
 };
 
