@@ -3,6 +3,7 @@ class Vector2;
 
 class UIElement
 {
+protected:
 
 	bool hidden = false;
 	bool active = false; // Some elements render differently when active.

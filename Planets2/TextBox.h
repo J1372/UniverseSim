@@ -20,7 +20,6 @@ class TextBox : public UIElement
 	Color edge_color = DARKGRAY;
 
 	bool editable = false;
-	bool active = false;
 	static constexpr int edge_width = 10;
 
 	std::function<void(std::string& text)> callback = nullptr;
@@ -41,7 +40,5 @@ public:
 	bool send_keypress(int key_code);
 
 	std::string get_text() const { return entered_text; }
-
-	void set_active(bool to_set) { active = to_set; }
 };
 
