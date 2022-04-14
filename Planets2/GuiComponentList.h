@@ -1,6 +1,8 @@
 #pragma once
-#include "UIElement.h"
 #include <vector>
+
+class UIElement;
+struct Vector2;
 
 class GuiComponentList
 {
@@ -15,7 +17,7 @@ class GuiComponentList
 
 public:
 
-	template <typename T, typename... ArgTypes>
+	template <class T, class... ArgTypes>
 	T add(ArgTypes... args);
 
 	void render();

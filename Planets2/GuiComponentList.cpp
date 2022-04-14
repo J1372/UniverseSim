@@ -1,7 +1,9 @@
 #include "GuiComponentList.h"
 #include "raylib.h" // for Vector2
 
-template<typename T, typename... ArgTypes>
+#include "UIElement.h"
+
+template<class T, class... ArgTypes>
 T GuiComponentList::add(ArgTypes... args)
 {
 	T element{ std::forward<ArgTypes>(args)... };
