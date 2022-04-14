@@ -3,13 +3,19 @@ class Vector2;
 
 class UIElement
 {
+
 	bool hidden = false;
+	bool active = false; // Some elements render differently when active.
 
 public:
 
 	bool hide() { hidden = true; }
 	bool show() { hidden = false; }
 	bool is_hidden() const { return hidden; }
+
+	void activate() { active = true; }
+	void deactivate() { active = false; }
+
 
 	virtual void click() = 0;
 	virtual bool send_keypress(int key_code) = 0;

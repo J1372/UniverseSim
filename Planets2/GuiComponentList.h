@@ -19,5 +19,8 @@ public:
 	void render();
 
 	UIElement* get_element(Vector2 point); // get top-most element at a point on the screen.
+
+	void send_click(Vector2 point);
+	bool send_keypress(int key_code);
 };
 

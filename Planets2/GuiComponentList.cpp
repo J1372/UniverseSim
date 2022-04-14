@@ -31,3 +31,48 @@ UIElement* GuiComponentList::get_element(Vector2 point)
 	// did not click on any element.
 	return nullptr;
 }
+
+void GuiComponentList::send_click(Vector2 point)
+{
+	UIElement* element = get_element(point);
+
+	if (element) {
+		element->click();
+
+		// Change active elements.
+		if (active_element) {
+			active_element->deactivate();
+		}
+		active_element = element;
+		active_element->activate();
+
+	}
+	else if (active_element) {
+		// Clicked on nothing, but deactivated active element.
+
+		active_element->deactivate();
+		active_element = nullptr;
+
+	}
+}
+
+bool GuiComponentList::send_keypress(int key_code)
+{
+	if (active_element) {
+		bool active_responded = active_element->send_keypress(key_code);
+
+		/*
+		* 
+		* if active element does not accept the key input, gui may respond here
+		* 
+		*/
+
+		return active_responded;
+	}
+	else {
+		// gui may respond here, returning true if it has responded to the key press.
+	}
+
+
+	return false;
+}
