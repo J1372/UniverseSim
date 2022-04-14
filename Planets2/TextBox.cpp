@@ -1,6 +1,6 @@
 #include "TextBox.h"
 void TextBox::click() {
-	int mouse_x_in_box = GetMousePosition().x - rect.x;
+	int mouse_x_in_box = GetMouseX() - rect.x;
 
 	// not perfect, but "functional"
 	// Better to do percentage on the text width, not textbox width
