@@ -8,9 +8,6 @@
 #include "SimulationScene.h"
 #include "SettingsScene.h"
 
-void process_input() {
-}
-
 int main() {
 	std::ios_base::sync_with_stdio(false);
 
@@ -30,7 +27,6 @@ int main() {
 			active_scene->resize(GetScreenWidth(), GetScreenHeight());
 		}
 
-		//process_input();
 		Scene *next_scene = active_scene->update();
 
 		if (next_scene == nullptr) {
