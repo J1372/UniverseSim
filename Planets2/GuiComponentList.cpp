@@ -11,6 +11,21 @@ T GuiComponentList::add(ArgTypes... args)
 	return element;
 }
 
+void GuiComponentList::set_active(UIElement* element)
+{
+	// Deactivate current active element
+	if (active_element) {
+		active_element->deactivate();
+	}
+
+	active_element = element;
+
+	// If element was not null, then activate new active element.
+	if (element) {
+		active_element->activate();
+	}
+}
+
 void GuiComponentList::render()
 {
 	for (UIElement* element : elements) {
@@ -38,22 +53,9 @@ void GuiComponentList::send_click(Vector2 point)
 
 	if (element) {
 		element->click();
-
-		// Change active elements.
-		if (active_element) {
-			active_element->deactivate();
-		}
-		active_element = element;
-		active_element->activate();
-
 	}
-	else if (active_element) {
-		// Clicked on nothing, but deactivated active element.
 
-		active_element->deactivate();
-		active_element = nullptr;
-
-	}
+	set_active(element);
 }
 
 bool GuiComponentList::send_keypress(int key_code)

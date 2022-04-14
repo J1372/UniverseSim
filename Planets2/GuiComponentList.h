@@ -11,6 +11,8 @@ class GuiComponentList
 	// not all uielements care to store whether they are active or not, but TextBox for example draws a cursor line if active. 
 	std::vector<UIElement*> elements;
 
+	void set_active(UIElement* element);
+
 public:
 
 	template <typename T, typename... ArgTypes>
