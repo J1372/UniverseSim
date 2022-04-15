@@ -18,9 +18,9 @@ public:
 	void deactivate() { active = false; }
 
 
-	virtual void click() = 0;
-	virtual bool send_keypress(int key_code) = 0;
-	virtual bool contains_point(Vector2 point) const = 0;
+	virtual void click() {};
+	virtual bool send_keypress(int key_code) { return false; }
+	virtual bool contains_point(Vector2 point) const { return false; }
 	virtual void render() const = 0;
 
 

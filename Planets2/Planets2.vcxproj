@@ -148,6 +148,7 @@
     <ClInclude Include="CheckBoxList.h" />
     <ClInclude Include="GuiComponentList.h" />
     <ClInclude Include="GuiScene.h" />
+    <ClInclude Include="Label.h" />
     <ClInclude Include="SettingsScene.h" />
     <ClInclude Include="SimulationScene.h" />
     <ClInclude Include="TextBox.h" />
@@ -165,12 +166,14 @@
     <ClCompile Include="CheckBoxList.cpp" />
     <ClCompile Include="GuiComponentList.cpp" />
     <ClCompile Include="GuiScene.cpp" />
+    <ClCompile Include="Label.cpp" />
     <ClCompile Include="SettingsScene.cpp" />
     <ClCompile Include="SimulationScene.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="rand_float.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="universe.cpp" />
     <ClCompile Include="View.cpp" />
   </ItemGroup>
