@@ -29,6 +29,8 @@ class SettingsScene : public GuiScene
 	Label num_planets_label = gui.add<Label>(&num_planets_label, "Num planets", LABEL_X, 420, 12);
 	Label num_systems_label = gui.add<Label>(&num_systems_label, "Num systems", LABEL_X, 520, 12);
 
+	void generate_settings();
+
 public:
 	SettingsScene(int width, int height);
 };

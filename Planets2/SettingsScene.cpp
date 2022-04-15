@@ -1,11 +1,19 @@
 #include "SettingsScene.h"
 #include "SimulationScene.h"
 
-SettingsScene::SettingsScene(int width, int height) : GuiScene{ width, height } {
-	settings.num_rand_planets = 0;
-	settings.num_rand_systems = 1;
+void SettingsScene::generate_settings()
+{
+	settings.num_rand_planets = std::stoi(num_planets_input.get_text());
+	settings.num_rand_systems = std::stoi(num_systems_input.get_text());
+}
 
-	start_button.set_on_action([this]() { return_scene = new SimulationScene{ screen_width, screen_height, settings }; });
+SettingsScene::SettingsScene(int width, int height) : GuiScene{ width, height } {
+
+	start_button.set_on_action([this]() {
+		generate_settings();
+		return_scene = new SimulationScene{ screen_width, screen_height, settings }; 
+		
+		});
 	exit_button.set_on_action([this]() { return_scene = nullptr; });
 
 	start_button.set_min_width(100);
