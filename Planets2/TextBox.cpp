@@ -1,4 +1,5 @@
 #include "TextBox.h"
+
 void TextBox::click() {
 	int mouse_x_in_box = GetMouseX() - rect.x;
 
@@ -31,14 +32,13 @@ void TextBox::render() const {
 
 bool TextBox::send_keypress(int key_code)
 {
-	constexpr int BACKSPACE_CODE = 8;
-
-	if (key_code == BACKSPACE_CODE) {
+	if (key_code == KEY_BACKSPACE) {
 		if (entered_text.empty())
 			return true;
 
-		entered_text.erase(cursor_pos);
+		entered_text.erase(cursor_pos, 1);
 		cursor_pos--;
+
 		return true;
 	}
 
@@ -49,6 +49,7 @@ bool TextBox::send_keypress(int key_code)
 
 
 	entered_text += static_cast<char>(key_code);
+	cursor_pos++;
 
 	return true;
 }
