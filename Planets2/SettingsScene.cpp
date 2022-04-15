@@ -7,4 +7,7 @@ SettingsScene::SettingsScene(int width, int height) : GuiScene{ width, height } 
 
 	start_button.set_min_width(100);
 	exit_button.set_min_width(100);
+
+
+	background_color = SKYBLUE;
 }

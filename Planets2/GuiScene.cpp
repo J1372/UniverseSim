@@ -17,7 +17,7 @@ Scene* GuiScene::update()
 	}
 
 	BeginDrawing();
-	ClearBackground(RAYWHITE);
+	ClearBackground(background_color);
 	gui.render();
 	EndDrawing();
 

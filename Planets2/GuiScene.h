@@ -1,6 +1,7 @@
 #pragma once
 #include "Scene.h"
 #include "GuiComponentList.h"
+#include "raylib.h" // for Color
 
 
 // pure gui scene. all it has are ui elements. Can take care of the virtual Scene:: update ourselves.
@@ -13,6 +14,7 @@ protected:
 
 	GuiComponentList gui;
 	Scene* return_scene = this;
+	Color background_color = RAYWHITE;
 
 	GuiScene(int width, int height) : Scene{ width, height } {}
 
