@@ -45,22 +45,10 @@ class Universe {
 public:
 
 	Universe() {
+		// maybe useful with default settings
 		active_bodies.reserve(UNIVERSE_CAPACITY);
 
 		//std::cout << std::thread::hardware_concurrency();
-	};
-
-	Universe(int num_planets, int num_systems) {
-		active_bodies.reserve(UNIVERSE_CAPACITY);
-
-
-		for (int i = 0; i < num_planets; ++i) {
-			create_rand_body();
-		}
-
-		for (int i = 0; i < num_systems; ++i) {
-			create_rand_system();
-		}
 	};
 
 	Universe(const UniverseSettings &to_set) {
