@@ -5,6 +5,7 @@
 #include "QuadTree.h"
 #include <limits>
 #include <iostream>
+#include "UniverseSettings.h"
 
 class SpatialPartitioning;
 
@@ -18,6 +19,8 @@ class Universe {
 	static constexpr long RAND_MASS = 100;
 	static constexpr double GRAV_CONST = 0.75;
 	static constexpr int MASS_SCALING = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
+
+	UniverseSettings settings{};
 
 	std::unique_ptr<SpatialPartitioning> partitioning_method = std::make_unique<QuadTree>(UNIVERSE_SIZE_MAX);
 
@@ -59,6 +62,23 @@ public:
 			create_rand_system();
 		}
 	};
+
+	Universe(const UniverseSettings &to_set) {
+		settings = to_set;
+
+		active_bodies.reserve(settings.UNIVERSE_CAPACITY);
+
+
+
+		for (int i = 0; i < settings.num_rand_planets; ++i) {
+			create_rand_body();
+		}
+
+		for (int i = 0; i < settings.num_rand_planets; ++i) {
+			create_rand_system();
+		}
+	};
+
 
 	bool can_create_body() const;
 
