@@ -6,11 +6,11 @@
 
 class SettingsScene : public GuiScene
 {
-	Button start_button = gui.add<Button>("Start", 500, 700);
-	Button exit_button = gui.add<Button>("Exit", 600, 700);
+	Button start_button = gui.add<Button>(&start_button, "Start", 500, 700);
+	Button exit_button = gui.add<Button>(&exit_button, "Exit", 600, 700);
 
-	TextBox num_planets_input = gui.add<TextBox>(300, 400, 500);
-	TextBox num_systems_input = gui.add<TextBox>(300, 500, 500);
+	TextBox num_planets_input = gui.add<TextBox>(&num_planets_input, 300, 400, 500);
+	TextBox num_systems_input = gui.add<TextBox>(&num_systems_input, 300, 500, 500);
 
 public:
 	SettingsScene(int width, int height);

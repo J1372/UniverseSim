@@ -18,11 +18,11 @@ class GuiComponentList
 public:
 
 	template <class T, class... ArgTypes>
-	T add(ArgTypes&&... args)
+	T add(UIElement* element_ptr, ArgTypes&&... args)
 	{
-		T element(std::forward<ArgTypes>(args)...);
+		elements.push_back(element_ptr); // Relying on RVO address doesn't work.
 
-		elements.push_back(&element);
+		T element(std::forward<ArgTypes>(args)...);
 
 		return element;
 	}
