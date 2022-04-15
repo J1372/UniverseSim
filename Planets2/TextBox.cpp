@@ -22,7 +22,7 @@ void TextBox::render() const {
 	
 	if (active) {
 		int cursor_line_x = rect.x + MeasureText(entered_text.substr(0, cursor_pos).c_str(), font_size);
-		constexpr int CURSOR_LINE_PADDING_HEIGHT = 0.2;
+		constexpr double CURSOR_LINE_PADDING_HEIGHT = 0.2;
 		int cursor_line_y = rect.y + rect.height * CURSOR_LINE_PADDING_HEIGHT;
 		int cursor_line_y_end = rect.y + rect.height * (1 - CURSOR_LINE_PADDING_HEIGHT);
 
