@@ -1,11 +1,11 @@
 #include "TextBox.h"
 
 void TextBox::click() {
-	int mouse_x_in_box = GetMouseX() - rect.x;
+	double mouse_x_in_box = GetMouseX() - rect.x;
 
 	// not perfect, but "functional"
 	// Better to do percentage on the text width, not textbox width
-	double mouse_pct = mouse_x_in_box / rect.width;
+	double mouse_pct = mouse_x_in_box / MeasureText(entered_text.c_str(), font_size);
 	cursor_pos = mouse_pct * entered_text.size();
 
 	active = true;
