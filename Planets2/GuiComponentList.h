@@ -18,9 +18,9 @@ class GuiComponentList
 public:
 
 	template <class T, class... ArgTypes>
-	T add(ArgTypes... args)
+	T add(ArgTypes&&... args)
 	{
-		T element{ std::forward<ArgTypes>(args)... };
+		T element(std::forward<ArgTypes>(args)...);
 
 		elements.push_back(&element);
 
