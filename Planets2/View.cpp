@@ -17,7 +17,9 @@ int main() {
 
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
 	InitWindow(start_width, start_height, "Game");
-	SetExitKey(KEY_NULL);
+	SetExitKey(KEY_NULL); // Disable raylib default exit when pressing escape.
+
+	MaximizeWindow();
 
 	std::unique_ptr<Scene> active_scene = std::make_unique<SettingsScene>(GetScreenWidth(), GetScreenHeight());
 
