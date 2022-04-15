@@ -22,7 +22,7 @@ class TextBox : public UIElement
 	bool editable = false;
 	static constexpr int edge_width = 10;
 
-	std::function<void(std::string& text)> callback = nullptr;
+	std::function<void(const std::string& text)> callback = nullptr;
 
 	// Returns the x coord of where to begin drawing the currently entered text.
 	int get_start_x_text() const { return rect.x + rect.width * (width_padding / 2); }
@@ -43,5 +43,14 @@ public:
 	bool send_keypress(int key_code);
 
 	std::string get_text() const { return entered_text; }
+
+	void deactivate() { 
+		active = false;
+		if (callback) {
+			callback(entered_text);
+		}
+	}
+
+	void set_on_exit(std::function<void(const std::string&)> on_action) { callback = on_action; }
 };
 

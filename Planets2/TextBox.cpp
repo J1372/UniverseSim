@@ -8,7 +8,6 @@ void TextBox::click() {
 	int len_text = entered_text.size();
 	cursor_pos = std::min(len_text, static_cast<int>(mouse_pct * len_text));
 
-	active = true;
 }
 
 void TextBox::render() const {

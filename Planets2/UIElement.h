@@ -15,7 +15,7 @@ public:
 	bool is_hidden() const { return hidden; }
 
 	void activate() { active = true; }
-	void deactivate() { active = false; }
+	virtual void deactivate() { active = false; }
 
 
 	virtual void click() {};
