@@ -6,6 +6,13 @@
 
 void Universe::generate_universe()
 {
+	// TODO make physics settings changeable while running. Keep universe settings const while running.
+	//		->move reserve/make unique out into constructor / run-once-at-start method.
+
+	active_bodies.reserve(settings.UNIVERSE_CAPACITY);
+
+	partitioning_method = std::make_unique<QuadTree>(settings.UNIVERSE_SIZE_MAX);
+
 	for (int i = 0; i < settings.num_rand_planets; ++i) {
 		create_rand_body();
 	}
@@ -86,7 +93,7 @@ void Universe::update_pos()
 	for (int i = 0; i < active_bodies.size(); i++) {
 		Body& body = *active_bodies[i];
 
-		body.pos_update(UNIVERSE_SIZE_MAX);
+		body.pos_update(settings.UNIVERSE_SIZE_MAX);
 	}
 }
 
@@ -149,7 +156,7 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 {
 	int id = generated_bodies;
 
-	active_bodies.emplace_back(std::make_unique<Body>(id, sat_dist, ecc, orbiting, GRAV_CONST, mass));
+	active_bodies.emplace_back(std::make_unique<Body>(id, sat_dist, ecc, orbiting, settings.GRAV_CONST, mass));
 
 	generated_bodies++;
 
@@ -163,9 +170,9 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 Body& Universe::create_rand_body()
 {
 	int id = generated_bodies;
-	float x = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
-	float y = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
-	long mass = randi(1, RAND_MASS);
+	float x = randi(-settings.UNIVERSE_SIZE_START, settings.UNIVERSE_SIZE_START);
+	float y = randi(-settings.UNIVERSE_SIZE_START, settings.UNIVERSE_SIZE_START);
+	long mass = randi(1, settings.RAND_MASS);
 
 	active_bodies.emplace_back(std::make_unique<Body>(id, x, y, mass));
 
@@ -180,22 +187,19 @@ Body& Universe::create_rand_body()
 
 Body& Universe::create_rand_system()
 {
-	long system_mass = randi(1, RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
+	long system_mass = randi(1, settings.RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
 
-	constexpr int MIN_PLANETS = 100; // 100 - 300 was
-	constexpr int MAX_PLANETS = 300;
+	int num_planets = randi(settings.SYSTEM_MIN_PLANETS, settings.SYSTEM_MAX_PLANETS);
 
-	int num_planets = randi(MIN_PLANETS, MAX_PLANETS); 
-	constexpr float star_mass_ratio = .95f;
-	constexpr float remaining_mass = 1 - star_mass_ratio;
+	float remaining_mass = 1 - settings.SYSTEM_STAR_MASS_RATIO;
 
 	
 
 
 
-	float star_x = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
-	float star_y = randi(-UNIVERSE_SIZE_START, UNIVERSE_SIZE_START);
-	long star_mass = star_mass_ratio * system_mass;
+	float star_x = randi(-settings.UNIVERSE_SIZE_START, settings.UNIVERSE_SIZE_START);
+	float star_y = randi(-settings.UNIVERSE_SIZE_START, settings.UNIVERSE_SIZE_START);
+	long star_mass = settings.SYSTEM_STAR_MASS_RATIO * system_mass;
 
 	Body& star = create_body(star_x, star_y, star_mass);
 	
@@ -221,9 +225,7 @@ Body& Universe::create_satellite(const Body& orbiting, float ecc, long mass)
 	// Performs no checks on whether its initial position collides with another satellite of the body.
 	// maybe perform the check in the create_system call
 
-	constexpr float MIN_DIST = 1.1F;
-	constexpr float MAX_DIST = 40;
-	float sat_dist = randf() * (MAX_DIST - MIN_DIST) + MIN_DIST; // sat_dist in range 1.5 to 10.0
+	float sat_dist = randf() * (settings.SATELLITE_MAX_DIST - settings.SATELLITE_MIN_DIST) + settings.SATELLITE_MIN_DIST;
 
 
 	Body& sat = create_body(sat_dist, orbiting, ecc, mass); // create body first to have it calculate its size for us for periapsis.
@@ -265,7 +267,7 @@ Body& Universe::create_rand_satellite(const Body& orbiting)
 	float apoapsis = periapsis * (1 + ecc) / (1 - ecc);
 	float semi_major_axis = (periapsis + apoapsis) / 2;
 
-	float numerator = (1 + ecc) * GRAV_CONST * mass;
+	float numerator = (1 + ecc) * settings.GRAV_CONST * mass;
 	float denominator = (1 - ecc) * semi_major_axis;
 	float periapsis_vel = std::sqrt(numerator / denominator);
 
@@ -282,7 +284,7 @@ void Universe::grav_pull(Body& body1, Body& body2) const
 {
 	// minor optimization, don't call dist_body. calc it from distv_body
 	// 3 mass scalar makes very cool
-	double force = GRAV_CONST * (1 * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
+	double force = settings.GRAV_CONST * (1 * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
 	// this is the net force
 
 

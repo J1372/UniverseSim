@@ -13,16 +13,10 @@ class SpatialPartitioning;
 //const double GRAV_CONST = 1;
 
 class Universe {
-	static constexpr int UNIVERSE_CAPACITY = 1000;
-	static constexpr int UNIVERSE_SIZE_START = 1000;
-	static constexpr float UNIVERSE_SIZE_MAX = 100000; // delete if go out of bounds or wraparound.
-	static constexpr long RAND_MASS = 100;
-	static constexpr double GRAV_CONST = 0.75;
-	static constexpr int MASS_SCALING = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
 
 	UniverseSettings settings{};
 
-	std::unique_ptr<SpatialPartitioning> partitioning_method = std::make_unique<QuadTree>(UNIVERSE_SIZE_MAX);
+	std::unique_ptr<SpatialPartitioning> partitioning_method;
 
 	std::vector<std::unique_ptr<Body>> active_bodies;
 
@@ -46,19 +40,15 @@ public:
 
 	Universe() {
 		// maybe useful with default settings
-		active_bodies.reserve(UNIVERSE_CAPACITY);
+		generate_universe();
 
 		//std::cout << std::thread::hardware_concurrency();
 	};
 
 	Universe(const UniverseSettings &to_set) {
 		settings = to_set;
-
-		active_bodies.reserve(settings.UNIVERSE_CAPACITY);
 		generate_universe();
-		
 	};
-
 
 	// Generates a new universe, using the current settings.
 	void generate_universe();

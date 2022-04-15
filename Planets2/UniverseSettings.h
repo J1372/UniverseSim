@@ -20,8 +20,8 @@ struct UniverseSettings {
 	static constexpr int SYSTEM_MAX_PLANETS = 300; // Roughly, maximum number of planets to generate in a system. May be more, since some planets will also have satellites.
 
 	static constexpr float SYSTEM_STAR_MASS_RATIO = .95f; // How much mass (%) of the system will be allocated to the star.  
-	static constexpr float SYSTEM_MIN_DIST = 1.1F; // The minimum distance a body's periapsis can be from its orbiting body at start.
-	static constexpr float SYSTEM_MAX_DIST = 40;   // The maximum distance a body's periapsis can be from its orbiting body at start.
+	static constexpr float SATELLITE_MIN_DIST = 1.1F; // The minimum distance a body's periapsis can be from its orbiting body at start.
+	static constexpr float SATELLITE_MAX_DIST = 40;   // The maximum distance a body's periapsis can be from its orbiting body at start.
 
 
 	// Start generation settings
