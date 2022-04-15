@@ -25,7 +25,7 @@ class SimulationScene : public Scene
 
 public:
 
-	SimulationScene(int width, int height, int num_planets, int num_systems) : Scene(width, height), universe{num_planets, num_systems}
+	SimulationScene(int width, int height, UniverseSettings settings) : Scene(width, height), universe{settings}
 	{
 		camera.offset = { static_cast<float>(screen_width) / 2, static_cast<float>(screen_height) / 2 };
 		camera.target = { 0, 0 };

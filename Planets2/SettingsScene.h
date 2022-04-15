@@ -1,12 +1,16 @@
 #pragma once
 #include "GuiScene.h"
+#include "UniverseSettings.h"
 
 #include "TextBox.h"
 #include "Button.h"
 #include "Label.h"
 
+
 class SettingsScene : public GuiScene
 {
+	UniverseSettings settings;
+
 
 	static constexpr int BUTTON_Y = 700;
 
