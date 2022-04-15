@@ -30,6 +30,7 @@ class TextBox : public UIElement
 public:
 
 	TextBox(float x, float y, float width) : rect{ x, y, width, 50 } {}
+	TextBox(const std::string& start_text, float x, float y, float width) : entered_text(start_text), rect{ x, y, width, 50 } {}
 
 	void click();
 
