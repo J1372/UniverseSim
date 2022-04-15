@@ -33,11 +33,10 @@ void TextBox::render() const {
 bool TextBox::send_keypress(int key_code)
 {
 	if (key_code == KEY_BACKSPACE) {
-		if (entered_text.empty())
-			return true;
-
-		entered_text.erase(cursor_pos, 1);
-		cursor_pos--;
+		if (cursor_pos > 0) {
+			cursor_pos--;
+			entered_text.erase(cursor_pos, 1);
+		}
 
 		return true;
 	}
