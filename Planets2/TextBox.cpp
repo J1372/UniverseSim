@@ -3,10 +3,10 @@
 void TextBox::click() {
 	double mouse_x_in_box = GetMouseX() - rect.x;
 
-	// not perfect, but "functional"
-	// Better to do percentage on the text width, not textbox width
 	double mouse_pct = mouse_x_in_box / MeasureText(entered_text.c_str(), font_size);
-	cursor_pos = mouse_pct * entered_text.size();
+
+	int len_text = entered_text.size();
+	cursor_pos = std::min(len_text, static_cast<int>(mouse_pct * len_text));
 
 	active = true;
 }
