@@ -22,4 +22,9 @@ struct UniverseSettings {
 	static constexpr float SYSTEM_STAR_MASS_RATIO = .95f; // How much mass (%) of the system will be allocated to the star.  
 	static constexpr float SYSTEM_MIN_DIST = 1.1F; // The minimum distance a body's periapsis can be from its orbiting body at start.
 	static constexpr float SYSTEM_MAX_DIST = 40;   // The maximum distance a body's periapsis can be from its orbiting body at start.
+
+
+	// Start generation settings
+	int num_rand_planets;
+	int num_rand_systems;
 };
