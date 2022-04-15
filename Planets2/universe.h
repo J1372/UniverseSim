@@ -55,17 +55,13 @@ public:
 		settings = to_set;
 
 		active_bodies.reserve(settings.UNIVERSE_CAPACITY);
-
-
-
-		for (int i = 0; i < settings.num_rand_planets; ++i) {
-			create_rand_body();
-		}
-
-		for (int i = 0; i < settings.num_rand_systems; ++i) {
-			create_rand_system();
-		}
+		generate_universe();
+		
 	};
+
+
+	// Generates a new universe, using the current settings.
+	void generate_universe();
 
 
 	bool can_create_body() const;

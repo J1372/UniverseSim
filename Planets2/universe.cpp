@@ -4,6 +4,17 @@
 #include <iostream>
 #include "rand_float.h"
 
+void Universe::generate_universe()
+{
+	for (int i = 0; i < settings.num_rand_planets; ++i) {
+		create_rand_body();
+	}
+
+	for (int i = 0; i < settings.num_rand_systems; ++i) {
+		create_rand_system();
+	}
+}
+
 bool Universe::can_create_body() const
 {
 	return generated_bodies < INT_MAX;
