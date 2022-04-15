@@ -3,16 +3,6 @@
 
 #include "UIElement.h"
 
-template<class T, class... ArgTypes>
-T GuiComponentList::add(ArgTypes... args)
-{
-	T element{ std::forward<ArgTypes>(args)... };
-
-	elements.push_back(&element);
-
-	return element;
-}
-
 void GuiComponentList::set_active(UIElement* element)
 {
 	// Deactivate current active element
