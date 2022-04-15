@@ -16,7 +16,10 @@ Scene* GuiScene::update()
 		key_code = GetKeyPressed();
 	}
 
+	BeginDrawing();
+	ClearBackground(RAYWHITE);
 	gui.render();
+	EndDrawing();
 
 	return return_scene;
 }
