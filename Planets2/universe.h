@@ -74,7 +74,7 @@ public:
 			create_rand_body();
 		}
 
-		for (int i = 0; i < settings.num_rand_planets; ++i) {
+		for (int i = 0; i < settings.num_rand_systems; ++i) {
 			create_rand_system();
 		}
 	};
