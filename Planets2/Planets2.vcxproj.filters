@@ -32,8 +32,10 @@
     <ClCompile Include="GuiComponentList.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="Label.cpp" />
     <ClCompile Include="UIElement.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Label.cpp">
       <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,7 +77,9 @@
     <ClInclude Include="GuiComponentList.h">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="Label.h" />
+    <ClInclude Include="Label.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
