@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <functional>
 #include "UIElement.h"
+
 class Scene;
 
 class Button : public UIElement
@@ -24,25 +25,29 @@ class Button : public UIElement
 
 	std::function<void(void)> callback = nullptr;
 
+	float get_default_width() const {
+		return text_length_pixels * (1 + width_padding);
+	}
+
 public:
 
 	Button(const std::string& text, float x, float y) :
 		text(text),
 		font_size(12),
 		text_length_pixels(MeasureText(text.c_str(), font_size)),
-		rect{ x, y, text_length_pixels * (1+width_padding), 50}
+		rect{ x, y, get_default_width(), 50}
 	{}
 
 	Button(const std::string &text, float x, float y, int font_size) :
 		text(text),
 		font_size(font_size),
 		text_length_pixels(MeasureText(text.c_str(), font_size)),
-		rect{ x, y, text_length_pixels * (1 + width_padding), 50 }
+		rect{ x, y, get_default_width(), 50}
 	{}
 
 
 	void set_min_width(float min_width) {
-		rect.width = std::max(min_width, text_length_pixels * (1 + width_padding));
+		rect.width = std::max(min_width, get_default_width());
 	}
 
 	void set_on_action(std::function<void(void)> on_action) { callback = on_action; }
@@ -53,7 +58,7 @@ public:
 
 	bool contains_point(Vector2 point) const {
 		return point.x >= rect.x and point.x < rect.x + rect.width
-			and point.y >= rect.y and rect.y < rect.y + rect.height;
+			and point.y >= rect.y and point.y < rect.y + rect.height;
 	}
 
 	void render() const;

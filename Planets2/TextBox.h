@@ -32,7 +32,7 @@ public:
 
 	bool contains_point(Vector2 point) const {
 		return point.x >= rect.x and point.x < rect.x + rect.width
-			and point.y >= rect.y and rect.y < rect.y + rect.height;
+			and point.y >= rect.y and point.y < rect.y + rect.height;
 	}
 
 	void render() const;
