@@ -8,6 +8,7 @@
 class TextBox : public UIElement
 {
 	std::string entered_text;
+	std::string prompt_text; // Shown when entered_text is empty.
 	int cursor_pos = 0;
 
 	int font_size = 12;
@@ -51,6 +52,8 @@ public:
 			callback(entered_text);
 		}
 	}
+
+	void set_prompt_text(const std::string& text) { prompt_text = text; }
 
 	void set_on_exit(std::function<void(const std::string&)> on_action) { callback = on_action; }
 };

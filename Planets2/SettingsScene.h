@@ -21,8 +21,8 @@ class SettingsScene : public GuiScene
 	static constexpr int TEXTBOX_WIDTH = 500;
 
 
-	TextBox num_planets_input = gui.add<TextBox>(&num_planets_input, TEXTBOX_START_X, 400, TEXTBOX_WIDTH);
-	TextBox num_systems_input = gui.add<TextBox>(&num_systems_input, TEXTBOX_START_X, 500, TEXTBOX_WIDTH);
+	TextBox num_planets_input = gui.add<TextBox>(&num_planets_input, "0", TEXTBOX_START_X, 400, TEXTBOX_WIDTH);
+	TextBox num_systems_input = gui.add<TextBox>(&num_systems_input, "1", TEXTBOX_START_X, 500, TEXTBOX_WIDTH);
 
 	static constexpr int LABEL_X = TEXTBOX_START_X + TEXTBOX_WIDTH + 100;
 

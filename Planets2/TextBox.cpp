@@ -17,7 +17,13 @@ void TextBox::render() const {
 	int start_x = get_start_x_text();
 	int start_y = rect.y + rect.height / 2;
 
-	DrawText(entered_text.c_str(), start_x, start_y, font_size, WHITE);
+	if (entered_text.empty()) {
+		DrawText(prompt_text.c_str(), start_x, start_y, font_size, LIGHTGRAY);
+	}
+	else {
+		DrawText(entered_text.c_str(), start_x, start_y, font_size, WHITE);
+	}
+
 	
 	if (active) {
 		int cursor_line_x = start_x + MeasureText(entered_text.substr(0, cursor_pos).c_str(), font_size);
