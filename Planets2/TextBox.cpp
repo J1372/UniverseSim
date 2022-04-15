@@ -46,8 +46,7 @@ bool TextBox::send_keypress(int key_code)
 		return false;
 	}
 
-
-	entered_text += static_cast<char>(key_code);
+	entered_text.insert(cursor_pos, 1, static_cast<char>(key_code));
 	cursor_pos++;
 
 	return true;
