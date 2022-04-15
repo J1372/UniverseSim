@@ -21,7 +21,7 @@ void TextBox::render() const {
 	DrawText(entered_text.c_str(), start_x, start_y, font_size, WHITE);
 	
 	if (active) {
-		int cursor_line_x = rect.x + MeasureText(entered_text.substr(0, cursor_pos).c_str(), font_size);
+		int cursor_line_x = start_x + MeasureText(entered_text.substr(0, cursor_pos).c_str(), font_size);
 		constexpr double CURSOR_LINE_PADDING_HEIGHT = 0.2;
 		int cursor_line_y = rect.y + rect.height * CURSOR_LINE_PADDING_HEIGHT;
 		int cursor_line_y_end = rect.y + rect.height * (1 - CURSOR_LINE_PADDING_HEIGHT);
