@@ -1,7 +1,7 @@
 #include "TextBox.h"
 
 void TextBox::click() {
-	double mouse_x_in_box = GetMouseX() - rect.x;
+	double mouse_x_in_box = GetMouseX() - get_start_x_text();
 
 	double mouse_pct = mouse_x_in_box / MeasureText(entered_text.c_str(), font_size);
 
@@ -15,7 +15,7 @@ void TextBox::render() const {
 	DrawRectangleRec(rect, background_color);
 	DrawRectangleLinesEx(rect, edge_width, edge_color);
 
-	int start_x = rect.x + rect.width * (width_padding / 2);
+	int start_x = get_start_x_text();
 	int start_y = rect.y + rect.height / 2;
 
 	DrawText(entered_text.c_str(), start_x, start_y, font_size, WHITE);

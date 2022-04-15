@@ -24,6 +24,9 @@ class TextBox : public UIElement
 
 	std::function<void(std::string& text)> callback = nullptr;
 
+	// Returns the x coord of where to begin drawing the currently entered text.
+	int get_start_x_text() const { return rect.x + rect.width * (width_padding / 2); }
+
 public:
 
 	TextBox(float x, float y, float width) : rect{ x, y, width, 50 } {}
