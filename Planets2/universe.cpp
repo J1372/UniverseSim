@@ -11,7 +11,7 @@ void Universe::generate_universe()
 
 	active_bodies.reserve(settings.UNIVERSE_CAPACITY);
 
-	partitioning_method = std::make_unique<QuadTree>(settings.UNIVERSE_SIZE_MAX);
+	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max);
 
 	for (int i = 0; i < settings.num_rand_planets; ++i) {
 		create_rand_body();
@@ -93,7 +93,7 @@ void Universe::update_pos()
 	for (int i = 0; i < active_bodies.size(); i++) {
 		Body& body = *active_bodies[i];
 
-		body.pos_update(settings.UNIVERSE_SIZE_MAX);
+		body.pos_update(settings.universe_size_max);
 	}
 }
 
@@ -170,8 +170,8 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 Body& Universe::create_rand_body()
 {
 	int id = generated_bodies;
-	float x = randi(-settings.UNIVERSE_SIZE_START, settings.UNIVERSE_SIZE_START);
-	float y = randi(-settings.UNIVERSE_SIZE_START, settings.UNIVERSE_SIZE_START);
+	float x = randi(-settings.universe_size_start, settings.universe_size_start);
+	float y = randi(-settings.universe_size_start, settings.universe_size_start);
 	long mass = randi(1, settings.RAND_MASS);
 
 	active_bodies.emplace_back(std::make_unique<Body>(id, x, y, mass));
@@ -197,8 +197,8 @@ Body& Universe::create_rand_system()
 
 
 
-	float star_x = randi(-settings.UNIVERSE_SIZE_START, settings.UNIVERSE_SIZE_START);
-	float star_y = randi(-settings.UNIVERSE_SIZE_START, settings.UNIVERSE_SIZE_START);
+	float star_x = randi(-settings.universe_size_start, settings.universe_size_start);
+	float star_y = randi(-settings.universe_size_start, settings.universe_size_start);
 	long star_mass = settings.SYSTEM_STAR_MASS_RATIO * system_mass;
 
 	Body& star = create_body(star_x, star_y, star_mass);

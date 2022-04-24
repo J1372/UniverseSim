@@ -3,6 +3,8 @@
 
 void SettingsScene::generate_settings()
 {
+	settings.universe_size_start = std::stoi(start_size_input.get_text());
+	settings.universe_size_max = 10 * settings.universe_size_start;
 	settings.num_rand_planets = std::stoi(num_planets_input.get_text());
 	settings.num_rand_systems = std::stoi(num_systems_input.get_text());
 }
