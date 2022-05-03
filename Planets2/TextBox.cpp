@@ -15,7 +15,9 @@ void TextBox::render() const {
 	DrawRectangleLinesEx(rect, edge_width, edge_color);
 
 	int start_x = get_start_x_text();
-	int start_y = rect.y + rect.height / 2;
+	int top_y = rect.y + edge_width;
+	int full_width = rect.height - 2 * edge_width;
+	int start_y = top_y + full_width / 3;
 
 	if (entered_text.empty()) {
 		DrawText(prompt_text.c_str(), start_x, start_y, font_size, LIGHTGRAY);
