@@ -15,8 +15,8 @@ void TextBox::render() const {
 	DrawRectangleLinesEx(rect, edge_width, edge_color);
 
 	int start_x = get_start_x_text();
-	int top_y = rect.y + edge_width;
-	int full_width = rect.height - 2 * edge_width;
+	int top_y = rect.y + edge_width; // y coord of the bottom of the top edge.
+	int full_width = rect.height - 2 * edge_width; // distance from bottom of top edge to top of bottom edge.
 	int start_y = top_y + full_width / 3;
 
 	if (entered_text.empty()) {
