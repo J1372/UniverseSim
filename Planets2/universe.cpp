@@ -156,7 +156,7 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 {
 	int id = generated_bodies;
 
-	active_bodies.emplace_back(std::make_unique<Body>(id, sat_dist, ecc, orbiting, settings.GRAV_CONST, mass));
+	active_bodies.emplace_back(std::make_unique<Body>(id, sat_dist, ecc, orbiting, settings.grav_const, mass));
 
 	generated_bodies++;
 
@@ -189,7 +189,7 @@ Body& Universe::create_rand_system()
 {
 	long system_mass = randi(1, settings.RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
 
-	int num_planets = randi(settings.SYSTEM_MIN_PLANETS, settings.SYSTEM_MAX_PLANETS);
+	int num_planets = randi(settings.system_min_planets, settings.system_max_planets);
 
 	float remaining_mass = 1 - settings.SYSTEM_STAR_MASS_RATIO;
 
@@ -267,7 +267,7 @@ Body& Universe::create_rand_satellite(const Body& orbiting)
 	float apoapsis = periapsis * (1 + ecc) / (1 - ecc);
 	float semi_major_axis = (periapsis + apoapsis) / 2;
 
-	float numerator = (1 + ecc) * settings.GRAV_CONST * mass;
+	float numerator = (1 + ecc) * settings.grav_const * mass;
 	float denominator = (1 - ecc) * semi_major_axis;
 	float periapsis_vel = std::sqrt(numerator / denominator);
 
@@ -284,7 +284,7 @@ void Universe::grav_pull(Body& body1, Body& body2) const
 {
 	// minor optimization, don't call dist_body. calc it from distv_body
 	// 3 mass scalar makes very cool
-	double force = settings.GRAV_CONST * (1 * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
+	double force = settings.grav_const * (1 * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
 	// this is the net force
 
 

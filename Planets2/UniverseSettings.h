@@ -11,13 +11,13 @@ struct UniverseSettings {
 	// physics
 	//static constexpr double GRAV_CONST = 1;
 	static constexpr long RAND_MASS = 100; // The maximum amount of mass to allocate to a body created with create_rand_body.
-	static constexpr double GRAV_CONST = 0.75;
-	static constexpr int MASS_SCALING = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
+	double grav_const = 0.75;
+	int mass_scaling_gravity = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
 
 
 	// create_system settings.
-	static constexpr int SYSTEM_MIN_PLANETS = 100; // Minimum number of planets to generate in a system.
-	static constexpr int SYSTEM_MAX_PLANETS = 300; // Roughly, maximum number of planets to generate in a system. May be more, since some planets will also have satellites.
+	int system_min_planets = 100; // Minimum number of planets to generate in a system.
+	int system_max_planets = 300; // Roughly, maximum number of planets to generate in a system. May be more, since some planets will also have satellites.
 
 	static constexpr float SYSTEM_STAR_MASS_RATIO = .95f; // How much mass (%) of the system will be allocated to the star.  
 	static constexpr float SATELLITE_MIN_DIST = 1.1F; // The minimum distance a body's periapsis can be from its orbiting body at start.
