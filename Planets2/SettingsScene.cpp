@@ -7,6 +7,7 @@ void SettingsScene::generate_settings()
 	settings.universe_size_max = 100 * settings.universe_size_start;
 	settings.num_rand_planets = std::stoi(num_planets_input.get_text());
 	settings.num_rand_systems = std::stoi(num_systems_input.get_text());
+	settings.grav_const = std::stod(grav_const_input.get_text());
 }
 
 SettingsScene::SettingsScene(int width, int height) : GuiScene{ width, height } {
