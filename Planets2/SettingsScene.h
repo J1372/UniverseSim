@@ -12,26 +12,42 @@ class SettingsScene : public GuiScene
 	UniverseSettings settings{};
 
 
-	static constexpr int BUTTON_Y = 700;
+	static constexpr int BUTTON_Y = 800;
 
-	Button start_button = gui.add<Button>(&start_button, "Start", 500, BUTTON_Y);
-	Button exit_button = gui.add<Button>(&exit_button, "Exit", 600, BUTTON_Y);
+	Button start_button = gui.add<Button>(&start_button, "Start", 400, BUTTON_Y);
+	Button exit_button = gui.add<Button>(&exit_button, "Exit", 500, BUTTON_Y);
 
-	static constexpr int TEXTBOX_START_X = 300;
-	static constexpr int TEXTBOX_WIDTH = 500;
+	static constexpr int TEXTBOX_WIDTH = 400;
+	static constexpr int LABEL_OFFSET = TEXTBOX_WIDTH + 50;
+
+	static constexpr int COLUMN_Y = 200;
+
+	// Universe generation settings column
+	static constexpr int UNIVERSE_START_X = 200;
+
+	Label universe_header = gui.add<Label>(&universe_header, "Universe Generation", UNIVERSE_START_X, COLUMN_Y, 12);
+
+	TextBox start_size_input = gui.add<TextBox>(&start_size_input, "1000", UNIVERSE_START_X, COLUMN_Y + 100, TEXTBOX_WIDTH);
+	TextBox num_planets_input = gui.add<TextBox>(&num_planets_input, "0", UNIVERSE_START_X, COLUMN_Y + 200, TEXTBOX_WIDTH);
+	TextBox num_systems_input = gui.add<TextBox>(&num_systems_input, "1", UNIVERSE_START_X, COLUMN_Y + 300, TEXTBOX_WIDTH);
+	
 
 
-	TextBox start_size_input = gui.add<TextBox>(&start_size_input, "1000", TEXTBOX_START_X, 300, TEXTBOX_WIDTH);
-	TextBox num_planets_input = gui.add<TextBox>(&num_planets_input, "0", TEXTBOX_START_X, 400, TEXTBOX_WIDTH);
-	TextBox num_systems_input = gui.add<TextBox>(&num_systems_input, "1", TEXTBOX_START_X, 500, TEXTBOX_WIDTH);
-	TextBox grav_const_input = gui.add<TextBox>(&grav_const_input, "0.75", TEXTBOX_START_X, 600, TEXTBOX_WIDTH);
+	Label start_size_label = gui.add<Label>(&start_size_label, "Universe starting size", UNIVERSE_START_X + LABEL_OFFSET, 320, 12);
+	Label num_planets_label = gui.add<Label>(&num_planets_label, "Num planets", UNIVERSE_START_X + LABEL_OFFSET, 420, 12);
+	Label num_systems_label = gui.add<Label>(&num_systems_label, "Num systems", UNIVERSE_START_X + LABEL_OFFSET, 520, 12);
 
-	static constexpr int LABEL_X = TEXTBOX_START_X + TEXTBOX_WIDTH + 50;
+	// Physics settings column
+	static constexpr int PHYSICS_START_X = UNIVERSE_START_X + LABEL_OFFSET + 200;
+	Label physics_header = gui.add<Label>(&physics_header, "Physics", PHYSICS_START_X, COLUMN_Y, 12);
+	TextBox grav_const_input = gui.add<TextBox>(&grav_const_input, "0.75", PHYSICS_START_X, COLUMN_Y + 100, TEXTBOX_WIDTH);
 
-	Label start_size_label = gui.add<Label>(&start_size_label, "Universe starting size", LABEL_X, 320, 12);
-	Label num_planets_label = gui.add<Label>(&num_planets_label, "Num planets", LABEL_X, 420, 12);
-	Label num_systems_label = gui.add<Label>(&num_systems_label, "Num systems", LABEL_X, 520, 12);
-	Label grav_const_label = gui.add<Label>(&grav_const_label, "Grav const", LABEL_X, 620, 12);
+	Label grav_const_label = gui.add<Label>(&grav_const_label, "Grav const", PHYSICS_START_X + LABEL_OFFSET, 320, 12);
+
+
+	// System generation settings column
+
+	
 
 	void generate_settings();
 
