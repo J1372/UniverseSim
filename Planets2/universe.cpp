@@ -284,7 +284,7 @@ void Universe::grav_pull(Body& body1, Body& body2) const
 {
 	// minor optimization, don't call dist_body. calc it from distv_body
 	// 3 mass scalar makes very cool
-	double force = settings.grav_const * (1 * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
+	double force = (settings.grav_const * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
 	// this is the net force
 
 

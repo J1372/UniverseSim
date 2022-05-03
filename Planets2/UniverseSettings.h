@@ -12,8 +12,6 @@ struct UniverseSettings {
 	//static constexpr double GRAV_CONST = 1;
 	static constexpr long RAND_MASS = 100; // The maximum amount of mass to allocate to a body created with create_rand_body.
 	double grav_const = 0.75;
-	int mass_scaling_gravity = 1; // used to be 3 but need to see how to incorporate that with create_system orbits.
-
 
 	// create_system settings.
 	int system_min_planets = 100; // Minimum number of planets to generate in a system.
