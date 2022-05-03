@@ -29,10 +29,10 @@ void TextBox::render() const {
 	
 	if (active) {
 		constexpr int CURSOR_LINE_PADDING = 3;
-		constexpr double CURSOR_LINE_PADDING_HEIGHT = 0.3;
+		constexpr double CURSOR_LINE_PADDING_HEIGHT = 0.2;
 		int cursor_line_x = start_x + MeasureText(entered_text.substr(0, cursor_pos).c_str(), font_size) + CURSOR_LINE_PADDING;
-		int cursor_line_y = rect.y + rect.height * CURSOR_LINE_PADDING_HEIGHT;
-		int cursor_line_y_end = rect.y + rect.height * (1 - CURSOR_LINE_PADDING_HEIGHT);
+		int cursor_line_y = top_y + full_width * CURSOR_LINE_PADDING_HEIGHT;
+		int cursor_line_y_end = top_y + full_width * (1 - CURSOR_LINE_PADDING_HEIGHT);
 
 		DrawLine(cursor_line_x, cursor_line_y, cursor_line_x, cursor_line_y_end, WHITE);
 	}
