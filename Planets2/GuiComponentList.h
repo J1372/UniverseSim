@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
+#include <memory>
 
-class UIElement;
+#include "UIElement.h"
 struct Vector2;
 
 class GuiComponentList
@@ -11,20 +12,23 @@ class GuiComponentList
 	// if false, process input yourself (tab inserts a tab char in TextBox, tab switches to next element in our Scene for example).
 	// must set_unactive() before switching elements.
 	// not all uielements care to store whether they are active or not, but TextBox for example draws a cursor line if active. 
-	std::vector<UIElement*> elements;
+	std::vector<std::unique_ptr<UIElement>> elements;
 
 	void set_active(UIElement* element);
 
 public:
 
 	template <class T, class... ArgTypes>
-	T add(UIElement* element_ptr, ArgTypes&&... args)
+	T& add(ArgTypes&&... args)
 	{
-		elements.push_back(element_ptr); // Relying on RVO address doesn't work.
+		std::unique_ptr<T> obj_ptr = std::make_unique<T>(std::forward<ArgTypes>(args)...);
+		T& element = *obj_ptr;
 
-		T element(std::forward<ArgTypes>(args)...);
+		elements.emplace_back(std::move(obj_ptr));
 
 		return element;
+
+		//return *elements.back.get();
 	}
 
 	void render();

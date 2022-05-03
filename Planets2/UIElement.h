@@ -23,6 +23,8 @@ public:
 	virtual bool contains_point(Vector2 point) const;
 	virtual void render() const = 0;
 
+	virtual ~UIElement() = default;
+
 
 };
 
