@@ -44,6 +44,8 @@ public:
 
 	bool send_keypress(int key_code);
 
+	void set_text(std::string& to_set) { entered_text = to_set; }
+	void set_text(std::string&& to_set) { entered_text = to_set; }
 	std::string get_text() const { return entered_text; }
 
 	void deactivate() { 
