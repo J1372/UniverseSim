@@ -61,10 +61,18 @@ private:
 
 	bool is_root() const { return parent == nullptr; }
 
+	int width() const { return end_x - x + 1; }
+	int height() const { return end_y - y + 1; }
+
+
 	// leaf node methods (doesn't really make sense for parent nodes)
 	bool is_empty() const { return quad_bodies.size() == 0; }
 	bool has_room() const { return quad_bodies.size() < MAX_BODIES; }
 	bool is_full() const { return quad_bodies.size() >= MAX_BODIES; }
+
+	bool contains_point(Vector2 point) const;
+	bool contains_fully(const Body& body) const;
+	bool contains_partially(const Body& body) const;
 
 
 	void add_to_child(Body& body);

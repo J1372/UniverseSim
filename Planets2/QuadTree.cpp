@@ -155,6 +155,36 @@ void QuadTree::update()
 	}
 }
 
+bool QuadTree::contains_point(Vector2 point) const
+{
+	return point.x >= x and point.x < end_x and
+		point.y >= y and point.y < end_y;
+}
+
+bool QuadTree::contains_fully(const Body& body) const
+{
+	// True if no part of the circle goes outside the quad.
+	return body.top().y >= y and body.bottom().y < end_y and
+		body.left().x >= x and body.right().x < end_x;
+}
+
+bool QuadTree::contains_partially(const Body& body) const
+{
+	// True if circle intersects with quad.
+	float dist_x = std::abs(body.x - x + width() / 2);
+	float dist_y = std::abs(body.y - y + height() / 2);
+
+	if (dist_x > (width() / 2 + body.radius)) { return false; }
+	if (dist_y > (height() / 2 + body.radius)) { return false; }
+
+	if (dist_x <= (width() / 2)) { return true; }
+	if (dist_y <= (height() / 2)) { return true; }
+
+	int corner_dist= std::pow((dist_x - width() / 2), 2) + std::pow((dist_y - height() / 2), 2);
+
+	return corner_dist <= std::pow(body.radius, 2);
+}
+
 void QuadTree::add_to_child(Body& new_body)
 {
 	if (UL->in_bounds(new_body.x, new_body.y)) {
