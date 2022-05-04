@@ -9,6 +9,11 @@ void SimulationScene::process_input()
 	static int multiplier = 8;
 	static float cam_speed = 5 * multiplier / camera.zoom;
 
+	if (IsKeyPressed(KEY_V)) {
+		should_render_partitioning = !should_render_partitioning;
+	}
+
+	// Camera movement keys
 
 	if (IsKeyDown(KEY_W)) {
 		camera.target.y -= cam_speed;
@@ -27,34 +32,24 @@ void SimulationScene::process_input()
 		running = !running;
 	}
 
-	if (IsKeyPressed(KEY_V)) {
-		should_render_partitioning = !should_render_partitioning;
-	}
-
-	if (IsKeyPressed(KEY_COMMA)) {
-		zoom_out();
-		cam_speed = 5 * multiplier / camera.zoom;
-	}
-	else if (IsKeyPressed(KEY_PERIOD)) {
-		zoom_in();
-		cam_speed = 5 * multiplier / camera.zoom;
-	}
-	else if (IsKeyPressed(KEY_MINUS)) {
+	if (IsKeyPressed(KEY_MINUS)) {
 		multiplier = std::max(1, multiplier - 1);
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
 	else if (IsKeyPressed(KEY_EQUAL)) {
-		++multiplier;
+		multiplier++;
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
+
+	// Camera zoom for keys and mousewheel
 
 	float wheel_move = GetMouseWheelMove();
 
-	if (wheel_move < 0) {
+	if (wheel_move < 0 or IsKeyPressed(KEY_COMMA)) {
 		zoom_out();
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
-	else if (wheel_move > 0) {
+	else if (wheel_move > 0 or IsKeyPressed(KEY_PERIOD)) {
 		zoom_in();
 		cam_speed = 5 * multiplier / camera.zoom;
 	}
