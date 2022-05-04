@@ -12,6 +12,7 @@ class SimulationScene : public Scene
 	Camera2D camera;
 
 	bool running = false;
+	bool should_render_partitioning = false;
 
 	void zoom_in() { camera.zoom *= 2; }
 

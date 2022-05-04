@@ -27,6 +27,10 @@ void SimulationScene::process_input()
 		running = !running;
 	}
 
+	if (IsKeyPressed(KEY_V)) {
+		should_render_partitioning = !should_render_partitioning;
+	}
+
 	if (IsKeyPressed(KEY_COMMA)) {
 		zoom_out();
 		cam_speed = 5 * multiplier / camera.zoom;
@@ -59,6 +63,9 @@ void SimulationScene::process_input()
 void SimulationScene::render() const
 {
 	render_system();
+	if (should_render_partitioning) {
+		universe.get_partitioning()->draw_debug(camera);
+	}
 }
 
 bool SimulationScene::on_screen(const Body& body) const
