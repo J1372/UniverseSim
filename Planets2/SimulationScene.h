@@ -24,6 +24,8 @@ class SimulationScene : public Scene
 	void render_system() const;
 	void render() const;
 
+	Scene* return_scene = this;
+
 public:
 
 	SimulationScene(int width, int height, UniverseSettings settings) : Scene(width, height), universe{settings}

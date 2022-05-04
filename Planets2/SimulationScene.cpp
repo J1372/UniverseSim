@@ -4,6 +4,8 @@
 #include "QuadTree.h"
 #include <string>
 
+#include "SettingsScene.h"
+
 void SimulationScene::process_input()
 {
 	static int multiplier = 8;
@@ -52,6 +54,12 @@ void SimulationScene::process_input()
 	else if (wheel_move > 0 or IsKeyPressed(KEY_PERIOD)) {
 		zoom_in();
 		cam_speed = 5 * multiplier / camera.zoom;
+	}
+
+	// Exiting to settings
+
+	if (IsKeyPressed(KEY_ESCAPE)) {
+		return_scene = new SettingsScene(screen_width, screen_height, universe.get_settings());
 	}
 }
 
@@ -142,5 +150,5 @@ Scene* SimulationScene::update()
 		DrawText(num_bodies_str.c_str(), 50, 70, 20, RAYWHITE);
 
 	EndDrawing();
-	return this;
+	return return_scene;
 }
