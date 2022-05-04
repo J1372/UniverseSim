@@ -23,6 +23,6 @@ struct UniverseSettings {
 
 
 	// Start generation settings
-	int num_rand_planets;
-	int num_rand_systems;
+	int num_rand_planets = 0;
+	int num_rand_systems = 1;
 };
