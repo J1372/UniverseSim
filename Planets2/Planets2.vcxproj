@@ -146,6 +146,8 @@
     <ClInclude Include="Body.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CheckBoxList.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="GridNode.h" />
     <ClInclude Include="GuiComponentList.h" />
     <ClInclude Include="GuiScene.h" />
     <ClInclude Include="Label.h" />
@@ -164,6 +166,8 @@
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="CheckBoxList.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GridNode.cpp" />
     <ClCompile Include="GuiComponentList.cpp" />
     <ClCompile Include="GuiScene.cpp" />
     <ClCompile Include="Label.cpp" />
