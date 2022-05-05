@@ -32,6 +32,11 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 	}
 }
 
+int QuadTree::update_internal()
+{
+	return 0;
+}
+
 void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>& to_remove)
 {
 	Body& body1 = **it;
@@ -71,19 +76,10 @@ void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Bo
 
 void QuadTree::add_body(Body& new_body)
 {
+	cur_size++;
+
 	if (is_leaf()) {
 		if (is_full()) {
-			// split then add like non_leaf
-			/*std::cout << "Splitting" << '\n';
-
-			std::cout << "Body.x: " << new_body->x << '\n';
-			std::cout << "Body.y: " << new_body->y << "\n\n";
-
-			std::cout << "Quad.x: " << x << '\n';
-			std::cout << "Quad.y: " << y << '\n';
-			std::cout << "Quad.end_x: " << end_x << '\n';
-			std::cout << "Quad.end_y: " << end_y << '\n';
-			*/
 
 			split();
 			add_to_child(new_body);
@@ -131,10 +127,10 @@ void QuadTree::update()
 		for (auto it = quad_bodies.begin(); it != quad_bodies.end();) {
 			Body& body = **it;
 
-			if (in_bounds(body.x, body.y)) {
+			if (contains_fully(body)) {
 				it++;
 			}
-			else {
+			else { // body no longer completely inside this leaf node.
 				it = quad_bodies.erase(it);
 				parent->reinsert(body);
 			}
@@ -143,10 +139,50 @@ void QuadTree::update()
 
 	}
 	else {
+		int to_check = quad_bodies.size();
+
 		UL->update();
 		UR->update();
 		LL->update();
 		LR->update();
+
+		// only check bodies which child nodes have not just reinserted upwards to this node.
+		auto it = quad_bodies.begin();
+		while (to_check != 0) {
+			Body& body = **it;
+
+			if (contains_fully(body)) {
+				// move to child node if body is fully contained by it.
+				if (UL->contains_fully(body)) {
+					UL->add_body(body);
+					it = quad_bodies.erase(it);
+				}
+				else if (UR->contains_fully(body)) {
+					UR->add_body(body);
+					it = quad_bodies.erase(it);
+				}
+				else if (LL->contains_fully(body)) {
+					LL->add_body(body);
+					it = quad_bodies.erase(it);
+				}
+				else if (LR->contains_fully(body)) {
+					LR->add_body(body);
+					it = quad_bodies.erase(it);
+				}
+				else {
+					it++;
+				}
+
+
+			}
+			else { // body no longer completely inside this node.
+				it = quad_bodies.erase(it);
+				parent->reinsert(body);
+			}
+
+			to_check--;
+
+		}
 
 		// Child methods may have called reinsert on us.
 		if (has_room()) {
@@ -187,16 +223,16 @@ bool QuadTree::contains_partially(const Body& body) const
 
 void QuadTree::add_to_child(Body& new_body)
 {
-	if (UL->in_bounds(new_body.x, new_body.y)) {
+	if (UL->contains_fully(new_body)) {
 		UL->add_body(new_body);
 	}
-	else if (UR->in_bounds(new_body.x, new_body.y)) {
+	else if (UR->contains_fully(new_body)) {
 		UR->add_body(new_body);
 	}
-	else if (LL->in_bounds(new_body.x, new_body.y)) {
+	else if (LL->contains_fully(new_body)) {
 		LL->add_body(new_body);
 	}
-	else if (LR->in_bounds(new_body.x, new_body.y)) {
+	else if (LR->contains_fully(new_body)) {
 		LR->add_body(new_body);
 	}
 	else {

@@ -50,6 +50,7 @@ private:
 	static constexpr int MAX_BODIES = 10;
 
 	std::vector<Body*> quad_bodies;
+	int cur_size = 0; // The number of bodies in this quad and its children.c
 
 	QuadTree* parent = nullptr;
 	std::unique_ptr<QuadTree> UL = nullptr;
@@ -57,6 +58,7 @@ private:
 	std::unique_ptr<QuadTree> LL = nullptr;
 	std::unique_ptr<QuadTree> LR = nullptr;
 
+	int update_internal(); // returns change in number of bodies in a quad due to movement.
 	void handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>& to_remove);
 
 	bool is_root() const { return parent == nullptr; }
@@ -66,9 +68,9 @@ private:
 
 
 	// leaf node methods (doesn't really make sense for parent nodes)
-	bool is_empty() const { return quad_bodies.size() == 0; }
-	bool has_room() const { return quad_bodies.size() < MAX_BODIES; }
-	bool is_full() const { return quad_bodies.size() >= MAX_BODIES; }
+	bool is_empty() const { return cur_size == 0; }
+	bool has_room() const { return cur_size < MAX_BODIES; }
+	bool is_full() const { return cur_size >= MAX_BODIES; }
 
 	bool contains_point(Vector2 point) const;
 	bool contains_fully(const Body& body) const;
