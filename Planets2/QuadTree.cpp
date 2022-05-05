@@ -306,8 +306,21 @@ void QuadTree::rem_from_child(const Body& body) // no longer used in our update,
 	}
 }*/
 
+
 void QuadTree::concatenate()
 {
+	// copy all body pointers from a quad, without erasing them in that quad.
+	auto copy_bodies = [](const QuadTree& quad, std::vector<Body*>& copy_to) {
+		for (Body* body : quad.quad_bodies) {
+			copy_to.push_back(body);
+		}
+	};
+
+	copy_bodies(*UL, quad_bodies);
+	copy_bodies(*UR, quad_bodies);
+	copy_bodies(*LL, quad_bodies);
+	copy_bodies(*LR, quad_bodies);
+
 	UL.reset();
 	UR.reset();
 	LL.reset();
