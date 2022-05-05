@@ -47,6 +47,7 @@ void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Bo
 				to_remove.push_back(&body2);
 
 				it2 = quad_bodies.erase(it2); // move to next check
+				cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
 			}
 			else { // it2 eats it1
 				body2.absorb(body1);
@@ -54,6 +55,7 @@ void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Bo
 				to_remove.push_back(&body1);
 
 				it = quad_bodies.erase(it); // it1 no longer exists, no more checks on other it2s.
+				cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
 				return;
 			}
 		}
