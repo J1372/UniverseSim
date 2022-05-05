@@ -74,19 +74,58 @@ void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Bo
 	it++;
 }
 
+bool QuadTree::in_more_than_one_child(Body& body)
+{
+	int num_children = 0;
+
+	if (UL->contains_partially(body)) {
+		num_children++;
+	}
+
+	if (UR->contains_partially(body)) {
+		num_children++;
+	}
+
+	if (LL->contains_partially(body)) {
+		num_children++;
+	}
+
+	if (LL->contains_partially(body)) {
+		num_children++;
+	}
+
+	return num_children > 1;
+}
+
+void QuadTree::selective_add(Body& new_body)
+{
+	// This = parent node.
+	// 
+	// Add to a child if body fully contained in it, else add to self.
+
+	if (in_more_than_one_child(new_body)) {
+		quad_bodies.push_back(&new_body);
+	}
+	else { // is only in one child node.
+		add_to_child(new_body); // adds to the child that contains the body fully.
+	}
+}
+
 void QuadTree::add_body(Body& new_body)
 {
 	cur_size++;
 
 	if (is_leaf()) {
 		if (is_full()) {
-
 			split();
-			add_to_child(new_body);
+			selective_add(new_body);
+		}
+		else {
+			quad_bodies.push_back(&new_body);
 		}
 	}
-	else { // has 4 quads, add to 1 of them
-		add_to_child(new_body);
+	else {
+		selective_add(new_body);
 	}
 }
 

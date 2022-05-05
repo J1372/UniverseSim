@@ -77,6 +77,8 @@ private:
 	bool contains_partially(const Body& body) const;
 
 
+	bool in_more_than_one_child(Body& body);
+	void selective_add(Body& new_body); // Chooses how to add body to the quad.
 	void add_to_child(Body& body);
 	//void rem_from_child(const Body& body);
 
