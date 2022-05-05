@@ -157,11 +157,12 @@ void QuadTree::update()
 		for (auto it = quad_bodies.begin(); it != quad_bodies.end();) {
 			Body& body = **it;
 
-			if (contains_fully(body)) {
+			if (contains_fully(body)) { // still fully contains this body, no changes needed.
 				it++;
 			}
 			else { // body no longer completely inside this leaf node.
 				it = quad_bodies.erase(it);
+				cur_size--;  // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
 				parent->reinsert(body);
 			}
 
@@ -183,6 +184,7 @@ void QuadTree::update()
 
 			if (contains_fully(body)) {
 				// move to child node if body is fully contained by it.
+				// TODO look into move_to_child(iterator)
 				if (UL->contains_fully(body)) {
 					UL->add_body(body);
 					it = quad_bodies.erase(it);
@@ -207,6 +209,7 @@ void QuadTree::update()
 			}
 			else { // body no longer completely inside this node.
 				it = quad_bodies.erase(it);
+				cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
 				parent->reinsert(body);
 			}
 
