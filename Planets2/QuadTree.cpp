@@ -32,11 +32,6 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 	}
 }
 
-int QuadTree::update_internal()
-{
-	return 0;
-}
-
 void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>& to_remove)
 {
 	Body& body1 = **it;

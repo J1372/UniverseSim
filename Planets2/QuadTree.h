@@ -58,7 +58,6 @@ private:
 	std::unique_ptr<QuadTree> LL = nullptr;
 	std::unique_ptr<QuadTree> LR = nullptr;
 
-	int update_internal(); // returns change in number of bodies in a quad due to movement.
 	void handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>& to_remove);
 
 	bool is_root() const { return parent == nullptr; }
