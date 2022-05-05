@@ -251,6 +251,18 @@ bool QuadTree::contains_partially(const Body& body) const
 	return corner_dist <= std::pow(body.radius, 2);
 }
 
+void QuadTree::move_to_parent(Body& body)
+{
+	rem_body(body);
+	parent->quad_bodies.push_back(&body);
+}
+
+void QuadTree::move_to_child(Body& body)
+{
+	quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), &body));
+	add_to_child(body);
+}
+
 void QuadTree::add_to_child(Body& new_body)
 {
 	if (UL->contains_fully(new_body)) {
@@ -322,7 +334,12 @@ void QuadTree::split()
 	for (auto it = quad_bodies.begin(); it != quad_bodies.end(); ++it) { //&& ref
 		Body& body = **it;
 
-		add_to_child(body);
+		if (in_more_than_one_child(body)) {
+			// stays in parent, since it is not unique to any child node.
+		}
+		else { // move body to child.
+			move_to_child(body);
+		}
 	}
 }
 
