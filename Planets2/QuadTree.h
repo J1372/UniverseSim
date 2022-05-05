@@ -78,7 +78,7 @@ private:
 
 
 	void add_to_child(Body& body);
-	void rem_from_child(const Body& body);
+	//void rem_from_child(const Body& body);
 
 	void concatenate();
 	void split();

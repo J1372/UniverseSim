@@ -84,31 +84,22 @@ void QuadTree::add_body(Body& new_body)
 			split();
 			add_to_child(new_body);
 		}
-
-		// add to self
-
-		quad_bodies.push_back(&new_body);
 	}
 	else { // has 4 quads, add to 1 of them
-		quad_bodies.push_back(&new_body);
-
 		add_to_child(new_body);
-
 	}
 }
 
 bool QuadTree::rem_body(const Body& body)
 {
 	quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), &body));
+	cur_size--;
 
 	if (!is_leaf()) {
 
 		if (has_room()) {
 			concatenate();
 			return true;
-		}
-		else {
-			rem_from_child(body);
 		}
 	}
 
@@ -247,7 +238,8 @@ void QuadTree::add_to_child(Body& new_body)
 	}
 }
 
-void QuadTree::rem_from_child(const Body& body)
+/*
+void QuadTree::rem_from_child(const Body& body) // no longer used in our update, but may be useful later if allow user to delete a planet.
 {
 	if (UL->in_bounds(body.x, body.y)) {
 		UL->rem_body(body);
@@ -261,7 +253,7 @@ void QuadTree::rem_from_child(const Body& body)
 	else if (LR->in_bounds(body.x, body.y)) { // LR
 		LR->rem_body(body);
 	}
-}
+}*/
 
 void QuadTree::concatenate()
 {
