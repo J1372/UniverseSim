@@ -358,13 +358,20 @@ void QuadTree::split()
 
 void QuadTree::reinsert(Body& body)
 {
-	if (in_bounds(body.x, body.y)) {
-		// no rem_body or rem_child, sub nodes already took care of that (they know it's not in their quad).
-		// don't have to remove from mine, because it is still in my quad.
-		add_to_child(body); // add to correct quad.
+	// Reinserting body upwards from a child node (which may or may not be a leaf node).
+
+	// The current node is never a leaf node.
+
+	// We want to keep moving up the chain if the body is not fully contained in this node.
+	// We want to add the body to the current node if it is fully contained in it.
+	//  If the body is fully contained in one of our children, add it to there instead.
+
+	if (contains_fully(body)) { // add to self. or add to child if fully fits in a child node.
+		// No need to increment cur_size, since the body is already counted (was in child node).
+		selective_add(body);
 	}
-	else {
-		quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), &body));
+	else { // Not fully contained in this node, needs to continue moving upwards.
+		cur_size--; // was previously in a child node, and now is moving to our parent node.
 		parent->reinsert(body);
 	}
 }
