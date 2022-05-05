@@ -37,13 +37,9 @@ void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Bo
 	Body& body1 = **it;
 	auto it2 = std::next(it, 1);
 	while (it2 != quad_bodies.end()) {
-		////std::cout << "\t\tCollision check against " << it2->first << "\n\n";
 		Body& body2 = **it2;
 
-		if (body1.check_col(body2)) { // there is a collision
-			////std::cout << "\t\t\tCollision!" << '\n';
-			////std::cout << "\t\t\t" << body1.x << ',' << body1.y << ',' << body1.radius << '\n';
-			////std::cout << "\t\t\t" << body2.x << ',' << body2.y << ',' << body2.radius << '\n';
+		if (body1.check_col(body2)) { 
 
 			if (body1.can_eat(body2)) { // it1 eats it2
 				body1.absorb(body2);
