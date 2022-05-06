@@ -464,7 +464,12 @@ void QuadTree::reinsert(Body& body)
 		// No need to increment cur_size, since the body is already counted (was in child node).
 		selective_add(body);
 	}
-	else { // Not fully contained in this node, needs to continue moving upwards.
+	else if (is_root()) {
+		// If body is not completely in the root quadtree, it is about to be wrapped around to the other side
+		//	since the quadtree root's size is the same size as the max universe size.
+	}
+	else { // not fully contained in this node, and this node is not the root (parent != nullptr)
+		// Not fully contained in this node, needs to continue moving upwards.
 		cur_size--; // was previously in a child node, and now is moving to our parent node.
 		parent->reinsert(body);
 	}
