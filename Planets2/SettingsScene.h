@@ -2,20 +2,20 @@
 #include "GuiScene.h"
 #include "UniverseSettings.h"
 
-#include "TextBox.h"
-#include "Button.h"
-#include "Label.h"
+class Button;
+class Label;
+class TextBox;
 
 
 class SettingsScene : public GuiScene
 {
 	UniverseSettings settings;
 
+	static constexpr int BUTTON_X = 400;
 	static constexpr int BUTTON_Y = 800;
 
-	Button& start_button = gui.add<Button>("Start", 400, BUTTON_Y);
-	Button& exit_button = gui.add<Button>("Exit", 500, BUTTON_Y);
-
+	Button& start_button = gui.add<Button>("Start", BUTTON_X, BUTTON_Y);
+	Button& exit_button = gui.add<Button>("Exit", BUTTON_X + 100, BUTTON_Y);
 
 
 	static constexpr int TEXTBOX_WIDTH = 400;

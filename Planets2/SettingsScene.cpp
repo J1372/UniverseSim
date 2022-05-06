@@ -1,6 +1,10 @@
 #include "SettingsScene.h"
 #include "SimulationScene.h"
 
+#include "Button.h"
+#include "Label.h"
+#include "TextBox.h"
+
 void SettingsScene::init_default()
 {
 	start_button.set_on_action([this]() {
