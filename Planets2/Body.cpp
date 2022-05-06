@@ -217,3 +217,18 @@ std::array<float, 2> Body::get_momentum() const
 {
 	return { mass * vel_x , mass * vel_y };
 }
+
+void Body::add_debug_text(const std::string&& text)
+{
+	debug_info.emplace_back(text);
+}
+
+const std::vector<std::string>& Body::get_debug_text() const
+{
+	return debug_info;
+}
+
+void Body::clear_debug_text()
+{
+	debug_info.clear();
+}
