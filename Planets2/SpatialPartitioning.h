@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-class Camera2D;
+struct Camera2D;
 class Body;
 
 class SpatialPartitioning
