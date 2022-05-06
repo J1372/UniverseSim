@@ -44,6 +44,9 @@
     <ClCompile Include="GridNode.cpp">
       <Filter>Partitioning</Filter>
     </ClCompile>
+    <ClCompile Include="Dropdown.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.h" />
@@ -91,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="GridNode.h">
       <Filter>Partitioning</Filter>
+    </ClInclude>
+    <ClInclude Include="Dropdown.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
