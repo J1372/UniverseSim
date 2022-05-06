@@ -64,7 +64,8 @@ public:
 	Body& create_rand_system();
 	Body& create_rand_satellite(const Body& orbiting);
 
-	const SpatialPartitioning* get_partitioning() const { return partitioning_method.get(); }
+	bool has_partitioning() const { return partitioning_method.get() != nullptr; }
+	const SpatialPartitioning& get_partitioning() const { return *partitioning_method.get(); }
 	UniverseSettings& get_settings() { return settings; }
 
 	const std::vector<std::unique_ptr<Body>>& get_bodies() const { return active_bodies; }
