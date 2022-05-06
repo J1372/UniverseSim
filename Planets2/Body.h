@@ -5,6 +5,7 @@
 #include <cmath>
 #include <array>
 #include <vector>
+#include <string>
 
 
 struct TypeExt {
