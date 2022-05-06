@@ -98,7 +98,7 @@ public:
 	Vector2 left() const { return { x - radius, y }; }
 	Vector2 right() const { return { x + radius, y }; }
 	Vector2 top() const { return { x, y - radius }; }
-	Vector2 bottom() const { return { x, y - radius }; }
+	Vector2 bottom() const { return { x, y + radius }; }
 
 
 };
