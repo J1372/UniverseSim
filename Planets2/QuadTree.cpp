@@ -1,5 +1,6 @@
 #include "QuadTree.h"
 #include <iostream>
+#include <string>
 
 int QuadTree::quads_generated = 0;
 
@@ -470,6 +471,8 @@ void QuadTree::reinsert(Body& body)
 }
 
 
+
+
 void QuadTree::draw_debug(const Camera2D &camera) const {
 
 	if (is_leaf()) {
@@ -484,20 +487,32 @@ void QuadTree::draw_debug(const Camera2D &camera) const {
 		LL->draw_debug(camera);
 		LR->draw_debug(camera);
 	}
-
-#ifdef PLANET_SIM_TEXTUAL_DEBUG
-	for (Body* body : quad_bodies) {
-		int text_x = body->x + body->radius + 20;
-		int text_y = body->y + body->radius + 20;
-		int font_size = 25;
-		int spacing = 20;
-
-		std::string id_str = std::format("Quad ID: {:}", quad_id);
-
-		// TODO draw_debug will take vector<string> ref, add its lines there, all text drawn in main render. 
-		DrawText(id_str.c_str(), text_x, text_y + spacing * 6, font_size, body->type->color);
-
-	}
-#endif
 	
+}
+
+const QuadTree& QuadTree::find_quad(const Body& body) const
+{
+	if (UL->contains_fully(body)) {
+		return UL->find_quad(body);
+	}
+	else if (UR->contains_fully(body)) {
+		return UR->find_quad(body);
+	}
+	else if (LL->contains_fully(body)) {
+		return LL->find_quad(body);
+	}
+	else if (LR->contains_fully(body)) {
+		return LR->find_quad(body);
+	}
+
+	return *this;
+}
+
+void QuadTree::attach_debug_text(Body& body) const
+{
+	const QuadTree& quad = find_quad(body);
+
+	body.add_debug_text("Quad ID: " + std::to_string(quad.quad_id));
+	body.add_debug_text("Quad Bodies: " + std::to_string(quad.cur_size));
+
 }

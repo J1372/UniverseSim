@@ -41,6 +41,7 @@ public:
 
 	void update();
 	void draw_debug(const Camera2D& camera) const;
+	void attach_debug_text(Body& body) const;
 
 	~QuadTree() = default;
 
@@ -110,5 +111,8 @@ private:
 	void split();
 
 	void reinsert(Body& body);
+
+	// Returns the smallest quad that contains the entire body.
+	const QuadTree& find_quad(const Body& body) const;
 
 };
