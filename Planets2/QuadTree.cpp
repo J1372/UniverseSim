@@ -1,15 +1,20 @@
 #include "QuadTree.h"
 #include <iostream>
 
+int QuadTree::quads_generated = 0;
+
 void QuadTree::collision_check(std::vector<Body*>& to_remove)
 {
 	if (is_leaf()) {
 		std::vector<Body*>::iterator it = quad_bodies.begin();
 		while (it != quad_bodies.end()) {
-			handle_collision(it, to_remove);
+			if (!handle_collision(it, it + 1, *this, *this, to_remove)) {
+				it++;
+			}
 		}
 	}
 	else {
+		// All collisions in child nodes must be reflected in current node's cur_size.
 		int prev_size = to_remove.size();
 
 		UL->collision_check(to_remove);
@@ -18,11 +23,33 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 		LR->collision_check(to_remove);
 
 		int children_removed = to_remove.size() - prev_size;
+		cur_size -= children_removed;
 
-		for (int i = prev_size; i < to_remove.size(); i++) {
-			Body* body = to_remove[i];
+		/* Now we need to do a collision check on our bodies.
+		* 
+		* This is different from a collision check in a leaf node.
+		* Our bodies can collide with each other, and with bodies in our child nodes.
+		* 
+		* Specifically the child nodes that contains_partially(our_body)
+		* This involves recursion downwards.
+		*/ 
 
-			quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), body));
+		// First, collision check with our node's bodies.
+		// If a collision occurs internally, this reduces the number of collision checks needed with child nodes.
+		//		which has the possibility of being more expensive.
+		std::vector<Body*>::iterator it = quad_bodies.begin();
+		while (it != quad_bodies.end()) {
+			if (!handle_collision(it, it + 1, *this, *this, to_remove)) {
+				it++;
+			}
+		}
+
+		// of the remaining bodies, do a collision check on each body with the bodies of relevant child nodes.
+		it = quad_bodies.begin();
+		while (it != quad_bodies.end()) {
+			if (!handle_collision_child(it, *this, to_remove)) {
+				it++;
+			}
 		}
 
 		// Child methods may have removed objects.
@@ -32,11 +59,75 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 	}
 }
 
-void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>& to_remove)
+bool QuadTree::handle_collision_child(std::vector<Body*>::iterator& it, QuadTree& original_quad, std::vector<Body*>& to_remove) {
+	Body& body = **it;
+
+	/* 
+	* 
+	* For each child quad which contains partially the body:
+	*	handle_collision body with all in that node
+	*	if body still living, recurse to that node with handle_collision_child.
+	* 
+	*
+	*/
+
+	if (UL->contains_partially(body)) {
+		if (handle_collision(it, UL->quad_bodies.begin(), original_quad, *UL, to_remove)) {
+			return true;
+		}
+
+		if (!UL->is_leaf()) {
+			if (UL->handle_collision_child(it, original_quad, to_remove)) {
+				return true;
+			}
+		}
+	}
+
+	if (UR->contains_partially(body)) {
+		if (handle_collision(it, UR->quad_bodies.begin(), original_quad, *UR, to_remove)) {
+			return true;
+		}
+
+		if (!UR->is_leaf()) {
+			if (UR->handle_collision_child(it, original_quad, to_remove)) {
+				return true;
+			}
+		}
+	}
+
+	if (LL->contains_partially(body)) {
+		if (handle_collision(it, LL->quad_bodies.begin(), original_quad, *LL, to_remove)) {
+			return true;
+		}
+
+		if (!LL->is_leaf()) {
+			if (LL->handle_collision_child(it, original_quad, to_remove)) {
+				return true;
+			}
+		}
+	}
+
+	if (LR->contains_partially(body)) {
+		if (handle_collision(it, LR->quad_bodies.begin(), original_quad, *LR, to_remove)) {
+			return true;
+		}
+
+		if (!LR->is_leaf()) {
+			if (LR->handle_collision_child(it, original_quad, to_remove)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+
+}
+
+bool QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>::iterator&& it2,
+	QuadTree& quad1, QuadTree& quad2, std::vector<Body*>& to_remove)
 {
 	Body& body1 = **it;
-	auto it2 = std::next(it, 1);
-	while (it2 != quad_bodies.end()) {
+	while (it2 != quad2.quad_bodies.end()) {
 		Body& body2 = **it2;
 
 		if (body1.check_col(body2)) { 
@@ -46,17 +137,17 @@ void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Bo
 
 				to_remove.push_back(&body2);
 
-				it2 = quad_bodies.erase(it2); // move to next check
-				cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
+				it2 = quad2.quad_bodies.erase(it2); // move to next check
+				quad2.cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
 			}
 			else { // it2 eats it1
 				body2.absorb(body1);
 
 				to_remove.push_back(&body1);
 
-				it = quad_bodies.erase(it); // it1 no longer exists, no more checks on other it2s.
-				cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
-				return;
+				it = quad1.quad_bodies.erase(it); // it1 no longer exists, no more checks on other it2s.
+				quad1.cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
+				return true;
 			}
 		}
 		else { // no collision. move to next check.
@@ -64,7 +155,9 @@ void QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Bo
 		}
 
 	}
-	it++;
+
+	return false;
+
 }
 
 bool QuadTree::in_more_than_one_child(Body& body)
@@ -83,7 +176,7 @@ bool QuadTree::in_more_than_one_child(Body& body)
 		num_children++;
 	}
 
-	if (LL->contains_partially(body)) {
+	if (LR->contains_partially(body)) {
 		num_children++;
 	}
 
@@ -226,15 +319,15 @@ bool QuadTree::contains_point(Vector2 point) const
 bool QuadTree::contains_fully(const Body& body) const
 {
 	// True if no part of the circle goes outside the quad.
-	return body.top().y >= y and body.bottom().y < end_y and
-		body.left().x >= x and body.right().x < end_x;
+	return body.top().y >= y and body.bottom().y <= end_y and
+		body.left().x >= x and body.right().x <= end_x;
 }
 
 bool QuadTree::contains_partially(const Body& body) const
 {
 	// True if circle intersects with quad.
-	float dist_x = std::abs(body.x - x + width() / 2);
-	float dist_y = std::abs(body.y - y + height() / 2);
+	float dist_x = std::abs(body.x - x - width() / 2);
+	float dist_y = std::abs(body.y - y - height() / 2);
 
 	if (dist_x > (width() / 2 + body.radius)) { return false; }
 	if (dist_y > (height() / 2 + body.radius)) { return false; }
@@ -253,10 +346,10 @@ void QuadTree::move_to_parent(Body& body)
 	parent->quad_bodies.push_back(&body);
 }
 
-void QuadTree::move_to_child(Body& body)
+void QuadTree::move_to_child(std::vector<Body*>::iterator& it)
 {
-	quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), &body));
-	add_to_child(body);
+	add_to_child(**it);
+	it = quad_bodies.erase(it);
 }
 
 void QuadTree::add_to_child(Body& new_body)
@@ -275,6 +368,7 @@ void QuadTree::add_to_child(Body& new_body)
 	}
 	else {
 		std::cout << "add_to_child added nothing to nowhere !!!" << '\n';
+		std::cout << "\tBody ID: " << new_body.id << '\n';
 		std::cout << "\tBody Position: (" << new_body.x << ", " << new_body.y << ")\n";
 		std::cout << "\tQuad Dimensions:\n";
 		std::cout << "\t\tx:\t" << x << '\n';
@@ -340,14 +434,17 @@ void QuadTree::split()
 
 	// add bodies to respective quads
 
-	for (auto it = quad_bodies.begin(); it != quad_bodies.end(); ++it) { //&& ref
+	auto it = quad_bodies.begin();
+	while (it < quad_bodies.end()) { //&& ref
 		Body& body = **it;
 
 		if (in_more_than_one_child(body)) {
 			// stays in parent, since it is not unique to any child node.
+			it++;
 		}
-		else { // move body to child.
-			move_to_child(body);
+		else {
+			// move body to child.
+			move_to_child(it);
 		}
 	}
 }
@@ -381,10 +478,26 @@ void QuadTree::draw_debug(const Camera2D &camera) const {
 		DrawRectangleLinesEx(rec, 50, RAYWHITE);
 	}
 	else {
+		// TODO invert drawing from LR to UL to solve textual debug issue.
 		UL->draw_debug(camera);
 		UR->draw_debug(camera);
 		LL->draw_debug(camera);
 		LR->draw_debug(camera);
 	}
+
+#ifdef PLANET_SIM_TEXTUAL_DEBUG
+	for (Body* body : quad_bodies) {
+		int text_x = body->x + body->radius + 20;
+		int text_y = body->y + body->radius + 20;
+		int font_size = 25;
+		int spacing = 20;
+
+		std::string id_str = std::format("Quad ID: {:}", quad_id);
+
+		// TODO draw_debug will take vector<string> ref, add its lines there, all text drawn in main render. 
+		DrawText(id_str.c_str(), text_x, text_y + spacing * 6, font_size, body->type->color);
+
+	}
+#endif
 	
 }

@@ -5,6 +5,10 @@
 #include "SpatialPartitioning.h"
 
 class QuadTree : public SpatialPartitioning {
+
+	static int quads_generated;
+	int quad_id;
+
 public:
 
 	const float x;
@@ -12,10 +16,10 @@ public:
 	const float end_x;
 	const float end_y;
 
-	QuadTree(float size) : x(-size), y(-size), end_x(size), end_y(size)
+	QuadTree(float size) : x(-size), y(-size), end_x(size), end_y(size), quad_id(quads_generated++)
 	{}
 
-	QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end_x(end_x), end_y(end_y)
+	QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end_x(end_x), end_y(end_y), quad_id(quads_generated++)
 	{}
 
 	void collision_check(std::vector<Body*>& to_remove);
@@ -58,7 +62,27 @@ private:
 	std::unique_ptr<QuadTree> LL = nullptr;
 	std::unique_ptr<QuadTree> LR = nullptr;
 
-	void handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>& to_remove);
+	/*
+	* Checks for, then handles any collision between the body referenced by the first iterator,
+	* with all the bodies from the second iterator to the end iterator of quad2's quad_bodies.
+	* 
+	* The first iterator is in quad1's quad_bodies.
+	* The second iterator is in quad2's quad_bodies.
+	* 
+	* quad1 can reference the same QuadTree as quad2.
+	* 
+	* If the first iterator's body collides with and absorbs a body, decrements quad2's size and removes the iterator from its quad_bodies.
+	* If the first iterator's body collides with and is absorbed by a body, decrements quad1's size and removes the iterator from its quad_bodies.
+	* 
+	* 
+	* 
+	* Returns true and advances the first iterator if its body was absorbed by another body.
+	*/
+	bool handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>::iterator&& it2,
+		QuadTree& quad1, QuadTree& quad2, std::vector<Body*>& to_remove);
+
+
+	bool handle_collision_child(std::vector<Body*>::iterator& it, QuadTree& original_quad, std::vector<Body*>& to_remove);
 
 	bool is_root() const { return parent == nullptr; }
 
@@ -76,7 +100,7 @@ private:
 	bool contains_partially(const Body& body) const;
 
 	void move_to_parent(Body& body); // Similar to parent->add_body, but doesn't increase its size.
-	void move_to_child(Body& body); // Moves to child without increasing our current size.
+	void move_to_child(std::vector<Body*>::iterator& it); // Moves to child without increasing our current size.
 	bool in_more_than_one_child(Body& body);
 	void selective_add(Body& new_body); // Chooses how to add body to the quad.
 	void add_to_child(Body& body);
