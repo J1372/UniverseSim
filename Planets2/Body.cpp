@@ -220,10 +220,10 @@ std::array<float, 2> Body::get_momentum() const
 
 void Body::add_debug_text(const std::string&& text)
 {
-	debug_info.emplace_back(text);
+	debug_info += text + "\n";
 }
 
-const std::vector<std::string>& Body::get_debug_text() const
+const std::string& Body::get_debug_text() const
 {
 	return debug_info;
 }

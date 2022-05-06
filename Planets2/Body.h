@@ -43,7 +43,7 @@ class Body {
 	};
 
 	int type_level = 0;
-	std::vector<std::string> debug_info;
+	std::string debug_info;
 
 
 	void do_wraparound(float wraparound_val);
@@ -105,7 +105,7 @@ public:
 
 
 	void add_debug_text(const std::string&& text);
-	const std::vector<std::string>& get_debug_text() const;
+	const std::string& get_debug_text() const;
 	void clear_debug_text();
 
 

@@ -121,16 +121,12 @@ void SimulationScene::draw_debug_text(int font_size, int spacing) const {
 		const Body& body = *body_ptr;
 		Color planet_color = body.type->color;
 
-		const std::vector<std::string>& debug_texts = body.get_debug_text();
+		const std::string& debug_texts = body.get_debug_text();
 		int text_x = body.x + body.radius + 20;
 		int text_y = body.y + body.radius + 20;
 
-		int cur_spacing = 0;
+		DrawText(debug_texts.c_str(), text_x, text_y, font_size, planet_color);
 
-		for (const std::string& text : debug_texts) {
-			DrawText(text.c_str(), text_x, text_y + cur_spacing, font_size, planet_color);
-			cur_spacing += spacing;
-		}
 	}
 	
 }
