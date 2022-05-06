@@ -1,11 +1,7 @@
 #include <raylib.h>
 #include <iostream>
-#include <format>
-#include <string>
 
-#include "universe.h"
 #include "Scene.h"
-#include "SimulationScene.h"
 #include "SettingsScene.h"
 
 int main() {
