@@ -121,7 +121,7 @@ void SimulationScene::draw_debug_text(int font_size, int spacing) const {
 		const Body& body = *body_ptr;
 		Color planet_color = body.type->color;
 
-		const std::vector<std::string> debug_texts = body.get_debug_text();
+		const std::vector<std::string>& debug_texts = body.get_debug_text();
 		int text_x = body.x + body.radius + 20;
 		int text_y = body.y + body.radius + 20;
 
