@@ -15,6 +15,10 @@ void SimulationScene::process_input()
 		should_render_partitioning = !should_render_partitioning;
 	}
 
+	if (IsKeyPressed(KEY_B)) {
+		should_render_debug_text = !should_render_debug_text;
+	}
+
 	// Camera movement keys
 
 	if (IsKeyDown(KEY_W)) {
@@ -63,12 +67,95 @@ void SimulationScene::process_input()
 	}
 }
 
+void SimulationScene::update_on_screen_bodies()
+{
+	on_screen_bodies.clear();
+
+	const std::vector<std::unique_ptr<Body>>& bodies = universe.get_bodies();
+
+	for (const auto& body_ptr : bodies) {
+		Body& body = *body_ptr;
+
+		if (on_screen(body)) {
+			on_screen_bodies.push_back(&body); // this shouldnt work o.o get_bodies returns a const vector.
+		}
+	}
+}
+
+void SimulationScene::attach_debug_info() const
+{
+	for (Body* body_ptr : on_screen_bodies) {
+		Body& body = *body_ptr;
+
+		body.add_debug_text("ID: " + std::to_string(body.id));
+		body.add_debug_text("X: " + std::to_string(body.x));
+		body.add_debug_text("Y: " + std::to_string(body.y));
+		body.add_debug_text("Vel(x): " + std::to_string(body.vel_x));
+		body.add_debug_text("Vel(y): " + std::to_string(body.vel_y));
+		body.add_debug_text("Mass: " + std::to_string(body.mass));
+	}
+}
+
+void SimulationScene::attach_partitioning_debug_info() const
+{
+	const SpatialPartitioning& partitioning = universe.get_partitioning();
+
+	for (Body* body_ptr : on_screen_bodies) {
+		Body& body = *body_ptr;
+		partitioning.attach_debug_text(body);
+	}
+}
+
+void SimulationScene::clear_debug_text()
+{
+	for (Body* body : on_screen_bodies) {
+		body->clear_debug_text();
+	}
+}
+
+
+void SimulationScene::draw_debug_text(int font_size, int spacing) const {
+	for (const Body* body_ptr : on_screen_bodies) {
+		const Body& body = *body_ptr;
+		Color planet_color = body.type->color;
+
+		const std::vector<std::string> debug_texts = body.get_debug_text();
+		int text_x = body.x + body.radius + 20;
+		int text_y = body.y + body.radius + 20;
+
+		int cur_spacing = 0;
+
+		for (const std::string& text : debug_texts) {
+			DrawText(text.c_str(), text_x, text_y + cur_spacing, font_size, planet_color);
+			cur_spacing += spacing;
+		}
+	}
+	
+}
+
+
 void SimulationScene::render() const
 {
-	render_system();
 	if (should_render_partitioning) {
-		universe.get_partitioning()->draw_debug(camera);
+		const SpatialPartitioning& partitioning = universe.get_partitioning();
+		partitioning.draw_debug(camera);
 	}
+
+	render_bodies();
+
+	if (should_render_debug_text) {
+		attach_debug_info();
+
+		if (should_render_partitioning) {
+			attach_partitioning_debug_info();
+		}
+
+		constexpr int font_size = 25;
+		constexpr int spacing = 20;
+		draw_debug_text(font_size, spacing);
+	}
+
+	
 }
 
 bool SimulationScene::on_screen(const Body& body) const
@@ -84,39 +171,13 @@ bool SimulationScene::on_screen(const Body& body) const
 	return rightmost.x >= 0 and lowest.y >= 0 and leftmost.x < GetScreenWidth() and highest.y < GetScreenHeight();
 }
 
-void SimulationScene::render_system() const
+void SimulationScene::render_bodies() const
 {
-	const std::vector<std::unique_ptr<Body>>& bodies = universe.get_bodies();
-
-	for (const auto& body_ptr : bodies) {
+	for (const Body* body_ptr : on_screen_bodies) {
 		const Body& body = *body_ptr;
 
-		if (on_screen(body)) {
-			Color planet_color = body.type->color; // not a reference
-			DrawCircle(body.x, body.y, body.radius, planet_color);
-
-#ifdef MY_DEBUG
-			int text_x = body.x + body.radius + 20;
-			int text_y = body.y + body.radius + 20;
-			int font_size = 25;
-			int spacing = 20;
-			std::string id_str = std::format("ID: {:}", body.id);
-			std::string x_str = std::format("X: {:.2f}", body.x);
-			std::string y_str = std::format("Y: {:.2f}", body.y);
-			std::string vel_x_str = std::format("Vel(x): {:.2f}", body.vel_x);
-			std::string vel_y_str = std::format("Vel(y): {:.2f}", body.vel_y);
-			std::string mass_str = std::format("Mass: {:}", body.mass);
-
-			DrawText(id_str.c_str(), text_x, text_y, font_size, planet_color);
-			DrawText(x_str.c_str(), text_x, text_y + spacing, font_size, planet_color);
-			DrawText(y_str.c_str(), text_x, text_y + spacing * 2, font_size, planet_color);
-			DrawText(vel_x_str.c_str(), text_x, text_y + spacing * 3, font_size, planet_color);
-			DrawText(vel_y_str.c_str(), text_x, text_y + spacing * 4, font_size, planet_color);
-			DrawText(mass_str.c_str(), text_x, text_y + spacing * 5, font_size, planet_color);
-#endif
-}
-
-
+		Color planet_color = body.type->color;
+		DrawCircle(body.x, body.y, body.radius, planet_color);
 	}
 }
 
@@ -136,6 +197,8 @@ Scene* SimulationScene::update()
 		universe.update();
 	}
 
+	update_on_screen_bodies();
+
 	BeginDrawing();
 		ClearBackground(BLACK); // maybe better to have before beginmode2d?
 
@@ -150,5 +213,8 @@ Scene* SimulationScene::update()
 		DrawText(num_bodies_str.c_str(), 50, 70, 20, RAYWHITE);
 
 	EndDrawing();
+
+	clear_debug_text();
+
 	return return_scene;
 }
