@@ -492,6 +492,11 @@ void QuadTree::draw_debug(const Camera2D &camera) const {
 
 const QuadTree& QuadTree::find_quad(const Body& body) const
 {
+
+	if (is_leaf()) {
+		return *this;
+	}
+
 	if (UL->contains_fully(body)) {
 		return UL->find_quad(body);
 	}
