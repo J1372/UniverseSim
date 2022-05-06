@@ -12,6 +12,7 @@ class SimulationScene : public Scene
 	Camera2D camera;
 
 	bool running = false;
+	// Can only be true if universe.has_partitioning() is true.
 	bool should_render_partitioning = false;
 	bool should_render_debug_text = false;
 

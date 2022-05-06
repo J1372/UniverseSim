@@ -12,7 +12,9 @@ void SimulationScene::process_input()
 	static float cam_speed = 5 * multiplier / camera.zoom;
 
 	if (IsKeyPressed(KEY_V)) {
-		should_render_partitioning = !should_render_partitioning;
+		if (universe.has_partitioning()) {
+			should_render_partitioning = !should_render_partitioning;
+		}
 	}
 
 	if (IsKeyPressed(KEY_B)) {
