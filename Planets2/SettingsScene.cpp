@@ -4,6 +4,7 @@
 #include "Button.h"
 #include "Label.h"
 #include "TextBox.h"
+#include "Dropdown.h"
 
 void SettingsScene::init_default()
 {
@@ -22,6 +23,10 @@ void SettingsScene::init_default()
 
 	num_planets_input.set_prompt_text("Number of random planets to generate");
 	num_systems_input.set_prompt_text("Number of random systems to generate");
+
+	partitioning_dropdown.add_choice("Quad tree");
+	partitioning_dropdown.add_choice("Grid");
+	partitioning_dropdown.add_choice("AABB");
 
 	background_color = SKYBLUE;
 }

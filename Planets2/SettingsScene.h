@@ -5,6 +5,7 @@
 class Button;
 class Label;
 class TextBox;
+class Dropdown;
 
 
 class SettingsScene : public GuiScene
@@ -64,10 +65,15 @@ class SettingsScene : public GuiScene
 	Label& sys_min_planets_label = gui.add<Label>("Min planets", SYSTEMS_START_X + LABEL_OFFSET, COLUMN_Y + 120, 12);
 	Label& sys_max_planets_label = gui.add<Label>("Max planets", SYSTEMS_START_X + LABEL_OFFSET, COLUMN_Y + 220, 12);
 
+	Dropdown& partitioning_dropdown = gui.add<Dropdown>(500, 500, 12);
+
 	void init_default(); // register event handling and other gui setup.
 	void generate_settings();
 
 	void read_settings_to_gui(); // set gui elements to reflect the current universe settings.
+
+
+
 
 public:
 
