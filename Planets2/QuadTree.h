@@ -34,6 +34,8 @@ public:
 			check_y >= y && check_y < end_y;
 	}
 
+	Body* find_body(Vector2 point);
+
 	const std::array<QuadTree*, 4> get_quads() const;
 
 	float get_width() const { return end_x - x + 1; }

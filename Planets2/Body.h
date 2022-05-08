@@ -98,6 +98,8 @@ public:
 	std::array<float, 2> distv_body(const Body& other) const;
 	float dist_body(const Body& other) const;
 
+	bool contains_point(Vector2 point) const;
+
 	Vector2 left() const { return { x - radius, y }; }
 	Vector2 right() const { return { x + radius, y }; }
 	Vector2 top() const { return { x, y - radius }; }

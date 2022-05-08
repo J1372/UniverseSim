@@ -128,6 +128,17 @@ float Body::dist_body(const Body& other) const
 	return std::sqrt(c_squared);
 }
 
+bool Body::contains_point(Vector2 point) const
+{
+	float dist_x = std::abs(point.x - x);
+	float dist_y = std::abs(point.y - y);
+
+	float dist_squared = std::pow(dist_x, 2) + std::pow(dist_y, 2);
+	float dist = std::sqrt(dist_squared);
+
+	return dist <= radius;
+}
+
 bool Body::can_eat(const Body& other) const
 {
 	return mass >= other.mass;

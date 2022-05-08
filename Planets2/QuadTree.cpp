@@ -232,6 +232,31 @@ bool QuadTree::rem_body(const Body& body)
 	return false;
 }
 
+Body* QuadTree::find_body(Vector2 point)
+{
+	// Because bodies can be in branch nodes too, can't just go to the leaf node and search.
+	auto found = std::find_if(quad_bodies.begin(), quad_bodies.end(), [point](const Body* body) { return body->contains_point(point); });
+
+	if (found != quad_bodies.end()) {
+		return *found;
+	} else if (!is_leaf()) {
+		if (UL->contains_point(point)) {
+			return UL->find_body(point);
+		}
+		else if (UR->contains_point(point)) {
+			return UR->find_body(point);
+		}
+		else if (LL->contains_point(point)) {
+			return LL->find_body(point);
+		}
+		else if (LR->contains_point(point)) {
+			return LR->find_body(point);
+		}
+	}
+
+	return nullptr;
+}
+
 const std::array<QuadTree*, 4> QuadTree::get_quads() const
 {
 	return { UL.get(), UR.get(), LL.get(), LR.get() };
