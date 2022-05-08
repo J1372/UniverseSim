@@ -1,5 +1,23 @@
 #include "Dropdown.h"
 
+int Dropdown::get_render_height() const
+{
+	if (active) {
+		return (choices.size() + 1) * rect.height;
+	}
+	else {
+		return rect.height;
+	}
+}
+
+bool Dropdown::contains_point(Vector2 point) const {
+	int height = get_render_height();
+
+	return point.x >= rect.x and point.x < rect.x + rect.width
+		and point.y >= rect.y and point.y < rect.y + height;
+
+}
+
 int Dropdown::translate_click() const
 {
 	int diff_y = GetMouseY() - rect.y;
@@ -12,6 +30,8 @@ int Dropdown::translate_click() const
 
 	return click_selection - 1;
 }
+
+
 
 std::string Dropdown::get_selected() const
 {
@@ -34,30 +54,30 @@ void Dropdown::click()
 void Dropdown::render() const
 {
 
-	int start_x = rect.x + rect.width * (width_padding / 2);
-	int top_y = rect.y + edge_width; // y coord of the bottom of the top edge.
-	int full_width = rect.height - 2 * edge_width; // distance from bottom of top edge to top of bottom edge.
-	int start_y = top_y + full_width / 3;
 
 	Rectangle render_rect = rect;
 
-	if (active) {
-		// set render rectangle height to accomodate all the choices.
-		render_rect.height = rect.height * choices.size();
-	}
+	// set render rectangle height to accomodate all the choices, if active.
+	render_rect.height = get_render_height();
 
 	// draw background
 	DrawRectangleRec(render_rect, background_color);
 	DrawRectangleLinesEx(render_rect, edge_width, edge_color);
 
+
+	int start_x = rect.x + edge_width + rect.width * (width_padding / 2);
+	int top_y = rect.y + edge_width; // y coord of the bottom of the top edge.
+	int full_width = rect.height - 2 * edge_width; // distance from bottom of top edge to top of bottom edge.
+	int start_y = top_y + full_width / 3;
+
 	if (active) { // render choices list
 		constexpr float SEPARATOR_THICKNESS = 3.0f;
 
 		// draw separator lines
-		Vector2 sep_left = { render_rect.x, 0 };
-		Vector2 sep_right = { render_rect.x + render_rect.width, 0 };
+		Vector2 sep_left = { render_rect.x + edge_width, 0 };
+		Vector2 sep_right = { render_rect.x - edge_width + render_rect.width, 0 };
 
-		for (int i = 1; i < choices.size(); i++) {
+		for (int i = 1; i < choices.size() + 1; i++) {
 			sep_left.y = render_rect.y + rect.height * i;
 			sep_right.y = sep_left.y;
 			DrawLineEx(sep_left, sep_right, SEPARATOR_THICKNESS, GRAY);
@@ -67,7 +87,7 @@ void Dropdown::render() const
 		for (int i = 0; i < choices.size(); i++) {
 			const std::string& choice = choices[i];
 
-			DrawText(choice.c_str(), start_x, start_y + rect.height * i, font_size, LIGHTGRAY);
+			DrawText(choice.c_str(), start_x, start_y + rect.height * (i+1), font_size, LIGHTGRAY);
 		}
 	}
 	
