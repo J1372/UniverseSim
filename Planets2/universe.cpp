@@ -3,6 +3,7 @@
 #include <numbers>
 #include <iostream>
 #include "rand_float.h"
+#include "raylib.h"
 
 void Universe::generate_universe()
 {
@@ -278,6 +279,23 @@ Body& Universe::create_rand_satellite(const Body& orbiting)
 
 
 	return sat;
+}
+
+Body* Universe::get_body(Vector2 point) const
+{
+	if (has_partitioning()) {
+		return partitioning_method->find_body(point);
+	}
+	else {
+		auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [point](const std::unique_ptr<Body>& body) {return body->contains_point(point); });
+		if (it != active_bodies.end()) {
+			return &**it; // Returns address of a dereference of an iterator to unique_ptr to Body. (Body*)
+		}
+		else {
+			return nullptr;
+		}
+	}
+	return nullptr;
 }
 
 void Universe::grav_pull(Body& body1, Body& body2) const

@@ -180,7 +180,7 @@ bool QuadTree::rem_body(const Body& body)
 	return false;
 }
 
-Body* QuadTree::find_body(Vector2 point)
+Body* QuadTree::find_body(Vector2 point) const
 {
 	// Because bodies can be in branch nodes too, can't just go to the leaf node and search.
 	auto found = std::find_if(quad_bodies.begin(), quad_bodies.end(), [point](const Body* body) { return body->contains_point(point); });

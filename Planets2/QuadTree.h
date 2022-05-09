@@ -32,7 +32,7 @@ public:
 			check_y >= y && check_y < end_y;
 	}
 
-	Body* find_body(Vector2 point);
+	Body* find_body(Vector2 point) const;
 
 	const std::array<QuadTree*, 4> get_quads() const;
 

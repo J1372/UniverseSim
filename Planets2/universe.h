@@ -7,6 +7,7 @@
 #include <iostream>
 #include "UniverseSettings.h"
 
+struct Vector2;
 class SpatialPartitioning;
 
 //const double GRAV_CONST = 0.00000000006743
@@ -67,6 +68,9 @@ public:
 	bool has_partitioning() const { return partitioning_method.get() != nullptr; }
 	const SpatialPartitioning& get_partitioning() const { return *partitioning_method.get(); }
 	UniverseSettings& get_settings() { return settings; }
+
+	// Returns the body at the coordinate, or nullptr if not found.
+	Body* get_body(Vector2 point) const;
 
 	const std::vector<std::unique_ptr<Body>>& get_bodies() const { return active_bodies; }
 	int get_num_bodies() const { return active_bodies.size(); }
