@@ -3,6 +3,7 @@
 #include <memory>
 #include "Body.h"
 #include "SpatialPartitioning.h"
+#include <functional>
 
 class QuadTree : public SpatialPartitioning {
 
@@ -105,9 +106,18 @@ private:
 	void move_to_parent(Body& body); // Similar to parent->add_body, but doesn't increase its size.
 	void move_to_child(std::vector<Body*>::iterator& it); // Moves to child without increasing our current size.
 	bool in_more_than_one_child(Body& body);
-	void selective_add(Body& new_body); // Chooses how to add body to the quad.
+	void selective_add(Body& new_body); // Chooses whether to add body to current quad or a child quad.
 	void add_to_child(Body& body);
 	//void rem_from_child(const Body& body);
+
+	/*
+	Returns the first (and hopefully only) child quad where the predicate is true, or nullptr if predicate false in all four child nodes.
+	Checks in order: UL, UR, LL, LR.
+	*/
+	QuadTree* get_quad(std::function<bool(const QuadTree&)> predicate) const;
+
+	// Returns all child quads where the predicate is true.
+	std::vector<QuadTree*> get_quads(std::function<bool(const QuadTree&)> predicate) const;
 
 	void concatenate();
 	void split();

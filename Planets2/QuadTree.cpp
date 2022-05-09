@@ -67,59 +67,27 @@ bool QuadTree::handle_collision_child(std::vector<Body*>::iterator& it, QuadTree
 	* 
 	* For each child quad which contains partially the body:
 	*	handle_collision body with all in that node
-	*	if body still living, recurse to that node with handle_collision_child.
+	*	if body still living, and the node is not a leaf, recurse to that node with handle_collision_child.
 	* 
-	*
 	*/
 
-	if (UL->contains_partially(body)) {
-		if (handle_collision(it, UL->quad_bodies.begin(), original_quad, *UL, to_remove)) {
+	// Get a list of our child quads that at least partially contain the body.
+	std::vector<QuadTree*> to_check = get_quads([&body](const QuadTree& quad) { return quad.contains_partially(body); });
+
+	// Check collisions on each valid quad. Returns true if the body being checked was absorbed by another.
+	for (QuadTree* quad : to_check) {
+		if (handle_collision(it, quad->quad_bodies.begin(), original_quad, *quad, to_remove)) {
 			return true;
 		}
 
-		if (!UL->is_leaf()) {
-			if (UL->handle_collision_child(it, original_quad, to_remove)) {
+		if (!quad->is_leaf()) {
+			if (quad->handle_collision_child(it, original_quad, to_remove)) {
 				return true;
 			}
 		}
 	}
 
-	if (UR->contains_partially(body)) {
-		if (handle_collision(it, UR->quad_bodies.begin(), original_quad, *UR, to_remove)) {
-			return true;
-		}
-
-		if (!UR->is_leaf()) {
-			if (UR->handle_collision_child(it, original_quad, to_remove)) {
-				return true;
-			}
-		}
-	}
-
-	if (LL->contains_partially(body)) {
-		if (handle_collision(it, LL->quad_bodies.begin(), original_quad, *LL, to_remove)) {
-			return true;
-		}
-
-		if (!LL->is_leaf()) {
-			if (LL->handle_collision_child(it, original_quad, to_remove)) {
-				return true;
-			}
-		}
-	}
-
-	if (LR->contains_partially(body)) {
-		if (handle_collision(it, LR->quad_bodies.begin(), original_quad, *LR, to_remove)) {
-			return true;
-		}
-
-		if (!LR->is_leaf()) {
-			if (LR->handle_collision_child(it, original_quad, to_remove)) {
-				return true;
-			}
-		}
-	}
-
+	// The original body still exists, so return false.
 	return false;
 
 }
@@ -163,25 +131,11 @@ bool QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Bo
 
 bool QuadTree::in_more_than_one_child(Body& body)
 {
-	int num_children = 0;
+	// Get a list of our child quads that at least partially contain the body.
+	std::vector<QuadTree*> contained_in = get_quads([&body](const QuadTree& quad) { return quad.contains_partially(body); });
 
-	if (UL->contains_partially(body)) {
-		num_children++;
-	}
-
-	if (UR->contains_partially(body)) {
-		num_children++;
-	}
-
-	if (LL->contains_partially(body)) {
-		num_children++;
-	}
-
-	if (LR->contains_partially(body)) {
-		num_children++;
-	}
-
-	return num_children > 1;
+	// if in more than one child quad, return true.
+	return contained_in.size() > 1;
 }
 
 void QuadTree::selective_add(Body& new_body)
@@ -240,18 +194,9 @@ Body* QuadTree::find_body(Vector2 point)
 	if (found != quad_bodies.end()) {
 		return *found;
 	} else if (!is_leaf()) {
-		if (UL->contains_point(point)) {
-			return UL->find_body(point);
-		}
-		else if (UR->contains_point(point)) {
-			return UR->find_body(point);
-		}
-		else if (LL->contains_point(point)) {
-			return LL->find_body(point);
-		}
-		else if (LR->contains_point(point)) {
-			return LR->find_body(point);
-		}
+		// Find the quad that the (x,y) point should be in, then recurse into it.
+		QuadTree* quad = get_quad([point](const QuadTree& quad) { return quad.contains_point(point); });
+		return quad->find_body(point);
 	}
 
 	return nullptr;
@@ -297,23 +242,16 @@ void QuadTree::update()
 			if (contains_fully(body)) {
 				// move to child node if body is fully contained by it.
 				// TODO look into move_to_child(iterator)
-				if (UL->contains_fully(body)) {
-					UL->add_body(body);
+				
+				// Get the child quad that fully contains the body, if any do.
+				QuadTree* contained_in = get_quad([&body](const QuadTree& quad) { return quad.contains_fully(body); });
+
+				// If the body is fully contained in a child quad, move it into that quad.
+				if (contained_in) {
+					contained_in->add_body(body);
 					it = quad_bodies.erase(it);
 				}
-				else if (UR->contains_fully(body)) {
-					UR->add_body(body);
-					it = quad_bodies.erase(it);
-				}
-				else if (LL->contains_fully(body)) {
-					LL->add_body(body);
-					it = quad_bodies.erase(it);
-				}
-				else if (LR->contains_fully(body)) {
-					LR->add_body(body);
-					it = quad_bodies.erase(it);
-				}
-				else {
+				else { // No child quad fully contains the body, so keep it in this node.
 					it++;
 				}
 
@@ -380,17 +318,12 @@ void QuadTree::move_to_child(std::vector<Body*>::iterator& it)
 
 void QuadTree::add_to_child(Body& new_body)
 {
-	if (UL->contains_fully(new_body)) {
-		UL->add_body(new_body);
-	}
-	else if (UR->contains_fully(new_body)) {
-		UR->add_body(new_body);
-	}
-	else if (LL->contains_fully(new_body)) {
-		LL->add_body(new_body);
-	}
-	else if (LR->contains_fully(new_body)) {
-		LR->add_body(new_body);
+	// Get the child quad that fully contains the body, if any do.
+	QuadTree* contained_in = get_quad([&new_body](const QuadTree& quad) { return quad.contains_fully(new_body); });
+
+	// if any child quad fully contains the body, add it to the quad.
+	if (contained_in) {
+		contained_in->add_body(new_body);
 	}
 	else {
 		std::cout << "add_to_child added nothing to nowhere !!!" << '\n';
@@ -405,20 +338,57 @@ void QuadTree::add_to_child(Body& new_body)
 	}
 }
 
+
+QuadTree* QuadTree::get_quad(std::function<bool(const QuadTree&)> predicate) const
+{
+	if (predicate(*UL)) {
+		return UL.get();
+	}
+	else if (predicate(*UR)) {
+		return UR.get();
+	}
+	else if (predicate(*LL)) {
+		return LL.get();
+	}
+	else if (predicate(*LR)) {
+		return LR.get();
+	}
+
+	return nullptr;
+}
+
+std::vector<QuadTree*> QuadTree::get_quads(std::function<bool(const QuadTree&)> predicate) const
+{
+	std::vector<QuadTree*> quads;
+	quads.reserve(4);
+
+	if (predicate(*UL)) {
+		quads.push_back(UL.get());
+	}
+
+	if (predicate(*UR)) {
+		quads.push_back(UR.get());
+	}
+
+	if (predicate(*LL)) {
+		quads.push_back(LL.get());
+	}
+
+	if (predicate(*LR)) {
+		quads.push_back(LR.get());
+	}
+
+	return quads;
+}
+
 /*
 void QuadTree::rem_from_child(const Body& body) // no longer used in our update, but may be useful later if allow user to delete a planet.
 {
-	if (UL->in_bounds(body.x, body.y)) {
-		UL->rem_body(body);
-	}
-	else if (UR->in_bounds(body.x, body.y)) {
-		UR->rem_body(body);
-	}
-	else if (LL->in_bounds(body.x, body.y)) {
-		LL->rem_body(body);
-	}
-	else if (LR->in_bounds(body.x, body.y)) { // LR
-		LR->rem_body(body);
+	// Get the child quad that fully contains the body, if any do.
+	QuadTree* contained_in = get_quad([&body](const QuadTree& quad) { return quad.contains_fully(body); });
+
+	if (contained_in)) {
+		contained_in->rem_body(body);
 	}
 }*/
 
@@ -522,24 +492,23 @@ void QuadTree::draw_debug(const Camera2D &camera) const {
 
 const QuadTree& QuadTree::find_quad(const Body& body) const
 {
-
+	// Can't recurse any further, and all bodies are somewhere in the quadtree, so it must be in this one.
 	if (is_leaf()) {
 		return *this;
 	}
 
-	if (UL->contains_fully(body)) {
-		return UL->find_quad(body);
-	}
-	else if (UR->contains_fully(body)) {
-		return UR->find_quad(body);
-	}
-	else if (LL->contains_fully(body)) {
-		return LL->find_quad(body);
-	}
-	else if (LR->contains_fully(body)) {
-		return LR->find_quad(body);
+	// Is a parent node.
+
+	// Get the child quad that fully contains the body, if any do.
+	QuadTree* contained_in = get_quad([&body](const QuadTree& quad) { return quad.contains_fully(body); });
+
+
+	// If a child node fully contains the body we are looking for, then recurse into it.
+	if (contained_in) {
+		return contained_in->find_quad(body);
 	}
 
+	// No child node fully contains the body, and all bodies are somewhere in the quadtree, so it must be in this one.
 	return *this;
 }
 
