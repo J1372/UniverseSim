@@ -20,6 +20,5 @@ public:
 	void add_body(Body& body);
 	void collision_check(std::vector<Body*>& to_remove);
 	void update();
-	void draw_debug(const Camera2D& camera) const;
 };
 

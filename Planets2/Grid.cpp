@@ -46,10 +46,3 @@ void Grid::update()
         node.update();
     }
 }
-
-void Grid::draw_debug(const Camera2D& camera) const
-{
-    for (const GridNode& node : nodes) {
-        node.draw_debug();
-    }
-}
