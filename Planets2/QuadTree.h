@@ -106,6 +106,8 @@ private:
 	// Removes a body from the node, and returns an iterator to the next body.
 	std::vector<Body*>::iterator rem_body(std::vector<Body*>::iterator it);
 
+	// If a body is removed from a child node (due to collision), notifies all relevant parent nodes to update their sizes. Unused.
+	void notify_child_removed();
 	void move_to_parent(Body& body); // Similar to parent->add_body, but doesn't increase its size.
 	void move_to_child(std::vector<Body*>::iterator& it); // Moves to child without increasing our current size.
 	bool in_more_than_one_child(Body& body);

@@ -15,16 +15,11 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 		}
 	}
 	else {
-		// All collisions in child nodes must be reflected in current node's cur_size.
-		int prev_size = to_remove.size();
 
 		UL->collision_check(to_remove);
 		UR->collision_check(to_remove);
 		LL->collision_check(to_remove);
 		LR->collision_check(to_remove);
-
-		int children_removed = to_remove.size() - prev_size;
-		cur_size -= children_removed;
 
 
 		/* Now we need to do a collision check on our bodies.
@@ -46,8 +41,6 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 			}
 		}
 
-		prev_size = to_remove.size();
-
 		// of the remaining bodies, do a collision check on each body with the bodies of relevant child nodes.
 		it = quad_bodies.begin();
 		while (it != quad_bodies.end()) {
@@ -55,9 +48,6 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 				it++;
 			}
 		}
-
-		children_removed = to_remove.size() - prev_size;
-		cur_size -= children_removed;
 
 		// Child methods may have removed objects.
 		if (has_room()) {
@@ -177,7 +167,7 @@ void QuadTree::add_body(Body& new_body)
 bool QuadTree::rem_body(const Body& body)
 {
 	quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), &body));
-	cur_size--;
+	notify_child_removed();
 
 	if (!is_leaf()) {
 
@@ -311,7 +301,7 @@ bool QuadTree::contains_partially(const Body& body) const
 std::vector<Body*>::iterator QuadTree::rem_body(std::vector<Body*>::iterator it)
 {
 	auto next_it = quad_bodies.erase(it);
-	cur_size--;
+	notify_child_removed();
 
 	if (!is_leaf()) {
 
