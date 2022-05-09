@@ -8,6 +8,18 @@
 
 void SimulationScene::process_input()
 {
+
+	if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+		Vector2 screen_point = GetMousePosition();
+		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera);
+
+		Body* body = universe.get_body(universe_point);
+
+		if (body) {
+			std::cout << body->id << '\n';
+		}
+	}
+
 	static int multiplier = 8;
 	static float cam_speed = 5 * multiplier / camera.zoom;
 
@@ -67,6 +79,8 @@ void SimulationScene::process_input()
 	if (IsKeyPressed(KEY_ESCAPE)) {
 		return_scene = new SettingsScene(screen_width, screen_height, universe.get_settings());
 	}
+
+	
 }
 
 void SimulationScene::update_on_screen_bodies()
