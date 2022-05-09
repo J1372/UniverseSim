@@ -108,7 +108,6 @@ private:
 
 	// If a body is removed from a child node (due to collision), notifies all relevant parent nodes to update their sizes. Unused.
 	void notify_child_removed();
-	void move_to_parent(Body& body); // Similar to parent->add_body, but doesn't increase its size.
 	void move_to_child(std::vector<Body*>::iterator& it); // Moves to child without increasing our current size.
 	bool in_more_than_one_child(Body& body);
 	void selective_add(Body& new_body); // Chooses whether to add body to current quad or a child quad.

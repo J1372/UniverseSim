@@ -322,12 +322,6 @@ void QuadTree::notify_child_removed()
 	}
 }
 
-void QuadTree::move_to_parent(Body& body)
-{
-	rem_body(body);
-	parent->quad_bodies.push_back(&body);
-}
-
 void QuadTree::move_to_child(std::vector<Body*>::iterator& it)
 {
 	add_to_child(**it);
