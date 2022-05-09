@@ -7,10 +7,6 @@
 #include <functional>
 
 class QuadTree : public SpatialPartitioning {
-
-	static int quads_generated;
-	int quad_id;
-
 public:
 
 	const float x;
@@ -56,7 +52,8 @@ public:
 
 private:
 
-	
+	static int quads_generated;
+	int quad_id;
 
 	static constexpr int MAX_BODIES = 10;
 
