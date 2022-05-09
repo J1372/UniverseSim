@@ -484,24 +484,24 @@ void QuadTree::reinsert(Body& body)
 	}
 }
 
-
-
-
-void QuadTree::draw_debug(const Camera2D &camera) const {
-
+void QuadTree::get_representation_internal(std::vector<Rectangle>& rep) const {
 	if (is_leaf()) {
-		Rectangle rec{ x, y, get_width(), get_height() };
-
-		DrawRectangleLinesEx(rec, 50, RAYWHITE);
+		rep.push_back(representation);
 	}
 	else {
-		// TODO invert drawing from LR to UL to solve textual debug issue.
-		UL->draw_debug(camera);
-		UR->draw_debug(camera);
-		LL->draw_debug(camera);
-		LR->draw_debug(camera);
+		UL->get_representation_internal(rep);
+		UR->get_representation_internal(rep);
+		LL->get_representation_internal(rep);
+		LR->get_representation_internal(rep);
 	}
-	
+
+}
+
+
+std::vector<Rectangle> QuadTree::get_representation() const {
+	std::vector<Rectangle> rep;
+	get_representation_internal(rep);
+	return rep;
 }
 
 const QuadTree& QuadTree::find_quad(const Body& body) const

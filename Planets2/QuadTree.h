@@ -3,6 +3,7 @@
 #include <memory>
 #include "Body.h"
 #include "SpatialPartitioning.h"
+#include "raylib.h"
 #include <functional>
 
 class QuadTree : public SpatialPartitioning {
@@ -17,10 +18,10 @@ public:
 	const float end_x;
 	const float end_y;
 
-	QuadTree(float size) : x(-size), y(-size), end_x(size), end_y(size), quad_id(quads_generated++)
+	QuadTree(float size) : x(-size), y(-size), end_x(size), end_y(size), quad_id(quads_generated++), representation{x, y, width(), height()}
 	{}
 
-	QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end_x(end_x), end_y(end_y), quad_id(quads_generated++)
+	QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end_x(end_x), end_y(end_y), quad_id(quads_generated++), representation{ x, y, width(), height() }
 	{}
 
 	void collision_check(std::vector<Body*>& to_remove);
@@ -43,7 +44,9 @@ public:
 	float get_height() const { return end_y - y + 1; }
 
 	void update();
-	void draw_debug(const Camera2D& camera) const;
+
+	// Returns a representation of the boundaries of the quad tree and all of its child nodes.
+	std::vector<Rectangle> get_representation() const;
 	void attach_debug_text(Body& body) const;
 
 	~QuadTree() = default;
@@ -65,6 +68,8 @@ private:
 	std::unique_ptr<QuadTree> UR = nullptr;
 	std::unique_ptr<QuadTree> LL = nullptr;
 	std::unique_ptr<QuadTree> LR = nullptr;
+
+	Rectangle representation;
 
 	/*
 	* Checks for, then handles any collision between the body referenced by the first iterator,
@@ -90,8 +95,8 @@ private:
 
 	bool is_root() const { return parent == nullptr; }
 
-	int width() const { return end_x - x + 1; }
-	int height() const { return end_y - y + 1; }
+	float width() const { return end_x - x + 1; }
+	float height() const { return end_y - y + 1; }
 
 
 	// leaf node methods (doesn't really make sense for parent nodes)
@@ -130,5 +135,8 @@ private:
 
 	// Returns the smallest quad that contains the entire body.
 	const QuadTree& find_quad(const Body& body) const;
+
+
+	void get_representation_internal(std::vector<Rectangle>& rep) const;
 
 };

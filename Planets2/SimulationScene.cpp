@@ -136,7 +136,11 @@ void SimulationScene::render() const
 {
 	if (should_render_partitioning) {
 		const SpatialPartitioning& partitioning = universe.get_partitioning();
-		partitioning.draw_debug(camera);
+		std::vector<Rectangle> rep = partitioning.get_representation();
+
+		for (const Rectangle& rect : rep) {
+			DrawRectangleLinesEx(rect, 50, WHITE);
+		}
 	}
 
 	render_bodies();
