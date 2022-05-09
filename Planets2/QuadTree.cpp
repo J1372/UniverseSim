@@ -26,6 +26,7 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 		int children_removed = to_remove.size() - prev_size;
 		cur_size -= children_removed;
 
+
 		/* Now we need to do a collision check on our bodies.
 		* 
 		* This is different from a collision check in a leaf node.
@@ -45,6 +46,8 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 			}
 		}
 
+		prev_size = to_remove.size();
+
 		// of the remaining bodies, do a collision check on each body with the bodies of relevant child nodes.
 		it = quad_bodies.begin();
 		while (it != quad_bodies.end()) {
@@ -52,6 +55,9 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 				it++;
 			}
 		}
+
+		children_removed = to_remove.size() - prev_size;
+		cur_size -= children_removed;
 
 		// Child methods may have removed objects.
 		if (has_room()) {
@@ -106,16 +112,14 @@ bool QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Bo
 
 				to_remove.push_back(&body2);
 
-				it2 = quad2.quad_bodies.erase(it2); // move to next check
-				quad2.cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
+				it2 = quad2.rem_body(it2);
 			}
 			else { // it2 eats it1
 				body2.absorb(body1);
 
 				to_remove.push_back(&body1);
 
-				it = quad1.quad_bodies.erase(it); // it1 no longer exists, no more checks on other it2s.
-				quad1.cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
+				it = quad1.rem_body(it); // it1 no longer exists, no more checks on other it2s.
 				return true;
 			}
 		}
@@ -219,7 +223,7 @@ void QuadTree::update()
 			}
 			else { // body no longer completely inside this leaf node.
 				it = quad_bodies.erase(it);
-				cur_size--;  // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
+				cur_size--;
 				parent->reinsert(body);
 			}
 
@@ -259,7 +263,7 @@ void QuadTree::update()
 			}
 			else { // body no longer completely inside this node.
 				it = quad_bodies.erase(it);
-				cur_size--; // TODO look into using rem_body ?compatibly alongside iterators. or having rem_body(iterator)
+				cur_size--;
 				parent->reinsert(body);
 			}
 
@@ -304,6 +308,30 @@ bool QuadTree::contains_partially(const Body& body) const
 	return corner_dist <= std::pow(body.radius, 2);
 }
 
+std::vector<Body*>::iterator QuadTree::rem_body(std::vector<Body*>::iterator it)
+{
+	auto next_it = quad_bodies.erase(it);
+	cur_size--;
+
+	if (!is_leaf()) {
+
+		if (has_room()) {
+			// Concatenation won't result in vector resizing / iterator invalidation since new size < maximum quad size.
+			concatenate();
+		}
+	}
+
+	return next_it;
+}
+
+void QuadTree::notify_child_removed()
+{
+	cur_size--;
+	if (!is_root()) {
+		parent->notify_child_removed();
+	}
+}
+
 void QuadTree::move_to_parent(Body& body)
 {
 	rem_body(body);
@@ -313,6 +341,8 @@ void QuadTree::move_to_parent(Body& body)
 void QuadTree::move_to_child(std::vector<Body*>::iterator& it)
 {
 	add_to_child(**it);
+
+	// Body moved to child node, so no need to decrease our size.
 	it = quad_bodies.erase(it);
 }
 
