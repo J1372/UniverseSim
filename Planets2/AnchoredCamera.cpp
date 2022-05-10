@@ -34,11 +34,11 @@ CameraState* AnchoredCamera::update(const Universe& universe)
     float wheel_move = GetMouseWheelMove();
     if (wheel_move < 0 or IsKeyPressed(KEY_COMMA)) {
         zoom_out();
-        cam_speed = 5 * cam_speed_multiplier / camera.zoom;
+        recalculate_cam_speed();
     }
     else if (wheel_move > 0 or IsKeyPressed(KEY_PERIOD)) {
         zoom_in();
-        cam_speed = 5 * cam_speed_multiplier / camera.zoom;
+        recalculate_cam_speed();
     }
 
     return ret_state;

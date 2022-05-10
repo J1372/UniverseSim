@@ -19,6 +19,9 @@ protected:
 
 	void recalculate_cam_speed() { cam_speed = 5 * cam_speed_multiplier / camera.zoom; }
 
+	void increase_cam_speed();
+	void decrease_cam_speed();
+
 public:
 
 	CameraState(int cam_speed_multiplier);

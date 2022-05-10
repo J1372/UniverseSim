@@ -51,13 +51,11 @@ CameraState* FreeCamera::update(const Universe& universe)
 
 	// Camera speed
 
-	if (IsKeyPressed(KEY_MINUS)) {
-		cam_speed_multiplier = std::max(1, cam_speed_multiplier - 1);
-		cam_speed = 5 * cam_speed_multiplier / camera.zoom;
+	if (IsKeyPressed(KEY_MINUS) and cam_speed_multiplier > 1) {
+		decrease_cam_speed();
 	}
 	else if (IsKeyPressed(KEY_EQUAL)) {
-		cam_speed_multiplier++;
-		cam_speed = 5 * cam_speed_multiplier / camera.zoom;
+		increase_cam_speed();
 	}
 
 	// Camera zoom for keys and mousewheel
@@ -66,11 +64,11 @@ CameraState* FreeCamera::update(const Universe& universe)
 
 	if (wheel_move < 0 or IsKeyPressed(KEY_COMMA)) {
 		zoom_out();
-		cam_speed = 5 * cam_speed_multiplier / camera.zoom;
+		recalculate_cam_speed();
 	}
 	else if (wheel_move > 0 or IsKeyPressed(KEY_PERIOD)) {
 		zoom_in();
-		cam_speed = 5 * cam_speed_multiplier / camera.zoom;
+		recalculate_cam_speed();
 	}
 
 	
