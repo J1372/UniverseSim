@@ -29,6 +29,15 @@ CameraState* AnchoredCamera::update(const Universe& universe)
         }
     }
 
+    // Camera speed
+
+    if (IsKeyPressed(KEY_MINUS) and cam_speed_multiplier > 1) {
+        decrease_cam_speed();
+    }
+    else if (IsKeyPressed(KEY_EQUAL)) {
+        increase_cam_speed();
+    }
+
     // Camera zoom for keys and mousewheel
 
     float wheel_move = GetMouseWheelMove();
