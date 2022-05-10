@@ -4,25 +4,19 @@
 #include "QuadTree.h"
 #include <string>
 
+#include "CameraState.h"
+#include "FreeCamera.h"
+
 #include "SettingsScene.h"
+
+SimulationScene::SimulationScene(int width, int height, UniverseSettings settings) : Scene(width, height), universe{settings}
+{
+	camera_state = std::make_unique<FreeCamera>(static_cast<float>(screen_width), static_cast<float>(screen_height), 8);
+	on_screen_bodies.reserve(universe.get_num_bodies());
+}
 
 void SimulationScene::process_input()
 {
-
-	if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
-		Vector2 screen_point = GetMousePosition();
-		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera);
-
-		Body* body = universe.get_body(universe_point);
-
-		if (body) {
-			std::cout << body->id << '\n';
-		}
-	}
-
-	static int multiplier = 8;
-	static float cam_speed = 5 * multiplier / camera.zoom;
-
 	if (IsKeyPressed(KEY_V)) {
 		if (universe.has_partitioning()) {
 			should_render_partitioning = !should_render_partitioning;
@@ -33,45 +27,8 @@ void SimulationScene::process_input()
 		should_render_debug_text = !should_render_debug_text;
 	}
 
-	// Camera movement keys
-
-	if (IsKeyDown(KEY_W)) {
-		camera.target.y -= cam_speed;
-	}
-	if (IsKeyDown(KEY_A)) {
-		camera.target.x -= cam_speed;
-	}
-	if (IsKeyDown(KEY_S)) {
-		camera.target.y += cam_speed;
-	}
-	if (IsKeyDown(KEY_D)) {
-		camera.target.x += cam_speed;
-	}
-
 	if (IsKeyPressed(KEY_SPACE)) {
 		running = !running;
-	}
-
-	if (IsKeyPressed(KEY_MINUS)) {
-		multiplier = std::max(1, multiplier - 1);
-		cam_speed = 5 * multiplier / camera.zoom;
-	}
-	else if (IsKeyPressed(KEY_EQUAL)) {
-		multiplier++;
-		cam_speed = 5 * multiplier / camera.zoom;
-	}
-
-	// Camera zoom for keys and mousewheel
-
-	float wheel_move = GetMouseWheelMove();
-
-	if (wheel_move < 0 or IsKeyPressed(KEY_COMMA)) {
-		zoom_out();
-		cam_speed = 5 * multiplier / camera.zoom;
-	}
-	else if (wheel_move > 0 or IsKeyPressed(KEY_PERIOD)) {
-		zoom_in();
-		cam_speed = 5 * multiplier / camera.zoom;
 	}
 
 	// Exiting to settings
@@ -176,6 +133,7 @@ void SimulationScene::render() const
 
 bool SimulationScene::on_screen(const Body& body) const
 {
+	Camera2D& camera = camera_state->get_camera();
 	Vector2 leftmost = GetWorldToScreen2D({ body.x - body.radius, body.y }, camera);
 	Vector2 rightmost = GetWorldToScreen2D({ body.x + body.radius, body.y }, camera);
 
@@ -202,7 +160,7 @@ void SimulationScene::resize(int width, int height)
 	screen_width = width;
 	screen_height = height;
 
-	camera.offset = { static_cast<float>(screen_width) / 2, static_cast<float>(screen_height) / 2 };
+	camera_state->resize(static_cast<float>(screen_width), static_cast<float>(screen_height));
 }
 
 Scene* SimulationScene::update()
@@ -213,12 +171,18 @@ Scene* SimulationScene::update()
 		universe.update();
 	}
 
+	CameraState* next_state = camera_state->update(universe);
+
+	if (camera_state.get() != next_state) {
+		camera_state = std::unique_ptr<CameraState>(next_state);
+	}
+
 	update_on_screen_bodies();
 
 	BeginDrawing();
 		ClearBackground(BLACK); // maybe better to have before beginmode2d?
 
-			BeginMode2D(camera);
+			BeginMode2D(camera_state->get_camera());
 				render();
 			EndMode2D();
 

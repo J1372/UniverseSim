@@ -3,13 +3,15 @@
 #include <raylib.h>
 
 #include "universe.h"
+
+class CameraState;
 class Body;
 
 class SimulationScene : public Scene
 {
 
 	Universe universe;
-	Camera2D camera;
+	std::unique_ptr<CameraState> camera_state;
 
 	bool running = false;
 	// Can only be true if universe.has_partitioning() is true.
@@ -17,10 +19,6 @@ class SimulationScene : public Scene
 	bool should_render_debug_text = false;
 
 	std::vector<Body*> on_screen_bodies;
-
-	void zoom_in() { camera.zoom *= 2; }
-
-	void zoom_out() { camera.zoom /= 2; }
 
 	void process_input();
 
@@ -45,15 +43,7 @@ class SimulationScene : public Scene
 
 public:
 
-	SimulationScene(int width, int height, UniverseSettings settings) : Scene(width, height), universe{settings}
-	{
-		camera.offset = { static_cast<float>(screen_width) / 2, static_cast<float>(screen_height) / 2 };
-		camera.target = { 0, 0 };
-		camera.rotation = 0;
-		camera.zoom = 1.0f;
-
-		on_screen_bodies.reserve(universe.get_num_bodies());
-	}
+	SimulationScene(int width, int height, UniverseSettings settings);
 
 	void resize(int width, int height);
 
