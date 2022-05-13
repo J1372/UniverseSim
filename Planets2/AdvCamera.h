@@ -78,7 +78,7 @@ public:
 	// Decreases the rate at which this camera will travel when move_offset called with a direction.
 	void decrease_speed_offset();
 
-	void set_zoom(float level) { camera.zoom = level; }
+	void set_zoom(float level);
 
 	float get_zoom() const { return camera.zoom; }
 

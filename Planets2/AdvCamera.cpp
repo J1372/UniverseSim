@@ -78,6 +78,12 @@ void AdvCamera::decrease_speed_offset()
 	}
 }
 
+void AdvCamera::set_zoom(float level)
+{
+	camera.zoom = level;
+	recalculate_speed_target();
+}
+
 void AdvCamera::move_target(Direction dir)
 {
 	switch (dir) {
