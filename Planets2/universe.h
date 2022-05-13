@@ -66,7 +66,7 @@ public:
 	Body& create_rand_satellite(const Body& orbiting);
 
 	bool has_partitioning() const { return partitioning_method.get() != nullptr; }
-	const SpatialPartitioning& get_partitioning() const { return *partitioning_method.get(); }
+	const SpatialPartitioning* get_partitioning() const { return partitioning_method.get(); }
 	UniverseSettings& get_settings() { return settings; }
 
 	// Returns the body at the coordinate, or nullptr if not found.

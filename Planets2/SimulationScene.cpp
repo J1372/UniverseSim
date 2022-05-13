@@ -72,7 +72,8 @@ void SimulationScene::attach_debug_info() const
 
 void SimulationScene::attach_partitioning_debug_info() const
 {
-	const SpatialPartitioning& partitioning = universe.get_partitioning();
+	// Safe to dereference since this method only called if should_render_partitioning, which is only true if the universe has a partitioning method.
+	const SpatialPartitioning& partitioning = *universe.get_partitioning();
 
 	for (Body* body_ptr : on_screen_bodies) {
 		Body& body = *body_ptr;
@@ -107,7 +108,8 @@ void SimulationScene::draw_debug_text(int font_size, int spacing) const {
 void SimulationScene::render() const
 {
 	if (should_render_partitioning) {
-		const SpatialPartitioning& partitioning = universe.get_partitioning();
+		// Safe to dereference this since if should_render_partitioning == true then universe has partitioning.
+		const SpatialPartitioning& partitioning = *universe.get_partitioning();
 		std::vector<Rectangle> rep = partitioning.get_representation();
 
 		for (const Rectangle& rect : rep) {
