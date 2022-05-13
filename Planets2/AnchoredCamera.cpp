@@ -111,6 +111,8 @@ void AnchoredCamera::enter(const AdvCamera& prev_camera, const Body& anchor_to)
 
     const Camera2D& ray_cam = prev_camera.get_raylib_camera();
 
+    // to keep camera still instead of snapping target to center, set
+    // offset to the targets original screen_pos
 
     camera.set_offset(ray_cam.offset);
     camera.set_target({anchored_to->x, anchored_to->y});
