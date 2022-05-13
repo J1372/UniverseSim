@@ -108,5 +108,12 @@ void AnchoredCamera::notify_body_no_longer_exists(const Body* absorbed_by)
 void AnchoredCamera::enter(const AdvCamera& prev_camera, const Body& anchor_to)
 {
     anchored_to = &anchor_to;
-    camera.set_offset(prev_camera.get_raylib_camera().offset);
+
+    const Camera2D& ray_cam = prev_camera.get_raylib_camera();
+
+
+    camera.set_offset(ray_cam.offset);
+    camera.set_target({anchored_to->x, anchored_to->y});
+    camera.set_zoom(ray_cam.zoom);
+
 }
