@@ -3,6 +3,7 @@
 #include <raylib.h>
 
 #include "universe.h"
+#include "CameraList.h"
 
 class CameraState;
 class Body;
@@ -11,7 +12,9 @@ class SimulationScene : public Scene
 {
 
 	Universe universe;
-	std::unique_ptr<CameraState> camera_state;
+	AdvCamera starting_config { Vector2{0,0}, Vector2{0,0} };
+	CameraList cameras {starting_config};
+	CameraState* camera_state;
 
 	bool running = false;
 	// Can only be true if universe.has_partitioning() is true.

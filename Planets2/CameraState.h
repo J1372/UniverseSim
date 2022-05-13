@@ -1,37 +1,31 @@
 #pragma once
-#include "raylib.h"
+#include "AdvCamera.h"
+#include <utility>
 
+struct CameraList;
+struct Camera2D;
 class Universe;
 
+// Handles the policy and keybindings for updating and using a camera.
 class CameraState {
 protected:
 
-	CameraState* ret_state = this;
-
-	Camera2D camera;
-	int cam_speed_multiplier;
-	float cam_speed;
-
-
-	void zoom_in() { camera.zoom *= 2; }
-
-	void zoom_out() { camera.zoom /= 2; }
-
-	void recalculate_cam_speed() { cam_speed = 5 * cam_speed_multiplier / camera.zoom; }
-
-	void increase_cam_speed();
-	void decrease_cam_speed();
+	AdvCamera camera;
 
 public:
 
-	CameraState(int cam_speed_multiplier);
+	CameraState(const AdvCamera& starting_config) : camera(starting_config)
+	{}
 
-	CameraState(Camera2D&& camera, int cam_speed_multiplier);
+	CameraState(AdvCamera&& starting_config) : camera(std::move(starting_config))
+	{}
 
-	virtual CameraState* update(const Universe& universe) = 0;
-	virtual void resize(float width, float height) = 0;
-	Camera2D& get_camera() { return camera; }
+	virtual CameraState* update(const Universe& universe, CameraList& cameras) = 0;
 
+	// Returns this state's camera.
+	const AdvCamera& get_camera() const { return camera; }
 
+	// Returns the underlying raylib Camera2D struct of this state's camera.
+	const Camera2D& get_raylib_camera() const { return camera.get_raylib_camera(); }
 
 };

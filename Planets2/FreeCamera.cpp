@@ -4,58 +4,66 @@
 #include "AnchoredCamera.h"
 #include <utility>
 
-FreeCamera::FreeCamera(float screen_width, float screen_height, int cam_speed_multiplier) : CameraState{cam_speed_multiplier}
+#include "raylib.h"
+
+#include "CameraList.h"
+
+FreeCamera::FreeCamera(const AdvCamera& starting_config) : CameraState(starting_config)
 {
-	camera.offset = { screen_width / 2, screen_height / 2 };
-	camera.target = { 0.0f, 0.0f };
-	camera.rotation = 0.0f;
-	camera.zoom = 1.0f;
+	float off_x = GetScreenWidth() / 2;
+	float off_y = GetScreenHeight() / 2;
+
+	camera.set_offset({ off_x, off_y });
 }
 
-FreeCamera::FreeCamera(Camera2D&& camera, int cam_speed_multiplier) : CameraState{std::move(camera), cam_speed_multiplier}
+FreeCamera::FreeCamera(AdvCamera&& starting_config) : CameraState(starting_config)
 {
-	// recalc offset and target so camera stays at same point, but offset is centered again.
+	float off_x = GetScreenWidth() / 2;
+	float off_y = GetScreenHeight() / 2;
+
+	camera.set_offset({ off_x, off_y });
 }
 
-CameraState* FreeCamera::update(const Universe& universe)
+CameraState* FreeCamera::update(const Universe& universe, CameraList& cameras)
 {
-
 	// Camera state change
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
 		Vector2 screen_point = GetMousePosition();
-		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera);
+		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera.get_raylib_camera());
 
 		Body* body = universe.get_body(universe_point);
 
 		if (body) {
 			std::cout << body->id << '\n';
-			return new AnchoredCamera { std::move(camera), cam_speed_multiplier, *body};
+			AnchoredCamera& transition_to = cameras.anchored_camera;
+			transition_to.enter(camera, *body);
+			return &transition_to;
 		}
 	}
 
 	// Camera movement
 
 	if (IsKeyDown(KEY_W)) {
-		camera.target.y -= cam_speed;
+		camera.move_target(Direction::UP);
 	}
 	if (IsKeyDown(KEY_A)) {
-		camera.target.x -= cam_speed;
+		camera.move_target(Direction::LEFT);
 	}
 	if (IsKeyDown(KEY_S)) {
-		camera.target.y += cam_speed;
+		camera.move_target(Direction::DOWN);
 	}
 	if (IsKeyDown(KEY_D)) {
-		camera.target.x += cam_speed;
+		camera.move_target(Direction::RIGHT);
 	}
 
 	// Camera speed
 
-	if (IsKeyPressed(KEY_MINUS) and cam_speed_multiplier > 1) {
-		decrease_cam_speed();
+	if (IsKeyPressed(KEY_MINUS)) {
+		camera.decrease_speed_target();
 	}
 	else if (IsKeyPressed(KEY_EQUAL)) {
-		increase_cam_speed();
+		camera.increase_speed_target();
 	}
 
 	// Camera zoom for keys and mousewheel
@@ -63,20 +71,26 @@ CameraState* FreeCamera::update(const Universe& universe)
 	float wheel_move = GetMouseWheelMove();
 
 	if (wheel_move < 0 or IsKeyPressed(KEY_COMMA)) {
-		zoom_out();
-		recalculate_cam_speed();
+		camera.zoom_out();
 	}
 	else if (wheel_move > 0 or IsKeyPressed(KEY_PERIOD)) {
-		zoom_in();
-		recalculate_cam_speed();
+		camera.zoom_in();
 	}
 
 	
 
-    return ret_state;
+    return this;
 }
 
-void FreeCamera::resize(float width, float height)
+void FreeCamera::enter(const AdvCamera& prev_camera)
 {
-	camera.offset = { width / 2, height / 2 };
+	const Camera2D& ray_cam = prev_camera.get_raylib_camera();
+	Vector2 center = { GetScreenWidth() / 2, GetScreenHeight() / 2 };
+
+	Vector2 my_target = GetScreenToWorld2D(center, ray_cam);
+
+	camera.set_offset(center);
+	camera.set_target(my_target);
+	camera.set_zoom(prev_camera.get_zoom());
+
 }

@@ -6,12 +6,13 @@
 
 #include "CameraState.h"
 #include "FreeCamera.h"
+#include "AdvCamera.h"
 
 #include "SettingsScene.h"
 
-SimulationScene::SimulationScene(int width, int height, UniverseSettings settings) : Scene(width, height), universe{settings}
+SimulationScene::SimulationScene(int width, int height, UniverseSettings settings) : Scene(width, height), universe{ settings }
 {
-	camera_state = std::make_unique<FreeCamera>(static_cast<float>(screen_width), static_cast<float>(screen_height), 8);
+	camera_state = &cameras.free_camera;
 	on_screen_bodies.reserve(universe.get_num_bodies());
 }
 
@@ -133,7 +134,7 @@ void SimulationScene::render() const
 
 bool SimulationScene::on_screen(const Body& body) const
 {
-	Camera2D& camera = camera_state->get_camera();
+	const Camera2D& camera = camera_state->get_raylib_camera();
 	Vector2 leftmost = GetWorldToScreen2D({ body.x - body.radius, body.y }, camera);
 	Vector2 rightmost = GetWorldToScreen2D({ body.x + body.radius, body.y }, camera);
 
@@ -160,7 +161,7 @@ void SimulationScene::resize(int width, int height)
 	screen_width = width;
 	screen_height = height;
 
-	camera_state->resize(static_cast<float>(screen_width), static_cast<float>(screen_height));
+	//camera_state->resize(static_cast<float>(screen_width), static_cast<float>(screen_height));
 }
 
 Scene* SimulationScene::update()
@@ -171,18 +172,14 @@ Scene* SimulationScene::update()
 		universe.update();
 	}
 
-	CameraState* next_state = camera_state->update(universe);
-
-	if (camera_state.get() != next_state) {
-		camera_state = std::unique_ptr<CameraState>(next_state);
-	}
+	camera_state = camera_state->update(universe, cameras);
 
 	update_on_screen_bodies();
 
 	BeginDrawing();
-		ClearBackground(BLACK); // maybe better to have before beginmode2d?
+		ClearBackground(BLACK);
 
-			BeginMode2D(camera_state->get_camera());
+			BeginMode2D(camera_state->get_raylib_camera());
 				render();
 			EndMode2D();
 

@@ -4,19 +4,48 @@
 #include "universe.h"
 #include <utility>
 
-AnchoredCamera::AnchoredCamera(Camera2D&& camera, int cam_speed_multiplier, const Body& anchor_to) : CameraState{std::move(camera), cam_speed_multiplier}, anchored_to(&anchor_to)
+#include "CameraList.h"
+
+
+AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config) : CameraState(starting_config), anchored_to(nullptr)
+{}
+
+AnchoredCamera::AnchoredCamera(AdvCamera&& starting_config) : CameraState(starting_config), anchored_to(nullptr)
+{}
+
+AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config, const Body& anchor_to) : CameraState(starting_config), anchored_to(&anchor_to)
 {
+    snap_camera_to_target();
 }
 
-CameraState* AnchoredCamera::update(const Universe& universe)
+AnchoredCamera::AnchoredCamera(AdvCamera&& starting_config, const Body& anchor_to) : CameraState(starting_config), anchored_to(&anchor_to)
+{
+    snap_camera_to_target();
+}
+
+void AnchoredCamera::snap_camera_to_target()
+{
+    camera.set_target({ anchored_to->x, anchored_to->y });
+}
+
+FreeCamera* AnchoredCamera::goto_free_camera(CameraList& cameras)
+{
+    FreeCamera& transition_to = cameras.free_camera;
+    transition_to.enter(camera);
+    return &transition_to;
+}
+
+CameraState* AnchoredCamera::update(const Universe& universe, CameraList& cameras)
 {
     // Update camera to follow the body it is anchored to.
-    camera.target.x = anchored_to->x;
-    camera.target.y = anchored_to->y;
+
+    if (!anchored_to) {
+        return goto_free_camera(cameras);
+    }
 
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
         Vector2 screen_point = GetMousePosition();
-        Vector2 universe_point = GetScreenToWorld2D(screen_point, camera);
+        Vector2 universe_point = GetScreenToWorld2D(screen_point, camera.get_raylib_camera());
 
         Body* body = universe.get_body(universe_point);
 
@@ -25,44 +54,59 @@ CameraState* AnchoredCamera::update(const Universe& universe)
             anchored_to = body;
         }
         else {
-            ret_state = new FreeCamera{ std::move(camera), cam_speed_multiplier };
+            return goto_free_camera(cameras);
         }
+    }
+
+    snap_camera_to_target();
+
+    // Camera movement, offset to the target body
+    // The anchored body should never be able to go off screen.
+    
+    // Both offsets must remain > 0 and < screen_size
+
+    if (IsKeyDown(KEY_W)) {
+        camera.move_offset(Direction::DOWN);
+    }
+    if (IsKeyDown(KEY_A)) {
+        camera.move_offset(Direction::RIGHT);
+    }
+    if (IsKeyDown(KEY_S)) {
+        camera.move_offset(Direction::UP);
+    }
+    if (IsKeyDown(KEY_D)) {
+        camera.move_offset(Direction::LEFT);
     }
 
     // Camera speed
 
-    if (IsKeyPressed(KEY_MINUS) and cam_speed_multiplier > 1) {
-        decrease_cam_speed();
+    if (IsKeyPressed(KEY_MINUS)) {
+        camera.decrease_speed_offset();
     }
     else if (IsKeyPressed(KEY_EQUAL)) {
-        increase_cam_speed();
+        camera.increase_speed_offset();
     }
 
     // Camera zoom for keys and mousewheel
 
     float wheel_move = GetMouseWheelMove();
     if (wheel_move < 0 or IsKeyPressed(KEY_COMMA)) {
-        zoom_out();
-        recalculate_cam_speed();
+        camera.zoom_out();
     }
     else if (wheel_move > 0 or IsKeyPressed(KEY_PERIOD)) {
-        zoom_in();
-        recalculate_cam_speed();
+        camera.zoom_in();
     }
 
-    return ret_state;
-}
-
-void AnchoredCamera::resize(float width, float height)
-{
+    return this;
 }
 
 void AnchoredCamera::notify_body_no_longer_exists(const Body* absorbed_by)
 {
-    if (absorbed_by) {
-        anchored_to = absorbed_by;
-    }
-    else {
-        ret_state = new FreeCamera{ std::move(camera), cam_speed_multiplier };
-    }
+    anchored_to = absorbed_by;
+}
+
+void AnchoredCamera::enter(const AdvCamera& prev_camera, const Body& anchor_to)
+{
+    anchored_to = &anchor_to;
+    camera.set_offset(prev_camera.get_raylib_camera().offset);
 }

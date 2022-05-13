@@ -1,14 +1,17 @@
 #pragma once
 #include "CameraState.h"
 
+struct CameraList;
+
 class FreeCamera : public CameraState
 {
 public:
 
-	FreeCamera(float screen_width, float screen_height, int cam_speed_multiplier);
-	FreeCamera(Camera2D&& camera, int cam_speed_multiplier);
-	CameraState* update(const Universe& universe) override;
+	FreeCamera(const AdvCamera& starting_config);
+	FreeCamera(AdvCamera&& starting_config);
 
-	void resize(float width, float height);
+	CameraState* update(const Universe& universe, CameraList& cameras) override;
+
+	void enter(const AdvCamera& prev_camera);
 
 };
