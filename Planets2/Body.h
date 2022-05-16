@@ -77,6 +77,8 @@ public:
 	// satellite constructor
 	Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_const, long mass);
 
+	// Returns a pair of body pointers, where the first has more mass than the second.
+	static std::pair<Body*, Body*> get_sorted_pair(Body& body1, Body& body2);
 
 	bool can_eat(const Body& other) const;
 

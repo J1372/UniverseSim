@@ -139,6 +139,16 @@ bool Body::contains_point(Vector2 point) const
 	return dist <= radius;
 }
 
+std::pair<Body*, Body*> Body::get_sorted_pair(Body& body1, Body& body2)
+{
+	if (body1.mass >= body2.mass) {
+		return std::make_pair<Body*, Body*>(&body1, &body2);
+	}
+	else {
+		return std::make_pair<Body*, Body*>(&body2, &body1);
+	}
+}
+
 bool Body::can_eat(const Body& other) const
 {
 	return mass >= other.mass;
