@@ -7,13 +7,15 @@
 #include <vector>
 #include <string>
 
+#include "Event.h"
+
+struct Removal;
 
 struct TypeExt {
 	int density;
 	long min_mass;
 	Color color; // list of colors (may be weighted). Pick one from prototype.
 };
-
 
 
 class Body {
@@ -44,6 +46,9 @@ class Body {
 
 	int type_level = 0;
 	std::string debug_info;
+
+	// Observers to notify when this body is being removed.
+	Event<Removal> on_removal_observers;
 
 
 	void do_wraparound(float wraparound_val);
@@ -90,9 +95,6 @@ public:
 
 	void pos_update(float wraparound_val);
 
-
-	bool check_col(const Body& other) const;
-
 	void grav_pull(std::array<float, 2> force_vector);
 
 	std::array<float, 2> get_momentum() const;
@@ -111,6 +113,13 @@ public:
 	void add_debug_text(const std::string&& text);
 	const std::string& get_debug_text() const;
 	void clear_debug_text();
+
+
+
+	// Notifies the body that it is being removed.
+	void notify_being_removed(Body* absorbed_by);
+
+	Event<Removal>& removal_event();
 
 
 };

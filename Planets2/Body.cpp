@@ -3,6 +3,7 @@
 #include <iostream>
 #include "rand_float.h"
 #include <numbers>
+#include "Removal.h"
 
 
 
@@ -215,13 +216,6 @@ void Body::pos_update(float wraparound_val)
 
 }
 
-bool Body::check_col(const Body& other) const
-{
-	float c_squared = std::pow(std::abs(other.x - x), 2) + std::pow(std::abs(other.y - y), 2);
-	return c_squared < std::pow((other.radius + radius), 2);
-}
-
-
 void Body::grav_pull(std::array<float, 2> force_vector)
 {
 
@@ -252,4 +246,15 @@ const std::string& Body::get_debug_text() const
 void Body::clear_debug_text()
 {
 	debug_info.clear();
+}
+
+void Body::notify_being_removed(Body* absorbed_by)
+{
+	Removal removal { *this, absorbed_by };
+	on_removal_observers.notify_all(removal);
+}
+
+Event<Removal>& Body::removal_event()
+{
+	return on_removal_observers;
 }
