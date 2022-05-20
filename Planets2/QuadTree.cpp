@@ -171,7 +171,7 @@ bool QuadTree::rem_body(const Body& body)
 
 	if (!is_leaf()) {
 
-		if (has_room()) {
+		if (has_room() and !in_coll_check) {
 			concatenate();
 			return true;
 		}

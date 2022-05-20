@@ -58,7 +58,10 @@ private:
 	static constexpr int MAX_BODIES = 10;
 
 	std::vector<Body*> quad_bodies;
-	int cur_size = 0; // The number of bodies in this quad and its children.c
+	int cur_size = 0; // The number of bodies in this quad and its children.
+
+	// True if currently performing a collision check.
+	bool in_coll_check = false;
 
 	QuadTree* parent = nullptr;
 	std::unique_ptr<QuadTree> UL = nullptr;
