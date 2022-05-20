@@ -1,9 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Body.cpp" />
     <ClCompile Include="rand_float.cpp" />
-    <ClCompile Include="universe.cpp" />
     <ClCompile Include="View.cpp" />
     <ClCompile Include="Button.cpp">
       <Filter>UI</Filter>
@@ -12,12 +10,6 @@
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingsScene.cpp">
-      <Filter>Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="SimulationScene.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
     <ClCompile Include="QuadTree.cpp">
@@ -47,11 +39,40 @@
     <ClCompile Include="Dropdown.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="Body.cpp">
+      <Filter>Sim_Model</Filter>
+    </ClCompile>
+    <ClCompile Include="universe.cpp">
+      <Filter>Sim_Model</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsScene.cpp">
+      <Filter>Scenes\SettingsScene</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationScene.cpp">
+      <Filter>Scenes\SimScene</Filter>
+    </ClCompile>
+    <ClCompile Include="AnchoredCamera.cpp">
+      <Filter>Scenes\SimScene</Filter>
+    </ClCompile>
+    <ClCompile Include="FreeCamera.cpp">
+      <Filter>Scenes\SimScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraState.cpp">
+      <Filter>Scenes\SimScene</Filter>
+    </ClCompile>
+    <ClCompile Include="AdvCamera.cpp">
+      <Filter>Scenes\SimScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraList.cpp">
+      <Filter>Scenes\SimScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Sim_Model\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Body.h" />
     <ClInclude Include="rand_float.h" />
-    <ClInclude Include="universe.h" />
     <ClInclude Include="Button.h">
       <Filter>UI</Filter>
     </ClInclude>
@@ -59,12 +80,6 @@
       <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingsScene.h">
-      <Filter>Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="SimulationScene.h">
       <Filter>Scenes</Filter>
     </ClInclude>
     <ClInclude Include="QuadTree.h">
@@ -82,7 +97,6 @@
     <ClInclude Include="GuiScene.h">
       <Filter>Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="UniverseSettings.h" />
     <ClInclude Include="GuiComponentList.h">
       <Filter>UI</Filter>
     </ClInclude>
@@ -98,6 +112,51 @@
     <ClInclude Include="Dropdown.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="Body.h">
+      <Filter>Sim_Model</Filter>
+    </ClInclude>
+    <ClInclude Include="universe.h">
+      <Filter>Sim_Model</Filter>
+    </ClInclude>
+    <ClInclude Include="UniverseSettings.h">
+      <Filter>Sim_Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsScene.h">
+      <Filter>Scenes\SettingsScene</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationScene.h">
+      <Filter>Scenes\SimScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraState.h">
+      <Filter>Scenes\SimScene</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeCamera.h">
+      <Filter>Scenes\SimScene</Filter>
+    </ClInclude>
+    <ClInclude Include="AnchoredCamera.h">
+      <Filter>Scenes\SimScene</Filter>
+    </ClInclude>
+    <ClInclude Include="AdvCamera.h">
+      <Filter>Scenes\SimScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraList.h">
+      <Filter>Scenes\SimScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Sim_Model\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Removal.h">
+      <Filter>Sim_Model\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Sim_Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Sim_Model\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
@@ -108,6 +167,18 @@
     </Filter>
     <Filter Include="Scenes">
       <UniqueIdentifier>{be4d922f-a108-4669-ada8-d2cc4ea1c65b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sim_Model">
+      <UniqueIdentifier>{3b2abd27-461d-47a1-bea0-e1a28f8fd6b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes\SimScene">
+      <UniqueIdentifier>{617a7e12-e038-4334-acfb-828f2437cce5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes\SettingsScene">
+      <UniqueIdentifier>{1453c02a-3b79-47eb-8999-7a12fa3b442d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sim_Model\Events">
+      <UniqueIdentifier>{062d3d50-5fc8-4357-b9f3-8ba5bb76e8ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
