@@ -6,6 +6,9 @@
 #include <limits>
 #include <iostream>
 #include "UniverseSettings.h"
+#include "Collision.h"
+
+#include <functional>
 
 struct Vector2;
 class SpatialPartitioning;
@@ -20,6 +23,8 @@ class Universe {
 	std::unique_ptr<SpatialPartitioning> partitioning_method;
 
 	std::vector<std::unique_ptr<Body>> active_bodies;
+
+	std::function<void(Collision)> on_collision = [this](Collision collision) { this->notify_collision(collision); };
 
 	int generated_bodies = 0;
 
@@ -37,19 +42,15 @@ class Universe {
 
 	std::vector<float> gen_rand_portions(int num_slots) const;
 
+	void notify_collision(Collision collision);
+
 public:
 
-	Universe() {
-		// maybe useful with default settings
-		generate_universe();
+	Universe();
 
-		//std::cout << std::thread::hardware_concurrency();
-	};
+	Universe(const UniverseSettings& to_set);
 
-	Universe(const UniverseSettings &to_set) {
-		settings = to_set;
-		generate_universe();
-	};
+	~Universe();
 
 	// Generates a new universe, using the current settings.
 	void generate_universe();

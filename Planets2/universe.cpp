@@ -4,6 +4,28 @@
 #include <iostream>
 #include "rand_float.h"
 #include "raylib.h"
+#include "Physics.h"
+
+Universe::Universe()
+{
+	Physics::collision_event().add_observer(on_collision);
+
+	generate_universe();
+
+	//std::cout << std::thread::hardware_concurrency();
+}
+
+Universe::~Universe()
+{
+	Physics::collision_event().rem_observer(on_collision);
+}
+
+Universe::Universe(const UniverseSettings& to_set)
+{
+	Physics::collision_event().add_observer(on_collision);
+	settings = to_set;
+	generate_universe();
+}
 
 void Universe::generate_universe()
 {
@@ -118,6 +140,36 @@ std::vector<float> Universe::gen_rand_portions(int num_slots) const
 	return slots;
 }
 
+void Universe::notify_collision(Collision collision)
+{
+	/*
+	* A simple handling of collisions. The bigger object completely absorbs the smaller object.
+	* 
+	* However, since this method is in charge of what happens when a collision occurs (spatial partitionings and physics delegate that decision making to here),
+	* it should be easy to add more complex and customizable collision mechanics later if wanted.
+	*
+	*/
+
+	Body& bigger = collision.bigger;
+	Body& smaller = collision.smaller;
+
+	bigger.absorb(smaller);
+	smaller.notify_being_removed(&bigger);
+
+	// smaller.notify could remove from partitioning if partitioning makes itself an observer of that body.
+	// but that would involve the partitioning systems managing their observer statuses of their bodies when they move.
+	// and it is not costly to just remove from root on collision, since collision is relatively rare.
+
+	auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [smaller](std::unique_ptr<Body>& other) {
+		return &smaller == other.get();
+	});
+
+	partitioning_method->notify_removal(smaller);
+
+	active_bodies.erase(it);
+
+}
+
 void Universe::update()
 {
 	handle_gravity(); // do grav pulls (update acceleration)
@@ -127,13 +179,6 @@ void Universe::update()
 	// handle_collisions();
 	std::vector<Body*> to_remove;
 	partitioning_method->collision_check(to_remove);
-
-	for (Body* body : to_remove) {
-
-		active_bodies.erase(std::find_if(active_bodies.begin(), active_bodies.end(), [body](std::unique_ptr<Body> &other) {
-			return body == other.get();
-			}));
-	}
 
 	partitioning_method->update();
 }
