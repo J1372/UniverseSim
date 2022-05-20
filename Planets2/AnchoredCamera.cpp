@@ -2,8 +2,6 @@
 #include "FreeCamera.h"
 #include "Body.h"
 #include "universe.h"
-#include <utility>
-
 #include "CameraList.h"
 
 
@@ -13,13 +11,15 @@ AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config) : CameraState(s
 AnchoredCamera::AnchoredCamera(AdvCamera&& starting_config) : CameraState(starting_config), anchored_to(nullptr)
 {}
 
-AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config, const Body& anchor_to) : CameraState(starting_config), anchored_to(&anchor_to)
+AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config, Body& anchor_to) : CameraState(starting_config)
 {
+    switch_to(anchor_to);
     snap_camera_to_target();
 }
 
-AnchoredCamera::AnchoredCamera(AdvCamera&& starting_config, const Body& anchor_to) : CameraState(starting_config), anchored_to(&anchor_to)
+AnchoredCamera::AnchoredCamera(AdvCamera&& starting_config, Body& anchor_to) : CameraState(starting_config)
 {
+    switch_to(anchor_to);
     snap_camera_to_target();
 }
 
@@ -33,6 +33,30 @@ FreeCamera* AnchoredCamera::goto_free_camera(CameraList& cameras)
     FreeCamera& transition_to = cameras.free_camera;
     transition_to.enter(camera);
     return &transition_to;
+}
+
+void AnchoredCamera::switch_to(Body* anchor_to)
+{
+    if (anchored_to) {
+        anchored_to->removal_event().rem_observer(on_body_removal);
+    }
+
+    anchored_to = anchor_to;
+
+    if (anchor_to) {
+        anchored_to->removal_event().add_observer(on_body_removal);
+    }
+}
+
+void AnchoredCamera::switch_to(Body& anchor_to)
+{
+    if (anchored_to) {
+        anchored_to->removal_event().rem_observer(on_body_removal);
+    }
+
+    anchored_to = &anchor_to;
+    anchored_to->removal_event().add_observer(on_body_removal);
+
 }
 
 CameraState* AnchoredCamera::update(const Universe& universe, CameraList& cameras)
@@ -100,14 +124,9 @@ CameraState* AnchoredCamera::update(const Universe& universe, CameraList& camera
     return this;
 }
 
-void AnchoredCamera::notify_body_no_longer_exists(const Body* absorbed_by)
+void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to)
 {
-    anchored_to = absorbed_by;
-}
-
-void AnchoredCamera::enter(const AdvCamera& prev_camera, const Body& anchor_to)
-{
-    anchored_to = &anchor_to;
+    switch_to(anchor_to);
 
     const Camera2D& ray_cam = prev_camera.get_raylib_camera();
 
