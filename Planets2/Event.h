@@ -26,7 +26,7 @@ inline void Event<ParamType>::add_observer(std::function<void(ParamType)> observ
 template<class ParamType>
 inline void Event<ParamType>::rem_observer(std::function<void(ParamType)> observer)
 {
-	auto it = std::find(observers.begin() observers.end(), observer);
+	auto it = std::find(observers.begin(), observers.end(), observer);
 	observers.erase(it);
 }
 
