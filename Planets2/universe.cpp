@@ -55,49 +55,6 @@ bool Universe::can_create_body() const
 	// 
 }
 
-void Universe::handle_collisions()
-{
-	int index = 0;
-	while (index < active_bodies.size()) {
-		bool removed = handle_collision(index);
-		if (!removed) {
-			index++;
-		}
-	}
-	
-}
-
-bool Universe::handle_collision(int it)
-{
-	Body& body1 = *active_bodies[it];
-	int it2 = it + 1;
-	while (it2 < active_bodies.size()) {
-		Body& body2 = *active_bodies[it2];
-
-		if (body1.check_col(body2)) { // there is a collision
-
-			if (body1.can_eat(body2)) { // it1 eats it2
-				body1.absorb(body2);
-
-				// better way of removing elements from vector exists, but do this for now.
-				active_bodies.erase(active_bodies.begin() + it2); // move to next check
-			}
-			else { // it2 eats it1
-				body2.absorb(body1);
-
-				active_bodies.erase(active_bodies.begin() + it); // it1 no longer exists, no more checks on other it2s.
-				return true;
-			}
-		}
-		else { // no collision. move to next check.
-			it2++;
-		}
-
-	}
-	
-	return false;
-}
-
 void Universe::handle_gravity()
 {
 	for (int i = 0; i < active_bodies.size() - 1; i++) {
@@ -164,7 +121,7 @@ void Universe::notify_collision(Collision collision)
 		return &smaller == other.get();
 	});
 
-	partitioning_method->notify_removal(smaller);
+	partitioning_method->rem_body(smaller);
 
 	active_bodies.erase(it);
 

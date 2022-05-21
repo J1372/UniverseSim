@@ -29,10 +29,10 @@ class Universe {
 	int generated_bodies = 0;
 
 	// O(n^2)
-	void handle_collisions();
+	//void handle_collisions();
 
 	// O(1)
-	bool handle_collision(int it);
+	//bool handle_collision(int it);
 
 	// O(n^2)
 	void handle_gravity();
