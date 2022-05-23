@@ -24,9 +24,6 @@ class Universe {
 
 	std::vector<std::unique_ptr<Body>> active_bodies;
 
-	std::function<void(Collision)> on_collision = [this](Collision collision) { this->notify_collision(collision); };
-	int collision_listener_id;
-
 	int generated_bodies = 0;
 
 	// O(n^2)
@@ -43,15 +40,14 @@ class Universe {
 
 	std::vector<float> gen_rand_portions(int num_slots) const;
 
-	void notify_collision(Collision collision);
+	void handle_collisions();
+	void handle_collision(Collision collision, std::vector<int>& has_removed);
 
 public:
 
 	Universe();
 
 	Universe(const UniverseSettings& to_set);
-
-	~Universe();
 
 	// Generates a new universe, using the current settings.
 	void generate_universe();

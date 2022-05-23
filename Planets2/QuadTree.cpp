@@ -1,28 +1,71 @@
 #include "QuadTree.h"
 #include <iostream>
 #include <string>
+#include "Physics.h"
+
+#include "Collision.h"
 
 int QuadTree::quads_generated = 0;
 
-void QuadTree::collision_check(std::vector<Body*>& to_remove)
+QuadTree::QuadTree(float size) : x(-size), y(-size), end_x(size), end_y(size), quad_id(quads_generated++), representation{ x, y, width(), height() }
+{}
+
+QuadTree::QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end_x(end_x), end_y(end_y), quad_id(quads_generated++), representation{ x, y, width(), height() }
+{}
+
+void QuadTree::get_collisions(std::vector<Collision>& collisions) const
 {
 	if (is_leaf()) {
-		std::vector<Body*>::iterator it = quad_bodies.begin();
-		while (it != quad_bodies.end()) {
-			if (!handle_collision(it, it + 1, *this, *this, to_remove)) {
-				it++;
-			}
+		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
+			Body& body = **it;
+			get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
 		}
 	}
 	else {
 
-		UL->collision_check(to_remove);
-		UR->collision_check(to_remove);
-		LL->collision_check(to_remove);
-		LR->collision_check(to_remove);
+		/* Need to do a collision check on our bodies.
+		*
+		* This is different from a collision check in a leaf node.
+		* Our bodies can collide with each other, and with bodies in our child nodes.
+		*
+		* Specifically the child nodes that contains_partially(our_body)
+		* This involves recursion downwards.
+		*/
 
+		// First, collision check with our node's bodies.
+		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
+			Body& body = **it;
+			get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+		}
 
-		/* Now we need to do a collision check on our bodies.
+		// Now, do a collision check on each body with the bodies of relevant child nodes.
+		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
+			Body& body = **it;
+			get_collisions_child(body, collisions);
+		}
+
+		// Can come before or after earlier checks.
+		UL->get_collisions(collisions);
+		UR->get_collisions(collisions);
+		LL->get_collisions(collisions);
+		LR->get_collisions(collisions);
+
+	}
+}
+
+std::vector<Collision> QuadTree::get_collisions() const
+{
+	std::vector<Collision> collisions;
+
+	if (is_leaf()) {
+		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
+			Body& body = **it;
+			get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+		}
+	}
+	else {
+
+		/* Need to do a collision check on our bodies.
 		* 
 		* This is different from a collision check in a leaf node.
 		* Our bodies can collide with each other, and with bodies in our child nodes.
@@ -32,95 +75,67 @@ void QuadTree::collision_check(std::vector<Body*>& to_remove)
 		*/ 
 
 		// First, collision check with our node's bodies.
-		// If a collision occurs internally, this reduces the number of collision checks needed with child nodes.
-		//		which has the possibility of being more expensive.
-		std::vector<Body*>::iterator it = quad_bodies.begin();
-		while (it != quad_bodies.end()) {
-			if (!handle_collision(it, it + 1, *this, *this, to_remove)) {
-				it++;
-			}
+		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
+			Body& body = **it;
+			get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
 		}
 
-		// of the remaining bodies, do a collision check on each body with the bodies of relevant child nodes.
-		it = quad_bodies.begin();
-		while (it != quad_bodies.end()) {
-			if (!handle_collision_child(it, *this, to_remove)) {
-				it++;
-			}
+		// Now, do a collision check on each body with the bodies of relevant child nodes.
+		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
+			Body& body = **it;
+			get_collisions_child(body, collisions);
 		}
 
-		// Child methods may have removed objects.
-		if (has_room()) {
-			concatenate();
-		}
+		// Can come before or after earlier checks.
+		UL->get_collisions(collisions);
+		UR->get_collisions(collisions);
+		LL->get_collisions(collisions);
+		LR->get_collisions(collisions);
+
 	}
+
+	return collisions;
 }
 
-bool QuadTree::handle_collision_child(std::vector<Body*>::iterator& it, QuadTree& original_quad, std::vector<Body*>& to_remove) {
-	Body& body = **it;
-
+void QuadTree::get_collisions_child(Body& checking, std::vector<Collision>& collisions) const
+{
 	/* 
 	* 
 	* For each child quad which contains partially the body:
 	*	handle_collision body with all in that node
-	*	if body still living, and the node is not a leaf, recurse to that node with handle_collision_child.
 	* 
 	*/
 
-	// Get a list of our child quads that at least partially contain the body.
-	std::vector<QuadTree*> to_check = get_quads([&body](const QuadTree& quad) { return quad.contains_partially(body); });
+	// Get a list of all our child quads (max depth) that at least partially contain the body.
+	auto partially_in_child = [&checking](const QuadTree& quad) { return quad.contains_partially(checking); };
+	std::vector<QuadTree*> to_check = get_quads(partially_in_child);
 
-	// Check collisions on each valid quad. Returns true if the body being checked was absorbed by another.
+	// Check for collisions between the given body and the bodies of relevant child nodes.
 	for (QuadTree* quad : to_check) {
-		if (handle_collision(it, quad->quad_bodies.begin(), original_quad, *quad, to_remove)) {
-			return true;
-		}
+		// get_collisions_internal can be static, and renamed.
+		get_collisions_internal(checking, quad->quad_bodies.begin(), quad->quad_bodies.end(), collisions);
 
+		// can remove if use get_all_quads instead.
 		if (!quad->is_leaf()) {
-			if (quad->handle_collision_child(it, original_quad, to_remove)) {
-				return true;
-			}
+			quad->get_collisions_child(checking, collisions);
 		}
-	}
 
-	// The original body still exists, so return false.
-	return false;
+	}
 
 }
 
-bool QuadTree::handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>::iterator&& it2,
-	QuadTree& quad1, QuadTree& quad2, std::vector<Body*>& to_remove)
+void QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const
 {
-	Body& body1 = **it;
-	while (it2 != quad2.quad_bodies.end()) {
-		Body& body2 = **it2;
+	while (it != end) {
+		Body& body2 = **it;
 
-		if (body1.check_col(body2)) { 
-
-			if (body1.can_eat(body2)) { // it1 eats it2
-				body1.absorb(body2);
-
-				to_remove.push_back(&body2);
-
-				it2 = quad2.rem_body(it2);
-			}
-			else { // it2 eats it1
-				body2.absorb(body1);
-
-				to_remove.push_back(&body1);
-
-				it = quad1.rem_body(it); // it1 no longer exists, no more checks on other it2s.
-				return true;
-			}
+		if (Physics::have_collided(checking, body2)) {
+			collisions.emplace_back(Body::get_sorted_pair(checking, body2));
 		}
-		else { // no collision. move to next check.
-			it2++;
-		}
+		//Physics::handle_collision(checking, body2);
 
+		it++;
 	}
-
-	return false;
-
 }
 
 bool QuadTree::in_more_than_one_child(Body& body)
@@ -164,20 +179,22 @@ void QuadTree::add_body(Body& new_body)
 	}
 }
 
-bool QuadTree::rem_body(const Body& body)
+void QuadTree::rem_body(const Body& body)
 {
-	quad_bodies.erase(std::find(quad_bodies.begin(), quad_bodies.end(), &body));
+	// Could be an outside command, so body could be in one of our child nodes.
+	QuadTree& quad = find_quad(body);
+	quad.rem_body_internal(body);
+}
+
+void QuadTree::rem_body_internal(const Body& body)
+{
+	auto it = std::find(quad_bodies.begin(), quad_bodies.end(), &body);
+	quad_bodies.erase(it);
 	notify_child_removed();
 
-	if (!is_leaf()) {
-
-		if (has_room() and !in_coll_check) {
-			concatenate();
-			return true;
-		}
+	if (!is_leaf() and has_room()) {
+		concatenate();
 	}
-
-	return false;
 }
 
 Body* QuadTree::find_body(Vector2 point) const
@@ -298,22 +315,6 @@ bool QuadTree::contains_partially(const Body& body) const
 	return corner_dist <= std::pow(body.radius, 2);
 }
 
-std::vector<Body*>::iterator QuadTree::rem_body(std::vector<Body*>::iterator it)
-{
-	auto next_it = quad_bodies.erase(it);
-	notify_child_removed();
-
-	if (!is_leaf()) {
-
-		if (has_room()) {
-			// Concatenation won't result in vector resizing / iterator invalidation since new size < maximum quad size.
-			concatenate();
-		}
-	}
-
-	return next_it;
-}
-
 void QuadTree::notify_child_removed()
 {
 	cur_size--;
@@ -406,6 +407,25 @@ void QuadTree::rem_from_child(const Body& body) // no longer used in our update,
 	}
 }*/
 
+
+std::vector<QuadTree*> QuadTree::get_all_quads(std::function<bool(const QuadTree&)> predicate) const
+{
+	std::vector<QuadTree*> quads = get_quads(predicate);
+
+	int cur_index = 0;
+	while (cur_index < quads.size()) {
+		QuadTree* quad = quads[cur_index];
+
+		if (!quad->is_leaf()) {
+			std::vector<QuadTree*> next_level = quad->get_quads(predicate);
+			quads.insert(quads.end(), next_level.begin(), next_level.end());
+		}
+
+		cur_index++;
+	}
+
+	return quads;
+}
 
 void QuadTree::concatenate()
 {
@@ -502,6 +522,28 @@ std::vector<Rectangle> QuadTree::get_representation() const {
 	std::vector<Rectangle> rep;
 	get_representation_internal(rep);
 	return rep;
+}
+
+QuadTree& QuadTree::find_quad(const Body& body)
+{
+	// Can't recurse any further, and all bodies are somewhere in the quadtree, so it must be in this one.
+	if (is_leaf()) {
+		return *this;
+	}
+
+	// Is a parent node.
+
+	// Get the child quad that fully contains the body, if any do.
+	QuadTree* contained_in = get_quad([&body](const QuadTree& quad) { return quad.contains_fully(body); });
+
+
+	// If a child node fully contains the body we are looking for, then recurse into it.
+	if (contained_in) {
+		return contained_in->find_quad(body);
+	}
+
+	// No child node fully contains the body, and all bodies are somewhere in the quadtree, so it must be in this one.
+	return *this;
 }
 
 const QuadTree& QuadTree::find_quad(const Body& body) const

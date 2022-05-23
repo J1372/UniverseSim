@@ -14,17 +14,13 @@ public:
 	const float end_x;
 	const float end_y;
 
-	QuadTree(float size) : x(-size), y(-size), end_x(size), end_y(size), quad_id(quads_generated++), representation{x, y, width(), height()}
-	{}
+	QuadTree(float size);
+	QuadTree(float x, float y, float end_x, float end_y);
 
-	QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end_x(end_x), end_y(end_y), quad_id(quads_generated++), representation{ x, y, width(), height() }
-	{}
-
-	void collision_check(std::vector<Body*>& to_remove);
 
 
 	void add_body(Body& body);
-	bool rem_body(const Body& body);
+	void rem_body(const Body& body);
 	bool is_leaf() const { return UL == nullptr; } // Non-leaf nodes always have all 4 quads.
 
 	bool in_bounds(int check_x, int check_y) const {
@@ -45,10 +41,12 @@ public:
 	std::vector<Rectangle> get_representation() const;
 	void attach_debug_text(Body& body) const;
 
+	// Performs a collision check, and returns all collision events.
+	std::vector<Collision> get_collisions() const;
+
 	~QuadTree() = default;
 
 	//void update_removed(const std::vector<int> &indices_removed);
-
 
 private:
 
@@ -60,8 +58,6 @@ private:
 	std::vector<Body*> quad_bodies;
 	int cur_size = 0; // The number of bodies in this quad and its children.
 
-	// True if currently performing a collision check.
-	bool in_coll_check = false;
 
 	QuadTree* parent = nullptr;
 	std::unique_ptr<QuadTree> UL = nullptr;
@@ -71,27 +67,17 @@ private:
 
 	Rectangle representation;
 
-	/*
-	* Checks for, then handles any collision between the body referenced by the first iterator,
-	* with all the bodies from the second iterator to the end iterator of quad2's quad_bodies.
-	* 
-	* The first iterator is in quad1's quad_bodies.
-	* The second iterator is in quad2's quad_bodies.
-	* 
-	* quad1 can reference the same QuadTree as quad2.
-	* 
-	* If the first iterator's body collides with and absorbs a body, decrements quad2's size and removes the iterator from its quad_bodies.
-	* If the first iterator's body collides with and is absorbed by a body, decrements quad1's size and removes the iterator from its quad_bodies.
-	* 
-	* 
-	* 
-	* Returns true and advances the first iterator if its body was absorbed by another body.
-	*/
-	bool handle_collision(std::vector<Body*>::iterator& it, std::vector<Body*>::iterator&& it2,
-		QuadTree& quad1, QuadTree& quad2, std::vector<Body*>& to_remove);
+	// Will assume body is in the quad that this method was called on.
+	void rem_body_internal(const Body& body);
 
 
-	bool handle_collision_child(std::vector<Body*>::iterator& it, QuadTree& original_quad, std::vector<Body*>& to_remove);
+	void get_collisions(std::vector<Collision>& collisions) const;
+	// Performs a collision check between the body and all bodies starting at the given iterator until the end iterator.
+	// If a collision is detected, adds a Collision event to the collision vector.
+	void get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const;
+
+
+	void get_collisions_child(Body& checking, std::vector<Collision>& collisions) const;
 
 	bool is_root() const { return parent == nullptr; }
 
@@ -108,9 +94,6 @@ private:
 	bool contains_fully(const Body& body) const;
 	bool contains_partially(const Body& body) const;
 
-	// Removes a body from the node, and returns an iterator to the next body.
-	std::vector<Body*>::iterator rem_body(std::vector<Body*>::iterator it);
-
 	// If a body is removed from a child node (due to collision), notifies all relevant parent nodes to update their sizes. Unused.
 	void notify_child_removed();
 	void move_to_child(std::vector<Body*>::iterator& it); // Moves to child without increasing our current size.
@@ -125,14 +108,19 @@ private:
 	*/
 	QuadTree* get_quad(std::function<bool(const QuadTree&)> predicate) const;
 
-	// Returns all child quads where the predicate is true.
+	// Returns all child quads (of UL, UR, LL, LR)  where the predicate is true.
 	std::vector<QuadTree*> get_quads(std::function<bool(const QuadTree&)> predicate) const;
+
+	// Returns all child quads (searches entire depth) where the predicate is true.
+	std::vector<QuadTree*> get_all_quads(std::function<bool(const QuadTree&)> predicate) const;
 
 	void concatenate();
 	void split();
 
 	void reinsert(Body& body);
 
+	// Returns the smallest quad that contains the entire body.
+	QuadTree& find_quad(const Body& body);
 	// Returns the smallest quad that contains the entire body.
 	const QuadTree& find_quad(const Body& body) const;
 

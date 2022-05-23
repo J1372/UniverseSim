@@ -5,24 +5,19 @@
 #include "rand_float.h"
 #include "raylib.h"
 #include "Physics.h"
+#include <algorithm>
+
+#include <vector>
 
 Universe::Universe()
 {
-	collision_listener_id = Physics::collision_event().add_observer(on_collision);
-
 	generate_universe();
 
 	//std::cout << std::thread::hardware_concurrency();
 }
 
-Universe::~Universe()
-{
-	Physics::collision_event().rem_observer(collision_listener_id);
-}
-
 Universe::Universe(const UniverseSettings& to_set)
 {
-	collision_listener_id = Physics::collision_event().add_observer(on_collision);
 	settings = to_set;
 	generate_universe();
 }
@@ -97,7 +92,7 @@ std::vector<float> Universe::gen_rand_portions(int num_slots) const
 	return slots;
 }
 
-void Universe::notify_collision(Collision collision)
+void Universe::handle_collision(Collision collision, std::vector<int>& has_removed)
 {
 	/*
 	* A simple handling of collisions. The bigger object completely absorbs the smaller object.
@@ -117,26 +112,35 @@ void Universe::notify_collision(Collision collision)
 	// but that would involve the partitioning systems managing their observer statuses of their bodies when they move.
 	// and it is not costly to just remove from root on collision, since collision is relatively rare.
 
-	auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [&smaller](std::unique_ptr<Body>& other) {
-		return &smaller == other.get();
-	});
+	has_removed.push_back(smaller.id);
 
 	partitioning_method->rem_body(smaller);
-
-	active_bodies.erase(it);
-
 }
 
+void Universe::handle_collisions()
+{
+	std::vector<Collision> collisions = partitioning_method->get_collisions();
+	std::vector<int> has_removed; // Can alternatively just add a flag to Body.
+	has_removed.reserve(active_bodies.size());
+
+	for (const Collision& collision : collisions) {
+		handle_collision(collision, has_removed);
+	}
+
+	// Remove 
+	auto it = std::remove_if(active_bodies.begin(), active_bodies.end(), [&has_removed](const std::unique_ptr<Body>& ptr) {
+		return std::find(has_removed.begin(), has_removed.end(), ptr->id) != has_removed.end();
+		});
+
+	active_bodies.erase(it, active_bodies.end());
+}
 void Universe::update()
 {
 	handle_gravity(); // do grav pulls (update acceleration)
 	update_pos(); // update velocities and positions
+	handle_collisions();
 
-	// remove collided objects.
-	// handle_collisions();
-	std::vector<Body*> to_remove;
-	partitioning_method->collision_check(to_remove);
-
+	// this should come before collisions. 
 	partitioning_method->update();
 }
 
