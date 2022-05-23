@@ -25,6 +25,7 @@ class Universe {
 	std::vector<std::unique_ptr<Body>> active_bodies;
 
 	std::function<void(Collision)> on_collision = [this](Collision collision) { this->notify_collision(collision); };
+	int collision_listener_id;
 
 	int generated_bodies = 0;
 

@@ -23,6 +23,13 @@ AnchoredCamera::AnchoredCamera(AdvCamera&& starting_config, Body& anchor_to) : C
     snap_camera_to_target();
 }
 
+AnchoredCamera::~AnchoredCamera()
+{
+    if (anchored_to) {
+        anchored_to->removal_event().rem_observer(listener_id);
+    }
+}
+
 void AnchoredCamera::snap_camera_to_target()
 {
     camera.set_target({ anchored_to->x, anchored_to->y });
@@ -38,24 +45,24 @@ FreeCamera* AnchoredCamera::goto_free_camera(CameraList& cameras)
 void AnchoredCamera::switch_to(Body* anchor_to)
 {
     if (anchored_to) {
-        anchored_to->removal_event().rem_observer(on_body_removal);
+        anchored_to->removal_event().rem_observer(listener_id);
     }
 
     anchored_to = anchor_to;
 
     if (anchor_to) {
-        anchored_to->removal_event().add_observer(on_body_removal);
+        listener_id = anchored_to->removal_event().add_observer(on_body_removal);
     }
 }
 
 void AnchoredCamera::switch_to(Body& anchor_to)
 {
     if (anchored_to) {
-        anchored_to->removal_event().rem_observer(on_body_removal);
+        anchored_to->removal_event().rem_observer(listener_id);
     }
 
     anchored_to = &anchor_to;
-    anchored_to->removal_event().add_observer(on_body_removal);
+    listener_id = anchored_to->removal_event().add_observer(on_body_removal);
 
 }
 

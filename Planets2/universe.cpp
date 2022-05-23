@@ -8,7 +8,7 @@
 
 Universe::Universe()
 {
-	Physics::collision_event().add_observer(on_collision);
+	collision_listener_id = Physics::collision_event().add_observer(on_collision);
 
 	generate_universe();
 
@@ -17,12 +17,12 @@ Universe::Universe()
 
 Universe::~Universe()
 {
-	Physics::collision_event().rem_observer(on_collision);
+	Physics::collision_event().rem_observer(collision_listener_id);
 }
 
 Universe::Universe(const UniverseSettings& to_set)
 {
-	Physics::collision_event().add_observer(on_collision);
+	collision_listener_id = Physics::collision_event().add_observer(on_collision);
 	settings = to_set;
 	generate_universe();
 }
@@ -117,7 +117,7 @@ void Universe::notify_collision(Collision collision)
 	// but that would involve the partitioning systems managing their observer statuses of their bodies when they move.
 	// and it is not costly to just remove from root on collision, since collision is relatively rare.
 
-	auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [smaller](std::unique_ptr<Body>& other) {
+	auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [&smaller](std::unique_ptr<Body>& other) {
 		return &smaller == other.get();
 	});
 
