@@ -68,33 +68,29 @@ void AnchoredCamera::switch_to(Body& anchor_to)
 
 CameraState* AnchoredCamera::update(const Universe& universe, CameraList& cameras)
 {
-    // Update camera to follow the body it is anchored to.
-
-    if (!anchored_to) {
-        return goto_free_camera(cameras);
-    }
-
+    // Handle state transitions and switching to different bodies.
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
         Vector2 screen_point = GetMousePosition();
         Vector2 universe_point = GetScreenToWorld2D(screen_point, camera.get_raylib_camera());
 
         Body* body = universe.get_body(universe_point);
 
-        if (body) {
-            std::cout << body->id << '\n';
-            anchored_to = body;
-        }
-        else {
-            return goto_free_camera(cameras);
-        }
+        switch_to(body);
     }
 
+    // anchored_to == nullptr if right click on nothing or body deleted and was not absorbed by another body.
+    // in any case, no body to anchor to, so return to a free camera state.
+    if (!anchored_to) {
+        return goto_free_camera(cameras);
+    }
+
+    // Will remain in an anchored camera state, so update camera and handle other user camera input.
+
+    // Update camera to follow the body it is anchored to.
     snap_camera_to_target();
 
     // Camera movement, offset to the target body
-    // The anchored body should never be able to go off screen.
-    
-    // Both offsets must remain > 0 and < screen_size
+    // The center of the anchored body is never able to go off screen.
 
     if (IsKeyDown(KEY_W)) {
         camera.move_offset(Direction::DOWN);
@@ -128,6 +124,7 @@ CameraState* AnchoredCamera::update(const Universe& universe, CameraList& camera
         camera.zoom_in();
     }
 
+    // We are still in an anchored camera state, so return this.
     return this;
 }
 
