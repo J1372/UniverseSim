@@ -299,32 +299,17 @@ void QuadTree::update()
 
 bool QuadTree::contains_point(Vector2 point) const
 {
-	return point.x >= dimensions.x and point.x < dimensions.x + dimensions.width and
-		point.y >= dimensions.y and point.y < dimensions.y + dimensions.height;
+	return Physics::point_in_rect(point, dimensions);
 }
 
 bool QuadTree::contains_fully(const Body& body) const
 {
-	// True if no part of the circle goes outside the quad.
-	return body.top().y >= dimensions.y and body.bottom().y <= dimensions.y + dimensions.height and
-		body.left().x >= dimensions.x and body.right().x <= dimensions.x + dimensions.width;
+	return Physics::body_inside_rect(body, dimensions);
 }
 
 bool QuadTree::contains_partially(const Body& body) const
 {
-	// True if circle intersects with quad.
-	float dist_x = std::abs(body.x - dimensions.x - dimensions.width / 2);
-	float dist_y = std::abs(body.y - dimensions.y - dimensions.width / 2);
-
-	if (dist_x > (dimensions.width / 2 + body.radius)) { return false; }
-	if (dist_y > (dimensions.height / 2 + body.radius)) { return false; }
-
-	if (dist_x <= (dimensions.width / 2)) { return true; }
-	if (dist_y <= (dimensions.height / 2)) { return true; }
-
-	int corner_dist = std::pow((dist_x - dimensions.width / 2), 2) + std::pow((dist_y - dimensions.height / 2), 2);
-
-	return corner_dist <= std::pow(body.radius, 2);
+	return Physics::body_intersects_rect(body, dimensions);
 }
 
 void QuadTree::notify_child_removed()
