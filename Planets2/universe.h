@@ -41,7 +41,7 @@ class Universe {
 	std::vector<float> gen_rand_portions(int num_slots) const;
 
 	void handle_collisions();
-	void handle_collision(Collision collision, std::vector<int>& has_removed);
+	void handle_collision(Collision collision, std::vector<int>& to_remove);
 
 public:
 

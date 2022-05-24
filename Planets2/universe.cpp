@@ -92,7 +92,7 @@ std::vector<float> Universe::gen_rand_portions(int num_slots) const
 	return slots;
 }
 
-void Universe::handle_collision(Collision collision, std::vector<int>& has_removed)
+void Universe::handle_collision(Collision collision, std::vector<int>& to_remove)
 {
 	/*
 	* A simple handling of collisions. The bigger object completely absorbs the smaller object.
@@ -105,6 +105,9 @@ void Universe::handle_collision(Collision collision, std::vector<int>& has_remov
 	Body& bigger = collision.bigger;
 	Body& smaller = collision.smaller;
 
+	// need to check if bodies have already been removed. Can add flag to Body or keep a map.
+	// or just loop through the presumably small to_remove vector
+
 	bigger.absorb(smaller);
 	smaller.notify_being_removed(&bigger);
 
@@ -112,7 +115,7 @@ void Universe::handle_collision(Collision collision, std::vector<int>& has_remov
 	// but that would involve the partitioning systems managing their observer statuses of their bodies when they move.
 	// and it is not costly to just remove from root on collision, since collision is relatively rare.
 
-	has_removed.push_back(smaller.id);
+	to_remove.push_back(smaller.id);
 
 	partitioning_method->rem_body(smaller);
 }
@@ -120,19 +123,31 @@ void Universe::handle_collision(Collision collision, std::vector<int>& has_remov
 void Universe::handle_collisions()
 {
 	std::vector<Collision> collisions = partitioning_method->get_collisions();
-	std::vector<int> has_removed; // Can alternatively just add a flag to Body.
-	has_removed.reserve(active_bodies.size());
+	std::vector<int> to_remove;
+	to_remove.reserve(active_bodies.size());
 
 	for (const Collision& collision : collisions) {
-		handle_collision(collision, has_removed);
+		handle_collision(collision, to_remove);
 	}
 
-	// Remove 
-	auto it = std::remove_if(active_bodies.begin(), active_bodies.end(), [&has_removed](const std::unique_ptr<Body>& ptr) {
-		return std::find(has_removed.begin(), has_removed.end(), ptr->id) != has_removed.end();
-		});
+	// Sort the ids.
+	std::sort(to_remove.begin(), to_remove.end());
 
-	active_bodies.erase(it, active_bodies.end());
+	// Comparison predicate for std::lower_bound.
+	auto predicate = [](const std::unique_ptr<Body>& ptr, int id) {
+		return ptr->id < id;
+	};
+
+	// Both active_bodies and to_remove are sorted by id in increasing order.
+	// We can loop backwards through to_remove and do binary search on active_bodies to efficiently remove all bodies with ids in to_remove.
+	for (auto it = to_remove.rbegin(); it != to_remove.rend(); it++) {
+		int id = *it;
+
+		// Find iterator->body to remove using binary search.
+		auto remove_it = std::lower_bound(active_bodies.begin(), active_bodies.end(), id, predicate);
+
+		active_bodies.erase(remove_it);
+	}
 }
 void Universe::update()
 {
