@@ -108,6 +108,13 @@ void Universe::handle_collision(Collision collision, std::vector<int>& to_remove
 	// need to check if bodies have already been removed. Can add flag to Body or keep a map.
 	// or just loop through the presumably small to_remove vector
 
+	// already_removed == true if one of the bodies in this collision event are already set to be removed.
+	bool already_removed = std::any_of(to_remove.begin(), to_remove.end(), [&bigger, &smaller](int id) { return id == bigger.id or id == smaller.id; });
+
+	if (already_removed) {
+		return;
+	}
+
 	bigger.absorb(smaller);
 	smaller.notify_being_removed(&bigger);
 
