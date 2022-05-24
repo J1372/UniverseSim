@@ -35,7 +35,6 @@ CameraState* FreeCamera::update(const Universe& universe, CameraList& cameras)
 		Body* body = universe.get_body(universe_point);
 
 		if (body) {
-			std::cout << body->id << '\n';
 			AnchoredCamera& transition_to = cameras.anchored_camera;
 			transition_to.enter(camera, *body);
 			return &transition_to;

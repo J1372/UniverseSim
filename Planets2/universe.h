@@ -4,7 +4,6 @@
 #include <memory>
 #include "QuadTree.h"
 #include <limits>
-#include <iostream>
 #include "UniverseSettings.h"
 #include "Collision.h"
 
