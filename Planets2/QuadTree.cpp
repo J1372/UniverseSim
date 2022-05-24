@@ -16,9 +16,11 @@ QuadTree::QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end
 void QuadTree::get_collisions(std::vector<Collision>& collisions) const
 {
 	if (is_leaf()) {
-		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
-			Body& body = **it;
-			get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+		if (!quad_bodies.empty()) {
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+				Body& body = **it;
+				get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+			}
 		}
 	}
 	else {
@@ -32,16 +34,19 @@ void QuadTree::get_collisions(std::vector<Collision>& collisions) const
 		* This involves recursion downwards.
 		*/
 
-		// First, collision check with our node's bodies.
-		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
-			Body& body = **it;
-			get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
-		}
 
-		// Now, do a collision check on each body with the bodies of relevant child nodes.
-		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
-			Body& body = **it;
-			get_collisions_child(body, collisions);
+		if (!quad_bodies.empty()) {
+			// First, collision check with our node's bodies.
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+				Body& body = **it;
+				get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+			}
+
+			// Now, do a collision check on each body with the bodies of relevant child nodes.
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+				Body& body = **it;
+				get_collisions_child(body, collisions);
+			}
 		}
 
 		// Can come before or after earlier checks.
@@ -58,10 +63,13 @@ std::vector<Collision> QuadTree::get_collisions() const
 	std::vector<Collision> collisions;
 
 	if (is_leaf()) {
-		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
-			Body& body = **it;
-			get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+		if (!quad_bodies.empty()) {
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+				Body& body = **it;
+				get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+			}
 		}
+
 	}
 	else {
 
@@ -74,16 +82,20 @@ std::vector<Collision> QuadTree::get_collisions() const
 		* This involves recursion downwards.
 		*/ 
 
-		// First, collision check with our node's bodies.
-		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
-			Body& body = **it;
-			get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
-		}
+		if (!quad_bodies.empty()) {
 
-		// Now, do a collision check on each body with the bodies of relevant child nodes.
-		for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
-			Body& body = **it;
-			get_collisions_child(body, collisions);
+			// First, collision check with our node's bodies.
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+				Body& body = **it;
+				get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+			}
+
+			// Now, do a collision check on each body with the bodies of relevant child nodes.
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+				Body& body = **it;
+				get_collisions_child(body, collisions);
+			}
+
 		}
 
 		// Can come before or after earlier checks.
@@ -138,7 +150,7 @@ void QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const
 	}
 }
 
-bool QuadTree::in_more_than_one_child(Body& body)
+bool QuadTree::in_more_than_one_child(const Body& body) const
 {
 	// Get a list of our child quads that at least partially contain the body.
 	std::vector<QuadTree*> contained_in = get_quads([&body](const QuadTree& quad) { return quad.contains_partially(body); });
