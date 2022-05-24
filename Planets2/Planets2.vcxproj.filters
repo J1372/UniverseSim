@@ -69,7 +69,9 @@
     <ClCompile Include="Collision.cpp">
       <Filter>Sim_Model\Events</Filter>
     </ClCompile>
-    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="Physics.cpp">
+      <Filter>Sim_Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rand_float.h" />
