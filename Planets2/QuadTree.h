@@ -11,7 +11,7 @@ class QuadTree : public SpatialPartitioning {
 public:
 
 	QuadTree(float size);
-	QuadTree(float x, float y, float end_x, float end_y);
+	QuadTree(float x, float y, float size);
 
 	// Will add a body to the most appropriate quad node. Potentially splits that node if it reached its capacity.
 	void add_body(Body& body);
@@ -26,9 +26,6 @@ public:
 
 	// Returns an array of all 4 child node pointers (UL, UR, LL, LR).
 	const std::array<QuadTree*, 4> get_quads() const;
-
-	float get_width() const { return end_x - x + 1; }
-	float get_height() const { return end_y - y + 1; }
 
 	// Checks all bodies and reinserts bodies into the most fitting node.
 	void update();
@@ -50,10 +47,7 @@ private:
 	static int quads_generated;
 	int quad_id;
 
-	const float x;
-	const float y;
-	const float end_x;
-	const float end_y;
+	const Rectangle dimensions;
 
 	std::vector<Body*> quad_bodies; // List of body pointers to bodies that are fully contained in this quad. They do not overlap with any other quad.
 	int cur_size = 0; // The number of bodies in this quad and all its children (max depth).
@@ -66,7 +60,6 @@ private:
 	std::unique_ptr<QuadTree> LL = nullptr;
 	std::unique_ptr<QuadTree> LR = nullptr;
 
-	Rectangle representation;
 
 	// Will assume body is in the quad that this method was called on.
 	void rem_body_internal(const Body& body);
@@ -80,9 +73,6 @@ private:
 	void get_collisions_child(Body& checking, std::vector<Collision>& collisions) const;
 
 	bool is_root() const { return parent == nullptr; }
-
-	float width() const { return end_x - x + 1; }
-	float height() const { return end_y - y + 1; }
 
 	bool is_empty() const { return cur_size == 0; }
 	bool has_room() const { return cur_size < MAX_BODIES; }

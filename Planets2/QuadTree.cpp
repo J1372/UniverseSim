@@ -7,10 +7,10 @@
 
 int QuadTree::quads_generated = 0;
 
-QuadTree::QuadTree(float size) : x(-size), y(-size), end_x(size), end_y(size), quad_id(quads_generated++), representation{ x, y, width(), height() }
+QuadTree::QuadTree(float size) : dimensions{ -size, -size, size, size }, quad_id(quads_generated++)
 {}
 
-QuadTree::QuadTree(float x, float y, float end_x, float end_y) : x(x), y(y), end_x(end_x), end_y(end_y), quad_id(quads_generated++), representation{ x, y, width(), height() }
+QuadTree::QuadTree(float x, float y, float size) : dimensions{ x, y, x + size, y + size }, quad_id(quads_generated++)
 {}
 
 void QuadTree::get_collisions(std::vector<Collision>& collisions) const
@@ -299,30 +299,30 @@ void QuadTree::update()
 
 bool QuadTree::contains_point(Vector2 point) const
 {
-	return point.x >= x and point.x < end_x and
-		point.y >= y and point.y < end_y;
+	return point.x >= dimensions.x and point.x < dimensions.x + dimensions.width and
+		point.y >= dimensions.y and point.y < dimensions.y + dimensions.height;
 }
 
 bool QuadTree::contains_fully(const Body& body) const
 {
 	// True if no part of the circle goes outside the quad.
-	return body.top().y >= y and body.bottom().y <= end_y and
-		body.left().x >= x and body.right().x <= end_x;
+	return body.top().y >= dimensions.y and body.bottom().y <= dimensions.y + dimensions.height and
+		body.left().x >= dimensions.x and body.right().x <= dimensions.x + dimensions.width;
 }
 
 bool QuadTree::contains_partially(const Body& body) const
 {
 	// True if circle intersects with quad.
-	float dist_x = std::abs(body.x - x - width() / 2);
-	float dist_y = std::abs(body.y - y - height() / 2);
+	float dist_x = std::abs(body.x - dimensions.x - dimensions.width / 2);
+	float dist_y = std::abs(body.y - dimensions.y - dimensions.width / 2);
 
-	if (dist_x > (width() / 2 + body.radius)) { return false; }
-	if (dist_y > (height() / 2 + body.radius)) { return false; }
+	if (dist_x > (dimensions.width / 2 + body.radius)) { return false; }
+	if (dist_y > (dimensions.height / 2 + body.radius)) { return false; }
 
-	if (dist_x <= (width() / 2)) { return true; }
-	if (dist_y <= (height() / 2)) { return true; }
+	if (dist_x <= (dimensions.width / 2)) { return true; }
+	if (dist_y <= (dimensions.height / 2)) { return true; }
 
-	int corner_dist= std::pow((dist_x - width() / 2), 2) + std::pow((dist_y - height() / 2), 2);
+	int corner_dist = std::pow((dist_x - dimensions.width / 2), 2) + std::pow((dist_y - dimensions.height / 2), 2);
 
 	return corner_dist <= std::pow(body.radius, 2);
 }
@@ -357,10 +357,10 @@ void QuadTree::add_to_child(Body& new_body)
 		std::cout << "\tBody ID: " << new_body.id << '\n';
 		std::cout << "\tBody Position: (" << new_body.x << ", " << new_body.y << ")\n";
 		std::cout << "\tQuad Dimensions:\n";
-		std::cout << "\t\tx:\t" << x << '\n';
-		std::cout << "\t\ty:\t" << y << '\n';
-		std::cout << "\t\tend_x:\t" << end_x << '\n';
-		std::cout << "\t\tend_y:\t" << end_y << '\n';
+		std::cout << "\t\tx:\t" << dimensions.x << '\n';
+		std::cout << "\t\ty:\t" << dimensions.y << '\n';
+		std::cout << "\t\twidth:\t" << dimensions.width << '\n';
+		std::cout << "\t\theight:\t" << dimensions.height << '\n';
 
 	}
 }
@@ -461,13 +461,17 @@ void QuadTree::concatenate()
 
 void QuadTree::split()
 {
-	float mid_x = (x + end_x) / 2;
-	float mid_y = (y + end_y) / 2;
+	float x = dimensions.x;
+	float y = dimensions.y;
+	float mid_x = (dimensions.x + dimensions.width) / 2;
+	float mid_y = (dimensions.y + dimensions.height) / 2;
 
-	UL = std::make_unique<QuadTree>(x, y, mid_x, mid_y);
-	UR = std::make_unique<QuadTree>(mid_x, y, end_x, mid_y);
-	LL = std::make_unique<QuadTree>(x, mid_y, mid_x, end_y);
-	LR = std::make_unique<QuadTree>(mid_x, mid_y, end_x, end_y);
+	float size = dimensions.width / 2;
+
+	UL = std::make_unique<QuadTree>(x, y, size);
+	UR = std::make_unique<QuadTree>(mid_x, y, size);
+	LL = std::make_unique<QuadTree>(x, mid_y, size);
+	LR = std::make_unique<QuadTree>(mid_x, mid_y, size);
 
 	UL->parent = this;
 	UR->parent = this;
@@ -518,7 +522,7 @@ void QuadTree::reinsert(Body& body)
 
 void QuadTree::get_representation_internal(std::vector<Rectangle>& rep) const {
 	if (is_leaf()) {
-		rep.push_back(representation);
+		rep.push_back(dimensions);
 	}
 	else {
 		UL->get_representation_internal(rep);
