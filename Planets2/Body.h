@@ -121,6 +121,10 @@ public:
 
 	Event<Removal>& removal_event();
 
+	Rectangle get_bounding_box() const;
+
+	bool operator==(const Body& other) const;
+
 
 };
 

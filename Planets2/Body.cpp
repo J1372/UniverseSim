@@ -258,3 +258,14 @@ Event<Removal>& Body::removal_event()
 {
 	return on_removal_observers;
 }
+
+Rectangle Body::get_bounding_box() const
+{
+	float diameter = radius * 2;
+	return { left(), top(), diameter, diameter };
+}
+
+bool Body::operator==(const Body& other) const
+{
+	return id == other.id;
+}
