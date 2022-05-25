@@ -158,6 +158,7 @@
     <ClInclude Include="GuiComponentList.h" />
     <ClInclude Include="GuiScene.h" />
     <ClInclude Include="Label.h" />
+    <ClInclude Include="LineSweep.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="SettingsScene.h" />
     <ClInclude Include="Shape.h" />
@@ -167,7 +168,7 @@
     <ClInclude Include="Removal.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="QuadTree.h" />
-    <ClInclude Include="rand_float.h" />
+    <ClInclude Include="my_random.h" />
     <ClInclude Include="SpatialPartitioning.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="universe.h" />
@@ -188,13 +189,14 @@
     <ClCompile Include="GuiComponentList.cpp" />
     <ClCompile Include="GuiScene.cpp" />
     <ClCompile Include="Label.cpp" />
+    <ClCompile Include="LineSweep.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="SettingsScene.cpp" />
     <ClCompile Include="AdvCamera.cpp" />
     <ClCompile Include="SimulationScene.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="QuadTree.cpp" />
-    <ClCompile Include="rand_float.cpp" />
+    <ClCompile Include="my_random.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="universe.cpp" />

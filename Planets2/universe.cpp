@@ -2,7 +2,7 @@
 #include <malloc.h>
 #include <numbers>
 #include <iostream>
-#include "rand_float.h"
+#include "my_random.h"
 #include "raylib.h"
 #include "Physics.h"
 #include <algorithm>
@@ -29,7 +29,7 @@ void Universe::generate_universe()
 
 	active_bodies.reserve(settings.UNIVERSE_CAPACITY);
 
-	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max);
+	partitioning_method = std::make_unique<QuadTree>(2*settings.universe_size_max);
 
 	for (int i = 0; i < settings.num_rand_planets; ++i) {
 		create_rand_body();
@@ -79,7 +79,7 @@ std::vector<float> Universe::gen_rand_portions(int num_slots) const
 
 	float sum = 0.0f;
 	for (int i = 0; i < num_slots; ++i) {
-		float lot = randf();
+		float lot = Rand::real();
 		slots.emplace_back(lot);
 		sum += lot;
 	}
@@ -199,9 +199,9 @@ Body& Universe::create_body(float sat_dist, const Body& orbiting, float ecc, lon
 Body& Universe::create_rand_body()
 {
 	int id = generated_bodies;
-	float x = randi(-settings.universe_size_start, settings.universe_size_start);
-	float y = randi(-settings.universe_size_start, settings.universe_size_start);
-	long mass = randi(1, settings.RAND_MASS);
+	float x = Rand::num(-settings.universe_size_start, settings.universe_size_start);
+	float y = Rand::num(-settings.universe_size_start, settings.universe_size_start);
+	long mass = Rand::num(1, settings.RAND_MASS);
 
 	active_bodies.emplace_back(std::make_unique<Body>(id, x, y, mass));
 
@@ -216,9 +216,9 @@ Body& Universe::create_rand_body()
 
 Body& Universe::create_rand_system()
 {
-	long system_mass = randi(1, settings.RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
+	long system_mass = Rand::num(1, settings.RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
 
-	int num_planets = randi(settings.system_min_planets, settings.system_max_planets);
+	int num_planets = Rand::num(settings.system_min_planets, settings.system_max_planets);
 
 	float remaining_mass = 1 - settings.SYSTEM_STAR_MASS_RATIO;
 
@@ -226,8 +226,8 @@ Body& Universe::create_rand_system()
 
 
 
-	float star_x = randi(-settings.universe_size_start, settings.universe_size_start);
-	float star_y = randi(-settings.universe_size_start, settings.universe_size_start);
+	float star_x = Rand::num(-settings.universe_size_start, settings.universe_size_start);
+	float star_y = Rand::num(-settings.universe_size_start, settings.universe_size_start);
 	long star_mass = settings.SYSTEM_STAR_MASS_RATIO * system_mass;
 
 	Body& star = create_body(star_x, star_y, star_mass);
@@ -235,9 +235,9 @@ Body& Universe::create_rand_system()
 	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
 
 	for (int i = 0; i < num_planets; ++i) {
-		Body& planet = create_satellite(star, randf(), mass_ratios[i] * system_mass);
-		if (randf() < .1f) {
-			create_satellite(planet, randf(), .1 * planet.mass);
+		Body& planet = create_satellite(star, Rand::real(), mass_ratios[i] * system_mass);
+		if (Rand::real() < .1f) {
+			create_satellite(planet, Rand::real(), .1 * planet.mass);
 		}
 		// rand num moons (distribution based on mass maybe)
 	}
@@ -254,7 +254,7 @@ Body& Universe::create_satellite(const Body& orbiting, float ecc, long mass)
 	// Performs no checks on whether its initial position collides with another satellite of the body.
 	// maybe perform the check in the create_system call
 
-	float sat_dist = randf() * (settings.SATELLITE_MAX_DIST - settings.SATELLITE_MIN_DIST) + settings.SATELLITE_MIN_DIST;
+	float sat_dist = Rand::real() * (settings.SATELLITE_MAX_DIST - settings.SATELLITE_MIN_DIST) + settings.SATELLITE_MIN_DIST;
 
 
 	Body& sat = create_body(sat_dist, orbiting, ecc, mass); // create body first to have it calculate its size for us for periapsis.
@@ -273,18 +273,18 @@ Body& Universe::create_rand_satellite(const Body& orbiting)
 
 	// Performs no checks on whether its initial position collides with another satellite of the body.
 
-	float sat_dist = randf() * 8.5f + 1.5f; // need to be float, this is int. and goes up to 10.5
+	float sat_dist = Rand::real() * 8.5f + 1.5f; // need to be float, this is int. and goes up to 10.5
 
 	//long mass = std::max((rand() % orbiting.mass) / 2, 1l);
-	long mass = randi(1, (int)(orbiting.mass / 2)); // randi is 32-bit oops
+	long mass = Rand::num(1, (int)(orbiting.mass / 2)); // randi is 32-bit oops
 
-	float ecc = randf(); // needs to be random in between 0 and 0.99. cannot be 1 unless use different calculation.
+	float ecc = Rand::real(); // needs to be random in between 0 and 0.99. cannot be 1 unless use different calculation.
 	Body& sat = create_body(0, 0, mass);
 
 
 	// Calculating position of satellite at its periapsis (closest point to the body it orbits).
 	float periapsis = sat_dist * (orbiting.radius + sat.radius);
-	float periapsis_angle = (randf() * 2) * std::numbers::pi; // angle from orbiting body where periapsis is.
+	float periapsis_angle = (Rand::real() * 2) * std::numbers::pi; // angle from orbiting body where periapsis is.
 	float periapsis_v[2] = { periapsis * std::sin(periapsis_angle), periapsis * std::cos(periapsis_angle) };
 
 	sat.x = orbiting.x + periapsis_v[0];

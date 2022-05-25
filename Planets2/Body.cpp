@@ -1,7 +1,7 @@
 #include "Body.h"
 #include <cmath>
 #include <iostream>
-#include "rand_float.h"
+#include "my_random.h"
 #include <numbers>
 #include "Removal.h"
 
@@ -53,7 +53,7 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 
 
 	float periapsis = sat_dist * (orbiting.radius + radius);
-	float periapsis_angle = (randf() * 2) * std::numbers::pi; // angle from orbiting body where periapsis is.
+	float periapsis_angle = (Rand::real() * 2) * std::numbers::pi; // angle from orbiting body where periapsis is.
 	float periapsis_v[2] = { periapsis * std::cos(periapsis_angle), periapsis * std::sin(periapsis_angle) };
 	// for some reason x = sin and y = cos;
 	// this should be valid x and y for pos and negative. hope so :)
@@ -91,7 +91,7 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 	float vel_v[2] = { v_per * sin(v_angle), v_per * cos(v_angle) };
 
 	constexpr double RETROGRADE_CHANCE = 0.12;
-	bool retrograde_roll = randf() < RETROGRADE_CHANCE;
+	bool retrograde_roll = Rand::real() < RETROGRADE_CHANCE;
 
 	if (retrograde_roll) {
 		vel_v[0] = -vel_v[0];

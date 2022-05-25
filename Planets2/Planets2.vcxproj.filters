@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="rand_float.cpp" />
+    <ClCompile Include="my_random.cpp" />
     <ClCompile Include="View.cpp" />
     <ClCompile Include="Button.cpp">
       <Filter>UI</Filter>
@@ -72,9 +72,12 @@
     <ClCompile Include="Physics.cpp">
       <Filter>Sim_Model</Filter>
     </ClCompile>
+    <ClCompile Include="LineSweep.cpp">
+      <Filter>Partitioning</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="rand_float.h" />
+    <ClInclude Include="my_random.h" />
     <ClInclude Include="Button.h">
       <Filter>UI</Filter>
     </ClInclude>
@@ -158,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>Sim_Model\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LineSweep.h">
+      <Filter>Partitioning</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
