@@ -12,4 +12,6 @@ struct Collision {
 
 	Collision(std::pair<Body*, Body*> collided);
 
+	bool operator==(const Collision& other) const;
+
 };
