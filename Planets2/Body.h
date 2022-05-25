@@ -104,10 +104,10 @@ public:
 
 	bool contains_point(Vector2 point) const;
 
-	Vector2 left() const { return { x - radius, y }; }
-	Vector2 right() const { return { x + radius, y }; }
-	Vector2 top() const { return { x, y - radius }; }
-	Vector2 bottom() const { return { x, y + radius }; }
+	float left() const { return x - radius; }
+	float right() const { return x + radius; }
+	float top() const { return y - radius; }
+	float bottom() const { return y + radius; }
 
 
 	void add_debug_text(const std::string&& text);

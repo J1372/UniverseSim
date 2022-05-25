@@ -34,8 +34,8 @@ bool Physics::point_in_rect(Vector2 point, Rectangle rect)
 
 bool Physics::body_inside_rect(const Body& body, Rectangle rect)
 {
-	return body.top().y >= rect.y and body.bottom().y <= rect.y + rect.height and
-		body.left().x >= rect.x and body.right().x <= rect.x + rect.width;
+	return body.top() >= rect.y and body.bottom() <= rect.y + rect.height and
+		body.left() >= rect.x and body.right() <= rect.x + rect.width;
 }
 
 bool Physics::body_intersects_rect(const Body& body, Rectangle rect)
