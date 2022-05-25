@@ -20,6 +20,18 @@ class SimulationScene : public Scene
 	// Can only be true if universe.has_partitioning() is true.
 	bool should_render_partitioning = false;
 	bool should_render_debug_text = false;
+	bool should_render_help_text = false;
+	const std::string help_text =
+		"[H] to close help text\n"
+		"[V] to show partitioning representation\n"
+		"[B] to show debug text info\n"
+		"[SPACE] to toggle pause\n"
+		"[W] [A] [S] [D] to move the camera\n"
+		"[-, +] to control the camera's speed\n"
+		"[COMMA] or scroll down to zoom out\n"
+		"[PERIOD] or scroll up to zoom in\n"
+		"[ESCAPE] to go back to settings\n"
+		"Right click to anchor camera to a planet\n";
 
 	std::vector<Body*> on_screen_bodies;
 

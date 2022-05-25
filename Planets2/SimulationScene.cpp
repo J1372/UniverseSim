@@ -24,6 +24,10 @@ void SimulationScene::process_input()
 		}
 	}
 
+	if (IsKeyPressed(KEY_H)) {
+		should_render_help_text = !should_render_help_text;
+	}
+
 	if (IsKeyPressed(KEY_B)) {
 		should_render_debug_text = !should_render_debug_text;
 	}
@@ -188,8 +192,11 @@ Scene* SimulationScene::update()
 		DrawFPS(50, 50);
 
 		std::string num_bodies_str = "Number bodies: " + std::to_string(universe.get_num_bodies());
-
 		DrawText(num_bodies_str.c_str(), 50, 70, 20, RAYWHITE);
+
+		if (should_render_help_text) {
+			DrawText(help_text.c_str(), 1400, 100, 20, RAYWHITE);
+		}
 
 	EndDrawing();
 
