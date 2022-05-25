@@ -7,7 +7,7 @@
 
 int QuadTree::quads_generated = 0;
 
-QuadTree::QuadTree(float size) : dimensions{ -size, -size, size, size }, quad_id(quads_generated++)
+QuadTree::QuadTree(float size) : dimensions{ -size / 2, -size / 2, size, size }, quad_id(quads_generated++)
 {}
 
 QuadTree::QuadTree(float x, float y, float size) : dimensions{ x, y, x + size, y + size }, quad_id(quads_generated++)
