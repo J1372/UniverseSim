@@ -1,30 +1,40 @@
 #pragma once
 #include <vector>
+#include "raylib.h"
 
 class Body;
+struct Collision;
 
+
+// A node in a grid. Stores its dimensions and pointers to bodies, whose centers are inside the node's dimensions.
 class GridNode
 {
-	const float x;
-	const float y;
-	const float end_x;
-	const float end_y;
+	const int id;
+	const Rectangle dimensions;
 
-	std::vector<Body*> quad_bodies;
+
+	std::vector<Body*> bodies;
 
 public:
 
 	GridNode() = default;
-	GridNode(float x, float y, float node_size) : x(x), y(y), end_x(x + node_size - 1), end_y(y + node_size - 1)
-	{}
+	GridNode(float x, float y, float node_size, int id);
 
 	void add(Body& body);
-	void update();
+	void rem(const Body& body);
 
-	void collision_check(std::vector<Body*>& to_remove);
+	void clear();
 
-	bool in_bounds(float x, float y) const;
+	bool contains_point(Vector2 point) const;
+	bool contains_partially(const Body& body) const;
+	bool contains_fully(const Body& body) const;
 
-	void draw_debug() const;
+	Body* find_body(Vector2 point) const;
+
+	Rectangle get_representation() const;
+	void attach_debug_text(Body& body) const;
+
+	void get_collisions(std::vector<Collision>& collisions) const;
+
 };
 
