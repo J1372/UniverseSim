@@ -7,10 +7,10 @@
 
 int QuadTree::quads_generated = 0;
 
-QuadTree::QuadTree(float size) : dimensions{ -size / 2, -size / 2, size, size }, quad_id(quads_generated++)
+QuadTree::QuadTree(float size) : dimensions{ -size / 2.0f, -size / 2.0f, size, size }, quad_id(quads_generated++)
 {}
 
-QuadTree::QuadTree(float x, float y, float size) : dimensions{ x, y, x + size, y + size }, quad_id(quads_generated++)
+QuadTree::QuadTree(float x, float y, float size) : dimensions{ x, y, size, size }, quad_id(quads_generated++)
 {}
 
 void QuadTree::get_collisions(std::vector<Collision>& collisions) const
@@ -43,7 +43,7 @@ void QuadTree::get_collisions(std::vector<Collision>& collisions) const
 			}
 
 			// Now, do a collision check on each body with the bodies of relevant child nodes.
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
 				Body& body = **it;
 				get_collisions_child(body, collisions);
 			}
@@ -91,7 +91,7 @@ std::vector<Collision> QuadTree::get_collisions() const
 			}
 
 			// Now, do a collision check on each body with the bodies of relevant child nodes.
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
 				Body& body = **it;
 				get_collisions_child(body, collisions);
 			}
@@ -125,7 +125,7 @@ void QuadTree::get_collisions_child(Body& checking, std::vector<Collision>& coll
 	// Check for collisions between the given body and the bodies of relevant child nodes.
 	for (QuadTree* quad : to_check) {
 		// get_collisions_internal can be static, and renamed.
-		get_collisions_internal(checking, quad->quad_bodies.begin(), quad->quad_bodies.end(), collisions);
+		quad->get_collisions_internal(checking, quad->quad_bodies.begin(), quad->quad_bodies.end(), collisions);
 
 		// can remove if use get_all_quads instead.
 		if (!quad->is_leaf()) {
@@ -448,10 +448,10 @@ void QuadTree::split()
 {
 	float x = dimensions.x;
 	float y = dimensions.y;
-	float mid_x = (dimensions.x + dimensions.width) / 2;
-	float mid_y = (dimensions.y + dimensions.height) / 2;
+	float mid_x = dimensions.x + dimensions.width / 2.0f;
+	float mid_y = dimensions.y + dimensions.height / 2.0f;
 
-	float size = dimensions.width / 2;
+	float size = dimensions.width / 2.0f;
 
 	UL = std::make_unique<QuadTree>(x, y, size);
 	UR = std::make_unique<QuadTree>(mid_x, y, size);
