@@ -10,8 +10,8 @@ protected:
 
 public:
 
-	bool hide() { hidden = true; }
-	bool show() { hidden = false; }
+	void hide() { hidden = true; }
+	void show() { hidden = false; }
 	bool is_hidden() const { return hidden; }
 
 	void activate() { active = true; }
