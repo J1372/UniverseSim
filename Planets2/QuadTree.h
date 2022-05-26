@@ -10,8 +10,10 @@ class QuadTree : public SpatialPartitioning {
 
 public:
 
-	QuadTree(float size);
-	QuadTree(float x, float y, float size);
+	QuadTree(float size, int max_bodies_per_quad, int max_depth);
+
+	// internal constructor. still needs to be public for make_unique.
+	QuadTree(float x, float y, float size, int depth);
 
 	// Will add a body to the most appropriate quad node. Potentially splits that node if it reached its capacity.
 	void add_body(Body& body);
@@ -43,9 +45,18 @@ public:
 
 private:
 
-	static constexpr int MAX_BODIES = 10;
+	// When number of bodies in a quad reaches this number, try to subdivide.
+	// Actual number of bodies may be higher than this, if subdividing would exceed max_depth.
+	static int max_bodies_per_quad;
+
+	// Number of possible subdivisions to be made. Root depth is 0, so 1 == only one subdivision from root.
+	static int max_depth;
 	static int quads_generated;
-	int quad_id;
+
+	const int quad_id;
+
+	// The current quad's depth from the root.
+	const int depth;
 
 	const Rectangle dimensions;
 
@@ -75,8 +86,10 @@ private:
 	bool is_root() const { return parent == nullptr; }
 
 	bool is_empty() const { return cur_size == 0; }
-	bool has_room() const { return cur_size < MAX_BODIES; }
-	bool is_full() const { return cur_size >= MAX_BODIES; }
+	bool has_room() const { return cur_size < max_bodies_per_quad; }
+	bool is_full() const { return cur_size >= max_bodies_per_quad; }
+
+	bool reached_depth_limit() const { return depth >= max_depth; }
 
 	// Returns true if the point is inside the quad's dimensions.
 	bool contains_point(Vector2 point) const;

@@ -11,7 +11,7 @@
 
 Universe::Universe()
 {
-	partitioning_method = std::make_unique<QuadTree>(2 * settings.universe_size_max);
+	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
 	generate_universe();
 	//std::cout << std::thread::hardware_concurrency();
 }
@@ -19,7 +19,7 @@ Universe::Universe()
 Universe::Universe(const UniverseSettings& to_set)
 {
 	settings = to_set;
-	partitioning_method = std::make_unique<QuadTree>(2 * settings.universe_size_max);
+	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
 	generate_universe();
 }
 

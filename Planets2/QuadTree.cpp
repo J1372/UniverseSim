@@ -5,12 +5,19 @@
 
 #include "Collision.h"
 
+int QuadTree::max_bodies_per_quad = 10;
+int QuadTree::max_depth = 5;
 int QuadTree::quads_generated = 0;
 
-QuadTree::QuadTree(float size) : dimensions{ -size / 2.0f, -size / 2.0f, size, size }, quad_id(quads_generated++)
-{}
+QuadTree::QuadTree(float size, int max_bodies_per_quad, int max_depth) :
+	dimensions{ -size / 2.0f, -size / 2.0f, size, size }, quad_id(quads_generated++), depth(0)
+{
+	QuadTree::max_bodies_per_quad = max_bodies_per_quad;
+	QuadTree::max_depth = max_depth;
+}
 
-QuadTree::QuadTree(float x, float y, float size) : dimensions{ x, y, size, size }, quad_id(quads_generated++)
+QuadTree::QuadTree(float x, float y, float size, int depth) :
+	dimensions{ x, y, size, size }, quad_id(quads_generated++), depth(depth)
 {}
 
 void QuadTree::get_collisions(std::vector<Collision>& collisions) const
@@ -178,7 +185,7 @@ void QuadTree::add_body(Body& new_body)
 	cur_size++;
 
 	if (is_leaf()) {
-		if (is_full()) {
+		if (is_full() and !reached_depth_limit()) {
 			split();
 			selective_add(new_body);
 		}
@@ -453,10 +460,12 @@ void QuadTree::split()
 
 	float size = dimensions.width / 2.0f;
 
-	UL = std::make_unique<QuadTree>(x, y, size);
-	UR = std::make_unique<QuadTree>(mid_x, y, size);
-	LL = std::make_unique<QuadTree>(x, mid_y, size);
-	LR = std::make_unique<QuadTree>(mid_x, mid_y, size);
+	int next_depth = depth + 1;
+
+	UL = std::make_unique<QuadTree>(x, y, size, next_depth);
+	UR = std::make_unique<QuadTree>(mid_x, y, size, next_depth);
+	LL = std::make_unique<QuadTree>(x, mid_y, size, next_depth);
+	LR = std::make_unique<QuadTree>(mid_x, mid_y, size, next_depth);
 
 	UL->parent = this;
 	UR->parent = this;

@@ -97,7 +97,7 @@ std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
 		int bodies_per_quad = std::stoi(quad_max_bodies_input.get_text());
 		int max_depth = std::stoi(quadtree_max_depth_input.get_text());
 
-		return std::make_unique<QuadTree>(settings.universe_size_max);
+		return std::make_unique<QuadTree>(settings.universe_size_max, bodies_per_quad, max_depth);
 	}
 	else if (name_method == "Grid") {
 		int nodes_per_row = std::stoi(grid_nodes_per_row_input.get_text());
