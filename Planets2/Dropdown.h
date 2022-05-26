@@ -3,10 +3,12 @@
 #include <raylib.h>
 #include <vector>
 #include <string>
+#include <functional>
 
 class Dropdown : public UIElement
 {
 
+	// Could be a template pair string,enum
 	std::vector<std::string> choices;
 	int selected = -1;
 
@@ -21,7 +23,7 @@ class Dropdown : public UIElement
 
 	static constexpr int edge_width = 10;
 
-	//std::function<void(const std::string& text)> callback = nullptr;
+	std::function<void(const std::string& text)> callback = nullptr;
 
 	// Returns the selection which the user has clicked on.
 	int translate_click() const;
@@ -56,5 +58,8 @@ public:
 	bool contains_point(Vector2 point) const;
 
 	void render() const override;
+
+	void set_on_selection(std::function<void(const std::string& text)> to_set);
+
 };
 

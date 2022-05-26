@@ -47,6 +47,7 @@ void Dropdown::click()
 {
 	if (active) {
 		selected = translate_click();
+		callback(get_selected());
 		deactivate();
 	}
 }
@@ -98,4 +99,9 @@ void Dropdown::render() const
 
 
 	
+}
+
+void Dropdown::set_on_selection(std::function<void(const std::string& text)> to_set)
+{
+	callback = to_set;
 }
