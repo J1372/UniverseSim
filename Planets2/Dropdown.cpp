@@ -25,6 +25,23 @@ void Dropdown::add_choice(const std::string& choice) {
 	}
 }
 
+void Dropdown::set_selected(int number) {
+	selected = number;
+
+	if (callback) {
+		callback(get_selected());
+	}
+}
+
+void Dropdown::deselect() {
+	selected = -1;
+
+	if (callback) {
+		// if change return to enum, how to handle this without every enum needing a null.
+		callback(get_selected());
+	}
+}
+
 bool Dropdown::contains_point(Vector2 point) const {
 	int height = get_render_height();
 
@@ -61,8 +78,8 @@ std::string Dropdown::get_selected() const
 void Dropdown::click()
 {
 	if (active) {
-		selected = translate_click();
-		callback(get_selected());
+		int index = translate_click();
+		set_selected(index);
 		deactivate();
 	}
 }

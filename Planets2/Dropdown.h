@@ -37,8 +37,8 @@ public:
 
 	void add_choice(const std::string& choice);
 
-	void set_selected(int number) { selected = number; }
-	void deselect() { selected = -1; }
+	void set_selected(int number);
+	void deselect();
 	bool has_selected() const { return selected >= 0 and selected < choices.size(); }
 
 	std::string get_selected() const;
