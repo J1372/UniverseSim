@@ -18,7 +18,7 @@ void GuiComponentList::set_active(UIElement* element)
 
 void GuiComponentList::render()
 {
-	for (auto&& element : elements) {
+	for (auto&& element : visible_elements) {
 		element->render();
 	}
 }
@@ -26,7 +26,7 @@ void GuiComponentList::render()
 UIElement* GuiComponentList::get_element(Vector2 point)
 {
 	// elements are rendered first->last. so last elements are on top. loop backwards.
-	for (int i = elements.size() - 1; i >= 0; i--) {
+	for (int i = visible_elements.size() - 1; i >= 0; i--) {
 		auto&& element = elements[i];
 		if (element->contains_point(point)) {
 			return element.get();
@@ -67,4 +67,21 @@ bool GuiComponentList::send_keypress(int key_code)
 
 
 	return false;
+}
+
+void GuiComponentList::show(UIElement& element)
+{
+	if (element.is_hidden()) {
+		element.show();
+		visible_elements.push_back(&element);
+	}
+}
+
+void GuiComponentList::hide(UIElement& element)
+{
+	if (!element.is_hidden()) {
+		element.hide();
+		auto it = std::find(visible_elements.begin(), visible_elements.end(), &element);
+		visible_elements.erase(it);
+	}
 }

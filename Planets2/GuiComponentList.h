@@ -14,6 +14,11 @@ class GuiComponentList
 	// not all uielements care to store whether they are active or not, but TextBox for example draws a cursor line if active. 
 	std::vector<std::unique_ptr<UIElement>> elements;
 
+	// A separate list of only bisible element pointers, so no need to poll in render() and get_element().
+	// Could set a bool flag has_changed that is implicitly changed after send_click, show hide. And check first in render, so often no loop.
+	// But would still need to poll in get_element without this vector. Which would only happen on any click. Might not be bad.
+	std::vector<UIElement*> visible_elements;
+
 	void set_active(UIElement* element);
 
 public:
@@ -24,6 +29,7 @@ public:
 		std::unique_ptr<T> obj_ptr = std::make_unique<T>(std::forward<ArgTypes>(args)...);
 		T& element = *obj_ptr;
 
+		visible_elements.push_back(obj_ptr.get());
 		elements.emplace_back(std::move(obj_ptr));
 
 		return element;
@@ -37,5 +43,8 @@ public:
 
 	void send_click(Vector2 point);
 	bool send_keypress(int key_code);
+
+	void show(UIElement& element);
+	void hide(UIElement& element);
 };
 
