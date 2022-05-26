@@ -1,6 +1,5 @@
 #pragma once
 #include "Scene.h"
-#include <raylib.h>
 
 #include "universe.h"
 #include "CameraList.h"
@@ -58,7 +57,7 @@ class SimulationScene : public Scene
 
 public:
 
-	SimulationScene(int width, int height, UniverseSettings settings);
+	SimulationScene(int width, int height, UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning);
 
 	void resize(int width, int height);
 

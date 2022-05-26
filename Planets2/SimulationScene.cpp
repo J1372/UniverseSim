@@ -1,7 +1,6 @@
 #include "SimulationScene.h"
 #include "universe.h"
 #include "Body.h"
-#include "QuadTree.h"
 #include <string>
 
 #include "CameraState.h"
@@ -10,7 +9,7 @@
 
 #include "SettingsScene.h"
 
-SimulationScene::SimulationScene(int width, int height, UniverseSettings settings) : Scene(width, height), universe{ settings }
+SimulationScene::SimulationScene(int width, int height, UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning) : Scene(width, height), universe{ settings, std::move(partitioning) }
 {
 	camera_state = &cameras.free_camera;
 	on_screen_bodies.reserve(universe.get_num_bodies());

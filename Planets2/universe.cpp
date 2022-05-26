@@ -24,7 +24,7 @@ Universe::Universe(const UniverseSettings& to_set)
 }
 
 
-Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning_method) : partitioning_method(std::move(partitioning_method)) {
+Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning) : partitioning_method(std::move(partitioning)) {
 	settings = to_set;
 	generate_universe();
 }

@@ -6,6 +6,7 @@ class Button;
 class Label;
 class TextBox;
 class Dropdown;
+class SpatialPartitioning;
 
 
 class SettingsScene : public GuiScene
@@ -72,6 +73,8 @@ class SettingsScene : public GuiScene
 
 	void read_settings_to_gui(); // set gui elements to reflect the current universe settings.
 
+
+	std::unique_ptr<SpatialPartitioning> gen_partitioning();
 
 
 

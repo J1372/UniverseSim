@@ -6,11 +6,14 @@
 #include "TextBox.h"
 #include "Dropdown.h"
 
+#include "SpatialPartitioning.h"
+#include "Grid.h"
+
 void SettingsScene::init_default()
 {
 	start_button.set_on_action([this]() {
 		generate_settings();
-		return_scene = new SimulationScene{ screen_width, screen_height, settings };
+		return_scene = new SimulationScene{ screen_width, screen_height, settings, gen_partitioning() };
 
 		});
 	exit_button.set_on_action([this]() { return_scene = nullptr; });
@@ -34,7 +37,7 @@ void SettingsScene::init_default()
 void SettingsScene::generate_settings()
 {
 	settings.universe_size_start = std::stoi(start_size_input.get_text());
-	settings.universe_size_max = 100 * settings.universe_size_start;
+	settings.universe_size_max = 200 * settings.universe_size_start;
 	settings.num_rand_planets = std::stoi(num_planets_input.get_text());
 	settings.num_rand_systems = std::stoi(num_systems_input.get_text());
 
@@ -54,6 +57,27 @@ void SettingsScene::read_settings_to_gui()
 
 	sys_min_planets_input.set_text(std::to_string(settings.system_min_planets));
 	sys_max_planets_input.set_text(std::to_string(settings.system_max_planets));
+}
+
+std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
+{
+	if (!partitioning_dropdown.has_selected()) {
+		// return null partitioning object
+		return nullptr;
+	}
+	std::string name_method = partitioning_dropdown.get_selected();
+
+	if (name_method == "Quad tree") {
+		return std::make_unique<QuadTree>(settings.universe_size_max);
+	}
+	else if (name_method == "Grid") {
+		return std::make_unique<Grid>(settings.universe_size_max, 10);
+	}
+	else if (name_method == "Line Sweep") {
+		return nullptr;
+	}
+
+	return nullptr;
 }
 
 SettingsScene::SettingsScene(int width, int height) : GuiScene{ width, height }
