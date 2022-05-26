@@ -98,8 +98,8 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 		vel_v[1] = -vel_v[1];
 	}
 
-	vel_x = vel_v[0];
-	vel_y = vel_v[1];
+	vel_x = vel_v[0] + orbiting.vel_x;
+	vel_y = vel_v[1] + orbiting.vel_y;
 
 #ifdef MY_DEBUG
 	std::cout << "Periapsis: " << periapsis << '\n';
