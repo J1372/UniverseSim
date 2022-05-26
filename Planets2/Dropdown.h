@@ -33,19 +33,9 @@ class Dropdown : public UIElement
 
 public:
 
-	Dropdown(float x, float y, int font_size) :
-		font_size(font_size),
-		rect{ x, y, 100, 50 }
-	{}
+	Dropdown(float x, float y, int font_size);
 
-	void add_choice(const std::string& choice) { 
-		choices.push_back(choice);
-		int length_choice = MeasureText(choice.c_str(), font_size) * (1 + width_padding) + 2 * edge_width;
-
-		if (length_choice > rect.width) {
-			rect.width = length_choice;
-		}
-	}
+	void add_choice(const std::string& choice);
 
 	void set_selected(int number) { selected = number; }
 	void deselect() { selected = -1; }

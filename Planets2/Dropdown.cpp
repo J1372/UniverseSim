@@ -1,5 +1,11 @@
 #include "Dropdown.h"
 
+
+Dropdown::Dropdown(float x, float y, int font_size) :
+	font_size(font_size),
+	rect{ x, y, 100, 50 }
+{}
+
 int Dropdown::get_render_height() const
 {
 	if (active) {
@@ -7,6 +13,15 @@ int Dropdown::get_render_height() const
 	}
 	else {
 		return rect.height;
+	}
+}
+
+void Dropdown::add_choice(const std::string& choice) {
+	choices.push_back(choice);
+	int length_choice = MeasureText(choice.c_str(), font_size) * (1 + width_padding) + 2 * edge_width;
+
+	if (length_choice > rect.width) {
+		rect.width = length_choice;
 	}
 }
 
