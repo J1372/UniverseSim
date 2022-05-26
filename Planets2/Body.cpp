@@ -54,7 +54,7 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 
 	float periapsis = sat_dist * (orbiting.radius + radius);
 	float periapsis_angle = (Rand::real() * 2) * std::numbers::pi; // angle from orbiting body where periapsis is.
-	float periapsis_v[2] = { periapsis * std::cos(periapsis_angle), periapsis * std::sin(periapsis_angle) };
+	float periapsis_pos[2] = { periapsis * std::cos(periapsis_angle), periapsis * std::sin(periapsis_angle) };
 	// for some reason x = sin and y = cos;
 	// this should be valid x and y for pos and negative. hope so :)
 
@@ -73,8 +73,8 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 	// int x = dist_at_point
 	// ecc >= 1.0 has possibility of divide by 0.
 
-	x = periapsis_v[0] + orbiting.x;
-	y = periapsis_v[1] + orbiting.y;
+	x = periapsis_pos[0] + orbiting.x;
+	y = periapsis_pos[1] + orbiting.y;
 
 	// currently sets velocity for if they're at periapsis with no implementation for random point in there orbit.
 
@@ -82,24 +82,25 @@ Body::Body(int id, float sat_dist, float ecc, const Body& orbiting, float grav_c
 	// all velocity at periapsis and apoapsis is tangental to body. 90 degrees = pi/2
 	float num = (1 + ecc) * grav_const * (orbiting.mass + mass); // orbiting.mass at least, possibly + mass
 	float den = (1 - ecc) * semi_major_axis;
-	float v_per = std::sqrt(num / den);
+	float velocity_periapsis = std::sqrt(num / den);
 
 	//float v_angle = periapsis_angle;
-	float v_angle = 2 * std::numbers::pi - periapsis_angle; // flip on y-axis
+	float velocity_angle = 2 * std::numbers::pi - periapsis_angle; // flip on y-axis
 
-
-	float vel_v[2] = { v_per * sin(v_angle), v_per * cos(v_angle) };
+	// Relative velocity of the body around the body it is orbiting.
+	float relative_velocity[2] = { velocity_periapsis * sin(velocity_angle), velocity_periapsis * cos(velocity_angle) };
 
 	constexpr double RETROGRADE_CHANCE = 0.12;
 	bool retrograde_roll = Rand::real() < RETROGRADE_CHANCE;
 
 	if (retrograde_roll) {
-		vel_v[0] = -vel_v[0];
-		vel_v[1] = -vel_v[1];
+		relative_velocity[0] = -relative_velocity[0];
+		relative_velocity[1] = -relative_velocity[1];
 	}
 
-	vel_x = vel_v[0] + orbiting.vel_x;
-	vel_y = vel_v[1] + orbiting.vel_y;
+	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
+	vel_x = relative_velocity[0] + orbiting.vel_x;
+	vel_y = relative_velocity[1] + orbiting.vel_y;
 
 #ifdef MY_DEBUG
 	std::cout << "Periapsis: " << periapsis << '\n';
