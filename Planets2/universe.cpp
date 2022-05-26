@@ -159,11 +159,10 @@ void Universe::handle_collisions()
 void Universe::update()
 {
 	handle_gravity(); // do grav pulls (update acceleration)
-	update_pos(); // update velocities and positions
+	update_pos(); // update velocities and positions 
+	partitioning_method->update();
 	handle_collisions();
 
-	// this should come before collisions. 
-	partitioning_method->update();
 }
 
 Body& Universe::create_body(float x, float y, long mass)
