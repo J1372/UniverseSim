@@ -210,6 +210,7 @@ void QuadTree::rem_body_internal(const Body& body)
 	auto it = std::find(quad_bodies.begin(), quad_bodies.end(), &body);
 	quad_bodies.erase(it);
 	notify_child_removed();
+	concat_check();
 }
 
 Body* QuadTree::find_body(Vector2 point) const
@@ -250,6 +251,7 @@ void QuadTree::update()
 			}
 
 		}
+
 
 	}
 	else {
@@ -293,7 +295,7 @@ void QuadTree::update()
 
 		}
 
-		// Child methods may have called reinsert on us.
+		// We may have reinserted upwards from our node or child nodes.
 		if (has_room()) {
 			concatenate();
 		}
@@ -318,17 +320,6 @@ bool QuadTree::contains_partially(const Body& body) const
 void QuadTree::notify_child_removed()
 {
 	cur_size--;
-
-	// We do this check up the parent chain, but really, a removal in a child node can only ever result in concatenation of its first order parent.
-	// actually a concatenation chain could happen. nevertheless, if parent does not concatenate, its parent wont concatenate either.
-	// so this could be optimized into two different methods, one with the concat check, and one without:
-	//	 "dont check for concat in next call if i am a parent and i did not concatenate."
-	//    still have to check if i am a leaf, though.
-
-	// or do this notify, then move concat chain checking afterwards.
-	if (!is_leaf() and has_room()) {
-		concatenate();
-	}
 
 	if (!is_root()) {
 		parent->notify_child_removed();
@@ -519,6 +510,39 @@ void QuadTree::reinsert(Body& body)
 		// Not fully contained in this node, needs to continue moving upwards.
 		cur_size--; // was previously in a child node, and now is moving to our parent node.
 		parent->reinsert(body);
+	}
+}
+
+void QuadTree::concat_check()
+{
+	// We do this check up the parent chain, but really, a removal in a child node can only ever result in concatenation of its first order parent.
+	// actually a concatenation chain could happen. nevertheless, if parent does not concatenate, its parent wont concatenate either.
+	// so this could be optimized into two different methods, one with the concat check, and one without:
+	//	 "dont check for concat in next call if i am a parent and i did not concatenate."
+	//    still have to check if i am a leaf, though.
+
+	// or do this notify, then move concat chain checking afterwards.
+
+	if (is_root()) {
+		if (!is_leaf() and has_room()) {
+			concatenate();
+		}
+		return;
+	}
+
+	// not root.
+
+	if (is_leaf()) { // leaves cannot concatenate, but check parent.
+		parent->concat_check();
+	}
+	else if (has_room()) { // parent, and not at max capacity.
+		// if we are a parent and we concatenate, we still need to tell our parent to check for concatenation.
+		concatenate();
+		parent->concat_check();
+	}
+	else { // parent and doesn't have room
+		// do nothing and stop checking.
+		// if we are a parent that didn't concatenate, then none of our parents concatenated either.
 	}
 }
 

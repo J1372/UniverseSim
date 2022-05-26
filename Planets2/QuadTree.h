@@ -123,6 +123,8 @@ private:
 	// Returns all child quads (searches entire depth) where the predicate is true.
 	std::vector<QuadTree*> get_all_quads(std::function<bool(const QuadTree&)> predicate) const;
 
+	void concat_check();
+
 	// Moves all child nodes' bodies into this node, then resets their pointers to nullptr.
 	void concatenate();
 	// Creates 4 new child nodes. Moves all bodies that can completely fit inside a child node, into that node.
