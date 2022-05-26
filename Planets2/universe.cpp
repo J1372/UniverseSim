@@ -11,13 +11,20 @@
 
 Universe::Universe()
 {
+	partitioning_method = std::make_unique<QuadTree>(2 * settings.universe_size_max);
 	generate_universe();
-
 	//std::cout << std::thread::hardware_concurrency();
 }
 
 Universe::Universe(const UniverseSettings& to_set)
 {
+	settings = to_set;
+	partitioning_method = std::make_unique<QuadTree>(2 * settings.universe_size_max);
+	generate_universe();
+}
+
+
+Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning_method) : partitioning_method(std::move(partitioning_method)) {
 	settings = to_set;
 	generate_universe();
 }
@@ -28,8 +35,6 @@ void Universe::generate_universe()
 	//		->move reserve/make unique out into constructor / run-once-at-start method.
 
 	active_bodies.reserve(settings.UNIVERSE_CAPACITY);
-
-	partitioning_method = std::make_unique<QuadTree>(2*settings.universe_size_max);
 
 	for (int i = 0; i < settings.num_rand_planets; ++i) {
 		create_rand_body();

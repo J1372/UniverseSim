@@ -47,6 +47,7 @@ public:
 	Universe();
 
 	Universe(const UniverseSettings& to_set);
+	Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning_method);
 
 	// Generates a new universe, using the current settings.
 	void generate_universe();
