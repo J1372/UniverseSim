@@ -41,7 +41,7 @@ bool Physics::body_inside_rect(const Body& body, Rectangle rect)
 bool Physics::body_intersects_rect(const Body& body, Rectangle rect)
 {
 	float dist_x = std::abs(body.x - rect.x - rect.width / 2);
-	float dist_y = std::abs(body.y - rect.y - rect.width / 2);
+	float dist_y = std::abs(body.y - rect.y - rect.height / 2);
 
 	if (dist_x > (rect.width / 2 + body.radius)) { return false; }
 	if (dist_y > (rect.height / 2 + body.radius)) { return false; }
