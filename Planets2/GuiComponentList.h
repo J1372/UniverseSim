@@ -19,6 +19,8 @@ class GuiComponentList
 	// But would still need to poll in get_element without this vector. Which would only happen on any click. Might not be bad.
 	std::vector<UIElement*> visible_elements;
 
+	// if maintain order needed, could give each element an id and keep vectors sorted.
+
 	void set_active(UIElement* element);
 
 public:

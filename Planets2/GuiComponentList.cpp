@@ -27,13 +27,13 @@ UIElement* GuiComponentList::get_element(Vector2 point)
 {
 	// elements are rendered first->last. so last elements are on top. loop backwards.
 	for (int i = visible_elements.size() - 1; i >= 0; i--) {
-		auto&& element = elements[i];
+		auto&& element = visible_elements[i];
 		if (element->contains_point(point)) {
-			return element.get();
+			return element;
 		}
 	}
 
-	// did not click on any element.
+	// did not click on any visible element.
 	return nullptr;
 }
 
