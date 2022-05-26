@@ -26,7 +26,7 @@ class Grid : public SpatialPartitioning
 
 public:
 
-	Grid(int grid_size, int node_size);
+	Grid(int grid_size, int nodes_per_row);
 
 	// Updates bodies to be in the correct grid.
 	void update();
