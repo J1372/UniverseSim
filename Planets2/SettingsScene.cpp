@@ -15,7 +15,8 @@ void SettingsScene::init_default()
 		generate_settings();
 		return_scene = new SimulationScene{ screen_width, screen_height, settings, gen_partitioning() };
 
-		});
+	});
+
 	exit_button.set_on_action([this]() { return_scene = nullptr; });
 
 	start_button.set_min_width(100);
@@ -30,6 +31,31 @@ void SettingsScene::init_default()
 	partitioning_dropdown.add_choice("Quad tree");
 	partitioning_dropdown.add_choice("Grid");
 	partitioning_dropdown.add_choice("AABB");
+
+	partitioning_dropdown.set_on_selection([this](const std::string& selection) {
+		if (selection == "Quad tree") {
+			gui.hide(grid_nodes_per_row_input);
+			gui.show(quadtree_max_depth_input);
+			gui.show(quad_max_bodies_input);
+		}
+		else if (selection == "Grid") {
+			gui.show(grid_nodes_per_row_input);
+			gui.hide(quadtree_max_depth_input);
+			gui.hide(quad_max_bodies_input);
+		}
+		else if (selection == "Line Sweep") {
+			gui.hide(grid_nodes_per_row_input);
+			gui.hide(quadtree_max_depth_input);
+			gui.hide(quad_max_bodies_input);
+		}
+		else {
+			gui.hide(grid_nodes_per_row_input);
+			gui.hide(quadtree_max_depth_input);
+			gui.hide(quad_max_bodies_input);
+		}
+	});
+
+	partitioning_dropdown.deselect();
 
 	background_color = SKYBLUE;
 }
@@ -68,10 +94,14 @@ std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
 	std::string name_method = partitioning_dropdown.get_selected();
 
 	if (name_method == "Quad tree") {
+		int bodies_per_quad = std::stoi(quad_max_bodies_input.get_text());
+		int max_depth = std::stoi(quadtree_max_depth_input.get_text());
+
 		return std::make_unique<QuadTree>(settings.universe_size_max);
 	}
 	else if (name_method == "Grid") {
-		return std::make_unique<Grid>(settings.universe_size_max, 10);
+		int nodes_per_row = std::stoi(grid_nodes_per_row_input.get_text());
+		return std::make_unique<Grid>(settings.universe_size_max, nodes_per_row);
 	}
 	else if (name_method == "Line Sweep") {
 		return nullptr;

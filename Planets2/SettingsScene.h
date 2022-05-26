@@ -66,7 +66,17 @@ class SettingsScene : public GuiScene
 	Label& sys_min_planets_label = gui.add<Label>("Min planets", SYSTEMS_START_X + LABEL_OFFSET, COLUMN_Y + 120, 12);
 	Label& sys_max_planets_label = gui.add<Label>("Max planets", SYSTEMS_START_X + LABEL_OFFSET, COLUMN_Y + 220, 12);
 
+
+
+	// Partitioning selection and specific settings.
 	Dropdown& partitioning_dropdown = gui.add<Dropdown>(500, 500, 12);
+
+	// Quadtree settings.
+	TextBox& quadtree_max_depth_input = gui.add<TextBox>(700, 500, TEXTBOX_WIDTH);
+	TextBox& quad_max_bodies_input = gui.add<TextBox>(700 + LABEL_OFFSET, 500, TEXTBOX_WIDTH);
+
+	// Grid settings
+	TextBox& grid_nodes_per_row_input = gui.add<TextBox>(700, 500, TEXTBOX_WIDTH);
 
 	void init_default(); // register event handling and other gui setup.
 	void generate_settings();
