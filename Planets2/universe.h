@@ -25,11 +25,10 @@ class Universe {
 
 	int generated_bodies = 0;
 
-	// O(n^2)
-	//void handle_collisions();
-
+	// O(n)
+	void handle_collisions(std::vector<Collision>& collisions);
 	// O(1)
-	//bool handle_collision(int it);
+	void handle_collision(Collision collision, std::vector<int>& to_remove);
 
 	// O(n^2)
 	void handle_gravity();
@@ -39,8 +38,9 @@ class Universe {
 
 	std::vector<float> gen_rand_portions(int num_slots) const;
 
-	void handle_collisions();
-	void handle_collision(Collision collision, std::vector<int>& to_remove);
+	// O(n^2)
+	std::vector<Collision> get_collisions_no_partitioning() const;
+
 
 public:
 
@@ -64,7 +64,9 @@ public:
 
 		Body& body = *active_bodies[active_bodies.size() - 1];
 
-		partitioning_method->add_body(body);
+		if (has_partitioning()) {
+			partitioning_method->add_body(body);
+		}
 
 		return body;
 	}

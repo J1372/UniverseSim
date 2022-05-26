@@ -97,6 +97,31 @@ std::vector<float> Universe::gen_rand_portions(int num_slots) const
 	return slots;
 }
 
+std::vector<Collision> Universe::get_collisions_no_partitioning() const
+{
+	std::vector<Collision> collisions;
+
+	if (active_bodies.empty()) {
+		return collisions;
+	}
+
+	collisions.reserve(active_bodies.size()); // could reserve on start, and on create_body resize it (after done handling).
+
+	for (auto it1 = active_bodies.begin(); it1 != active_bodies.end() - 1; it1++) {
+		Body& body1 = **it1;
+		for (auto it2 = it1 + 1; it2 != active_bodies.end(); it2++) {
+			Body& body2 = **it2;
+
+			if (Physics::have_collided(body1, body2)) {
+				collisions.emplace_back(Body::get_sorted_pair(body1, body2));
+			}
+
+		}
+	}
+
+	return collisions;
+}
+
 void Universe::handle_collision(Collision collision, std::vector<int>& to_remove)
 {
 	/*
@@ -128,13 +153,10 @@ void Universe::handle_collision(Collision collision, std::vector<int>& to_remove
 	// and it is not costly to just remove from root on collision, since collision is relatively rare.
 
 	to_remove.push_back(smaller.id);
-
-	partitioning_method->rem_body(smaller);
 }
 
-void Universe::handle_collisions()
+void Universe::handle_collisions(std::vector<Collision>& collisions)
 {
-	std::vector<Collision> collisions = partitioning_method->get_collisions();
 	std::vector<int> to_remove;
 	to_remove.reserve(active_bodies.size());
 
@@ -158,15 +180,30 @@ void Universe::handle_collisions()
 		// Find iterator->body to remove using binary search.
 		auto remove_it = std::lower_bound(active_bodies.begin(), active_bodies.end(), id, predicate);
 
+		if (has_partitioning()) {
+			partitioning_method->rem_body(**remove_it);
+		}
+
 		active_bodies.erase(remove_it);
 	}
 }
 void Universe::update()
 {
 	handle_gravity(); // do grav pulls (update acceleration)
-	update_pos(); // update velocities and positions 
-	partitioning_method->update();
-	handle_collisions();
+	update_pos(); // update velocities and positions
+
+	std::vector<Collision> collisions;
+
+	if (has_partitioning()) {
+		partitioning_method->update();
+		collisions = partitioning_method->get_collisions();
+	}
+	else {
+		collisions = get_collisions_no_partitioning();
+	}
+
+	handle_collisions(collisions);
+
 
 }
 
