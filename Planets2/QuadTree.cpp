@@ -210,10 +210,6 @@ void QuadTree::rem_body_internal(const Body& body)
 	auto it = std::find(quad_bodies.begin(), quad_bodies.end(), &body);
 	quad_bodies.erase(it);
 	notify_child_removed();
-
-	if (!is_leaf() and has_room()) {
-		concatenate();
-	}
 }
 
 Body* QuadTree::find_body(Vector2 point) const
@@ -322,6 +318,18 @@ bool QuadTree::contains_partially(const Body& body) const
 void QuadTree::notify_child_removed()
 {
 	cur_size--;
+
+	// We do this check up the parent chain, but really, a removal in a child node can only ever result in concatenation of its first order parent.
+	// actually a concatenation chain could happen. nevertheless, if parent does not concatenate, its parent wont concatenate either.
+	// so this could be optimized into two different methods, one with the concat check, and one without:
+	//	 "dont check for concat in next call if i am a parent and i did not concatenate."
+	//    still have to check if i am a leaf, though.
+
+	// or do this notify, then move concat chain checking afterwards.
+	if (!is_leaf() and has_room()) {
+		concatenate();
+	}
+
 	if (!is_root()) {
 		parent->notify_child_removed();
 	}
