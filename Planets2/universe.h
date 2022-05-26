@@ -54,13 +54,26 @@ public:
 
 	bool can_create_body() const;
 
-	Body& create_body(float x, float y, long mass);
-	Body& create_body(float sat_dist, const Body& orbiting, float ecc, long mass);
+	template <class... ArgTypes>
+	Body& create_body(ArgTypes&&... args)
+	{
+		int id = generated_bodies++;
+
+		active_bodies.emplace_back(std::make_unique<Body>(id, std::forward<ArgTypes>(args)...));
+
+		Body& body = *active_bodies[active_bodies.size() - 1];
+
+		partitioning_method->add_body(body);
+
+		return body;
+	}
+
 	Body& create_satellite(const Body& orbiting, float ecc, long mass);
 
 	Body& create_rand_body();
 	Body& create_rand_system();
 	Body& create_rand_satellite(const Body& orbiting);
+
 
 	bool has_partitioning() const { return partitioning_method.get() != nullptr; }
 	const SpatialPartitioning* get_partitioning() const { return partitioning_method.get(); }
