@@ -16,16 +16,29 @@ Universe::Universe()
 	//std::cout << std::thread::hardware_concurrency();
 }
 
-Universe::Universe(const UniverseSettings& to_set)
+Universe::Universe(const UniverseSettings& to_set) : settings(to_set),
+	dimensions{-settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
 {
-	settings = to_set;
 	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
 	generate_universe();
 }
 
+std::vector<std::unique_ptr<Body>>::iterator Universe::get_iterator(int id)
+{
+	auto predicate = [](const std::unique_ptr<Body>& ptr, int id) {
+		return ptr->id < id;
+	};
 
-Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning) : partitioning_method(std::move(partitioning)) {
-	settings = to_set;
+	// Find iterator->body by id using binary search.
+	return std::lower_bound(active_bodies.begin(), active_bodies.end(), id, predicate);
+}
+
+
+Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning) : settings(to_set), 
+	partitioning_method(std::move(partitioning)),
+	dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
+{
+	
 	generate_universe();
 }
 
@@ -122,6 +135,11 @@ std::vector<Collision> Universe::get_collisions_no_partitioning() const
 	return collisions;
 }
 
+bool Universe::in_bounds(Vector2 point) const
+{
+	return Physics::point_in_rect(point, dimensions);
+}
+
 void Universe::handle_collision(Collision collision, std::vector<int>& to_remove)
 {
 	/*
@@ -145,14 +163,14 @@ void Universe::handle_collision(Collision collision, std::vector<int>& to_remove
 		return;
 	}
 
-	bigger.absorb(smaller);
-	smaller.notify_being_removed(&bigger);
+	to_remove.push_back(smaller.id);
+	rem_body(smaller, bigger);
+
 
 	// smaller.notify could remove from partitioning if partitioning makes itself an observer of that body.
 	// but that would involve the partitioning systems managing their observer statuses of their bodies when they move.
 	// and it is not costly to just remove from root on collision, since collision is relatively rare.
 
-	to_remove.push_back(smaller.id);
 }
 
 void Universe::handle_collisions(std::vector<Collision>& collisions)
@@ -163,30 +181,8 @@ void Universe::handle_collisions(std::vector<Collision>& collisions)
 	for (const Collision& collision : collisions) {
 		handle_collision(collision, to_remove);
 	}
-
-	// Sort the ids.
-	std::sort(to_remove.begin(), to_remove.end());
-
-	// Comparison predicate for std::lower_bound.
-	auto predicate = [](const std::unique_ptr<Body>& ptr, int id) {
-		return ptr->id < id;
-	};
-
-	// Both active_bodies and to_remove are sorted by id in increasing order.
-	// We can loop backwards through to_remove and do binary search on active_bodies to efficiently remove all bodies with ids in to_remove.
-	for (auto it = to_remove.rbegin(); it != to_remove.rend(); it++) {
-		int id = *it;
-
-		// Find iterator->body to remove using binary search.
-		auto remove_it = std::lower_bound(active_bodies.begin(), active_bodies.end(), id, predicate);
-
-		if (has_partitioning()) {
-			partitioning_method->rem_body(**remove_it);
-		}
-
-		active_bodies.erase(remove_it);
-	}
 }
+
 void Universe::update()
 {
 	handle_gravity(); // do grav pulls (update acceleration)
@@ -275,6 +271,10 @@ Body& Universe::create_rand_satellite(const Body& orbiting)
 
 Body* Universe::get_body(Vector2 point) const
 {
+	if (!in_bounds(point)) {
+		return nullptr;
+	}
+
 	if (has_partitioning()) {
 		return partitioning_method->find_body(point);
 	}
@@ -316,5 +316,48 @@ void Universe::grav_pull(Body& body1, Body& body2) const
 
 	body2.grav_pull(force_vectors);
 
+
+}
+
+void Universe::rem_body(int id)
+{
+	// Find iterator->body to remove.
+	auto remove_it = get_iterator(id);
+	(**remove_it).notify_being_removed(nullptr);
+
+	if (has_partitioning()) {
+		partitioning_method->rem_body(**remove_it);
+	}
+
+	active_bodies.erase(remove_it);
+}
+
+
+void Universe::rem_body(Body& body)
+{
+
+	// Find iterator->body to remove.
+	auto remove_it = get_iterator(body.id);
+	body.notify_being_removed(nullptr);
+
+	if (has_partitioning()) {
+		partitioning_method->rem_body(**remove_it);
+	}
+
+	active_bodies.erase(remove_it);
+}
+
+
+void Universe::rem_body(Body& body, Body& removed_by) {
+
+	auto remove_it = get_iterator(body.id);
+	removed_by.absorb(body);
+	body.notify_being_removed(&removed_by);
+
+	if (has_partitioning()) {
+		partitioning_method->rem_body(**remove_it);
+	}
+
+	active_bodies.erase(remove_it);
 
 }

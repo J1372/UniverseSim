@@ -23,6 +23,17 @@ void SimulationScene::process_input()
 		}
 	}
 
+	if (IsKeyDown(KEY_LEFT_CONTROL) and IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		Vector2 screen_point = GetMousePosition();
+		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state->get_raylib_camera());
+
+		Body* body = universe.get_body(universe_point);
+
+		if (body) {
+			universe.rem_body(*body);
+		}
+	}
+
 	if (IsKeyPressed(KEY_H)) {
 		should_render_help_text = !should_render_help_text;
 	}

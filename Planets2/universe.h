@@ -23,6 +23,8 @@ class Universe {
 
 	std::vector<std::unique_ptr<Body>> active_bodies;
 
+	Rectangle dimensions;
+
 	int generated_bodies = 0;
 
 	// O(n)
@@ -41,6 +43,11 @@ class Universe {
 	// O(n^2)
 	std::vector<Collision> get_collisions_no_partitioning() const;
 
+	bool in_bounds(Vector2 point) const;
+
+	std::vector<std::unique_ptr<Body>>::iterator get_iterator(int id);
+
+	void rem_body(Body& body, Body& removed_by);
 
 public:
 
@@ -71,6 +78,7 @@ public:
 		return body;
 	}
 
+	// should enforce mass <= orbiting.mass
 	Body& create_satellite(const Body& orbiting, float ecc, long mass);
 
 	Body& create_rand_body();
@@ -81,6 +89,9 @@ public:
 	bool has_partitioning() const { return partitioning_method.get() != nullptr; }
 	const SpatialPartitioning* get_partitioning() const { return partitioning_method.get(); }
 	UniverseSettings& get_settings() { return settings; }
+
+	void rem_body(int id);
+	void rem_body(Body& body);
 
 	// Returns the body at the coordinate, or nullptr if not found.
 	Body* get_body(Vector2 point) const;
