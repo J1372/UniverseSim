@@ -22,9 +22,6 @@ void SettingsScene::init_default()
 	start_button.set_min_width(100);
 	exit_button.set_min_width(100);
 
-
-	//num_planets_input.set_on_exit([this](const std::string& text) { settings.num_rand_planets = std::stoi(text); });
-
 	num_planets_input.set_prompt_text("Number of random planets to generate");
 	num_systems_input.set_prompt_text("Number of random systems to generate");
 
