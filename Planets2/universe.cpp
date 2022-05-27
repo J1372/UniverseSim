@@ -86,7 +86,7 @@ void Universe::update_pos()
 	for (int i = 0; i < active_bodies.size(); i++) {
 		Body& body = *active_bodies[i];
 
-		body.pos_update(settings.universe_size_max);
+		body.pos_update(settings.universe_size_max / 2);
 	}
 }
 

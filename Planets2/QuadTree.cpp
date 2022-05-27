@@ -286,9 +286,17 @@ void QuadTree::update()
 
 			}
 			else { // body no longer completely inside this node.
-				it = quad_bodies.erase(it);
-				cur_size--;
-				parent->reinsert(body);
+
+				if (!is_root()) {
+					it = quad_bodies.erase(it);
+					cur_size--;
+					parent->reinsert(body);
+				}
+				else {
+					// wraparound or deletion is about to happen.
+					it++;
+				}
+
 			}
 
 			to_check--;
@@ -505,6 +513,7 @@ void QuadTree::reinsert(Body& body)
 	else if (is_root()) {
 		// If body is not completely in the root quadtree, it is about to be wrapped around to the other side
 		//	since the quadtree root's size is the same size as the max universe size.
+		quad_bodies.push_back(&body);
 	}
 	else { // not fully contained in this node, and this node is not the root (parent != nullptr)
 		// Not fully contained in this node, needs to continue moving upwards.

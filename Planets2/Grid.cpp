@@ -57,6 +57,11 @@ std::vector<GridNode*> Grid::get_all_nodes(const Body& body)
     int last_row = get_index(dimensions.y + dimensions.height);
     int last_col = get_index(dimensions.x + dimensions.width);
 
+    first_row = std::max(0, first_row);
+    first_col = std::max(0, first_col);
+
+    last_row = std::min(nodes_per_row-1, last_row);
+    last_col = std::min(nodes_per_row-1, last_col);
 
     for (int i = first_row; i <= last_row; i++) {
         for (int j = first_col; j <= last_col; j++) {
