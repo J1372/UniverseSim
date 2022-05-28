@@ -2,32 +2,10 @@
 #include "FreeCamera.h"
 #include "Body.h"
 #include "universe.h"
-#include "CameraList.h"
 
-
-AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config) : CameraState(starting_config), anchored_to(nullptr)
-{}
-
-AnchoredCamera::AnchoredCamera(AdvCamera&& starting_config) : CameraState(starting_config), anchored_to(nullptr)
-{}
-
-AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config, Body& anchor_to) : CameraState(starting_config)
+void AnchoredCamera::init(const AdvCamera& starting_config)
 {
-    switch_to(anchor_to);
-    snap_camera_to_target();
-}
-
-AnchoredCamera::AnchoredCamera(AdvCamera&& starting_config, Body& anchor_to) : CameraState(starting_config)
-{
-    switch_to(anchor_to);
-    snap_camera_to_target();
-}
-
-AnchoredCamera::~AnchoredCamera()
-{
-    if (anchored_to) {
-        anchored_to->removal_event().rem_observer(listener_id);
-    }
+    camera = starting_config;
 }
 
 void AnchoredCamera::snap_camera_to_target()
@@ -35,9 +13,9 @@ void AnchoredCamera::snap_camera_to_target()
     camera.set_target({ anchored_to->x, anchored_to->y });
 }
 
-FreeCamera* AnchoredCamera::goto_free_camera(CameraList& cameras)
+CameraState* AnchoredCamera::goto_free_camera()
 {
-    FreeCamera& transition_to = cameras.free_camera;
+    FreeCamera& transition_to = CameraState::free_camera;
     transition_to.enter(camera);
     return &transition_to;
 }
@@ -66,9 +44,9 @@ void AnchoredCamera::switch_to(Body& anchor_to)
 
 }
 
-CameraState* AnchoredCamera::update(const Universe& universe, CameraList& cameras)
+CameraState* AnchoredCamera::update(const Universe& universe)
 {
-    // Handle state transitions and switching to different bodies.
+    // Handle user switching to different bodies.
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
         Vector2 screen_point = GetMousePosition();
         Vector2 universe_point = GetScreenToWorld2D(screen_point, camera.get_raylib_camera());
@@ -77,11 +55,12 @@ CameraState* AnchoredCamera::update(const Universe& universe, CameraList& camera
 
         switch_to(body);
     }
-
-    // anchored_to == nullptr if right click on nothing or body deleted and was not absorbed by another body.
+    
+    // Handle state transitions
+    // anchored_to == nullptr if user right clicked on nothing or body deleted and was not absorbed by another body.
     // in any case, no body to anchor to, so return to a free camera state.
     if (!anchored_to) {
-        return goto_free_camera(cameras);
+        return goto_free_camera();
     }
 
     // Will remain in an anchored camera state, so update camera and handle other user camera input.
@@ -141,4 +120,14 @@ void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to)
     camera.set_target({anchored_to->x, anchored_to->y});
     camera.set_zoom(ray_cam.zoom);
 
+}
+
+const AdvCamera& AnchoredCamera::get_camera() const
+{
+    return camera;
+}
+
+const Camera2D& AnchoredCamera::get_raylib_camera() const
+{
+    return camera.get_raylib_camera();
 }

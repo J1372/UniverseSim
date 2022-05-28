@@ -47,6 +47,7 @@ class AdvCamera
 
 public:
 
+	AdvCamera() = default;
 	AdvCamera(Vector2& offset, Vector2& target);
 	AdvCamera(Vector2& offset, Vector2& target, int target_speed_multiplier);
 

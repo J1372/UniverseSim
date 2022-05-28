@@ -2,7 +2,7 @@
 #include "Scene.h"
 
 #include "universe.h"
-#include "CameraList.h"
+#include "AdvCamera.h"
 
 class CameraState;
 class Body;
@@ -12,7 +12,6 @@ class SimulationScene : public Scene
 
 	Universe universe;
 	AdvCamera starting_config { Vector2{0,0}, Vector2{0,0} };
-	CameraList cameras {starting_config};
 	CameraState* camera_state;
 
 	bool running = false;

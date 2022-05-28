@@ -6,25 +6,14 @@
 
 #include "raylib.h"
 
-#include "CameraList.h"
-
-FreeCamera::FreeCamera(const AdvCamera& starting_config) : CameraState(starting_config)
+void FreeCamera::init(const AdvCamera & starting_config)
 {
-	float off_x = GetScreenWidth() / 2;
-	float off_y = GetScreenHeight() / 2;
-
-	camera.set_offset({ off_x, off_y });
+	camera = starting_config;
+	Vector2 center = { GetScreenWidth() / 2, GetScreenHeight() / 2 };
+	camera.set_offset(center);
 }
 
-FreeCamera::FreeCamera(AdvCamera&& starting_config) : CameraState(starting_config)
-{
-	float off_x = GetScreenWidth() / 2;
-	float off_y = GetScreenHeight() / 2;
-
-	camera.set_offset({ off_x, off_y });
-}
-
-CameraState* FreeCamera::update(const Universe& universe, CameraList& cameras)
+CameraState* FreeCamera::update(const Universe& universe)
 {
 	// Camera state change
 
@@ -35,7 +24,7 @@ CameraState* FreeCamera::update(const Universe& universe, CameraList& cameras)
 		Body* body = universe.get_body(universe_point);
 
 		if (body) {
-			AnchoredCamera& transition_to = cameras.anchored_camera;
+			AnchoredCamera& transition_to = CameraState::anchored_camera;
 			transition_to.enter(camera, *body);
 			return &transition_to;
 		}
@@ -92,4 +81,14 @@ void FreeCamera::enter(const AdvCamera& prev_camera)
 	camera.set_target(my_target);
 	camera.set_zoom(prev_camera.get_zoom());
 
+}
+
+const AdvCamera& FreeCamera::get_camera() const
+{
+	return camera;
+}
+
+const Camera2D& FreeCamera::get_raylib_camera() const
+{
+	return camera.get_raylib_camera();
 }

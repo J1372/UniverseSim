@@ -9,9 +9,11 @@
 
 #include "SettingsScene.h"
 
-SimulationScene::SimulationScene(int width, int height, UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning) : Scene(width, height), universe{ settings, std::move(partitioning) }
+SimulationScene::SimulationScene(int width, int height, UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning) : 
+	Scene(width, height), universe{ settings, std::move(partitioning) }, camera_state(&CameraState::free_camera)
 {
-	camera_state = &cameras.free_camera;
+	CameraState::init_cameras(starting_config);
+
 	on_screen_bodies.reserve(universe.get_num_bodies());
 }
 
@@ -52,7 +54,7 @@ void SimulationScene::process_input()
 		return_scene = new SettingsScene(screen_width, screen_height, universe.get_settings());
 	}
 
-	
+
 }
 
 void SimulationScene::update_on_screen_bodies()
@@ -188,7 +190,7 @@ Scene* SimulationScene::update()
 		universe.update();
 	}
 
-	camera_state = camera_state->update(universe, cameras);
+	camera_state = camera_state->update(universe);
 
 	update_on_screen_bodies();
 

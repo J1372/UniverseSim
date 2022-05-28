@@ -12,6 +12,7 @@ AdvCamera::AdvCamera(Vector2& offset, Vector2& target) : target_speed_multiplier
 	camera.offset = offset;
 	camera.target = target;
 	camera.zoom = 1.0f;
+	camera.rotation = 0.0f;
 	recalculate_speed_target();
 }
 
@@ -20,6 +21,7 @@ AdvCamera::AdvCamera(Vector2& offset, Vector2& target, int target_speed_multipli
 	camera.offset = offset;
 	camera.target = target;
 	camera.zoom = 1.0f;
+	camera.rotation = 0.0f;
 	recalculate_speed_target();
 }
 
@@ -28,6 +30,7 @@ AdvCamera::AdvCamera(Vector2&& offset, Vector2&& target) : target_speed_multipli
 	camera.offset = std::move(offset);
 	camera.target = std::move(target);
 	camera.zoom = 1.0f;
+	camera.rotation = 0.0f;
 	recalculate_speed_target();
 }
 

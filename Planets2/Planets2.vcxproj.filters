@@ -63,9 +63,6 @@
     <ClCompile Include="AdvCamera.cpp">
       <Filter>Scenes\SimScene</Filter>
     </ClCompile>
-    <ClCompile Include="CameraList.cpp">
-      <Filter>Scenes\SimScene</Filter>
-    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Sim_Model\Events</Filter>
     </ClCompile>
@@ -145,9 +142,6 @@
       <Filter>Scenes\SimScene</Filter>
     </ClInclude>
     <ClInclude Include="AdvCamera.h">
-      <Filter>Scenes\SimScene</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraList.h">
       <Filter>Scenes\SimScene</Filter>
     </ClInclude>
     <ClInclude Include="Collision.h">
