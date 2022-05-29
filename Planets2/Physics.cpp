@@ -26,6 +26,18 @@ void Physics::handle_collision(Body& body1, Body& body2)
 	}
 }
 
+bool Physics::point_in_circle(Vector2 point, float circle_x, float circle_y, float radius)
+{
+	// Can remove absolute calls, since they are squared anyway.
+	float dist_x = std::abs(point.x - circle_x);
+	float dist_y = std::abs(point.y - circle_y);
+
+	float dist_squared = std::pow(dist_x, 2) + std::pow(dist_y, 2);
+	float dist = std::sqrt(dist_squared); // can compare to radius^2 instead.
+
+	return dist <= radius;
+}
+
 bool Physics::point_in_rect(Vector2 point, Rectangle rect)
 {
 	return point.x >= rect.x and point.x < rect.x + rect.width and
