@@ -12,7 +12,7 @@ int main() {
 	float start_height = 900.0;
 
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-	InitWindow(start_width, start_height, "Game");
+	InitWindow(start_width, start_height, "Universe sim");
 	SetExitKey(KEY_NULL); // Disable raylib default exit when pressing escape.
 
 	MaximizeWindow();
