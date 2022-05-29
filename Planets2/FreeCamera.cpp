@@ -82,13 +82,3 @@ void FreeCamera::enter(const AdvCamera& prev_camera)
 	camera.set_zoom(prev_camera.get_zoom());
 
 }
-
-const AdvCamera& FreeCamera::get_camera() const
-{
-	return camera;
-}
-
-const Camera2D& FreeCamera::get_raylib_camera() const
-{
-	return camera.get_raylib_camera();
-}

@@ -121,13 +121,3 @@ void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to)
     camera.set_zoom(ray_cam.zoom);
 
 }
-
-const AdvCamera& AnchoredCamera::get_camera() const
-{
-    return camera;
-}
-
-const Camera2D& AnchoredCamera::get_raylib_camera() const
-{
-    return camera.get_raylib_camera();
-}

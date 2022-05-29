@@ -11,6 +11,11 @@ class AnchoredCamera;
 // Camera mode state machine.
 // Handles the policy and keybindings for updating and using a camera.
 class CameraState {
+
+protected:
+
+	AdvCamera camera;
+
 public:
 
 	// Camera state implementations
@@ -26,9 +31,9 @@ public:
 	virtual CameraState* update(const Universe& universe) = 0;
 
 	// Returns this state's camera.
-	virtual const AdvCamera& get_camera() const = 0;
+	const AdvCamera& get_camera() const { return camera; };
 
 	// Returns the underlying raylib Camera2D struct of this state's camera.
-	virtual const Camera2D& get_raylib_camera() const = 0;
+	const Camera2D& get_raylib_camera() const { return camera.get_raylib_camera(); };
 
 };
