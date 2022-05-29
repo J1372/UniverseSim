@@ -109,6 +109,7 @@ public:
 	float right() const { return x + radius; }
 	float top() const { return y - radius; }
 	float bottom() const { return y + radius; }
+	float diameter() const { return 2 * radius; }
 
 
 	void add_debug_text(const std::string&& text);
