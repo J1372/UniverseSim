@@ -67,9 +67,7 @@ public:
 	{
 		int id = generated_bodies++;
 
-		active_bodies.emplace_back(std::make_unique<Body>(id, std::forward<ArgTypes>(args)...));
-
-		Body& body = *active_bodies[active_bodies.size() - 1];
+		Body& body = *active_bodies.emplace_back(std::make_unique<Body>(id, std::forward<ArgTypes>(args)...));
 
 		if (has_partitioning()) {
 			partitioning_method->add_body(body);
@@ -77,6 +75,9 @@ public:
 
 		return body;
 	}
+	
+	// Command to add the body to the universe.
+	void add_body(std::unique_ptr<Body>&& body_ptr);
 
 	// should enforce mass <= orbiting.mass
 	Body& create_satellite(const Body& orbiting, float ecc, long mass);

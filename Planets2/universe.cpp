@@ -23,6 +23,17 @@ Universe::Universe(const UniverseSettings& to_set) : settings(to_set),
 	generate_universe();
 }
 
+void Universe::add_body(std::unique_ptr<Body>&& body_ptr) {
+	Body& body = *body_ptr;
+	body.id = generated_bodies++;
+
+	active_bodies.emplace_back(std::move(body_ptr));
+
+	if (has_partitioning()) {
+		partitioning_method->add_body(body);
+	}
+}
+
 std::vector<std::unique_ptr<Body>>::iterator Universe::get_iterator(int id)
 {
 	auto predicate = [](const std::unique_ptr<Body>& ptr, int id) {
