@@ -87,6 +87,7 @@ public:
 
 	bool can_eat(const Body& other) const;
 
+	// Could take a float percentage parameter for partial absorptions. Then unconst other.
 	void absorb(const Body& other);
 
 	// void impact (struct Body * const, struct Body * const); partial absorb
@@ -114,7 +115,8 @@ public:
 	const std::string& get_debug_text() const;
 	void clear_debug_text();
 
-
+	void set_mass(long to_set);
+	void change_mass(long to_change);
 
 	// Notifies the body that it is being removed.
 	void notify_being_removed(Body* absorbed_by);

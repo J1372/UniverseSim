@@ -4,6 +4,7 @@
 #include "my_random.h"
 #include <numbers>
 #include "Removal.h"
+#include "Physics.h"
 
 
 
@@ -132,13 +133,7 @@ float Body::dist_body(const Body& other) const
 
 bool Body::contains_point(Vector2 point) const
 {
-	float dist_x = std::abs(point.x - x);
-	float dist_y = std::abs(point.y - y);
-
-	float dist_squared = std::pow(dist_x, 2) + std::pow(dist_y, 2);
-	float dist = std::sqrt(dist_squared);
-
-	return dist <= radius;
+	return Physics::point_in_circle(point, x, y, radius);
 }
 
 std::pair<Body*, Body*> Body::get_sorted_pair(Body& body1, Body& body2)
@@ -177,7 +172,6 @@ void Body::absorb(const Body& other)
 	// upgrade its type if it meets mass requirements.
 	mass = combined_mass;
 	upgrade_update();
-	radius = std::max(((float)mass) / type->density, 1.0f); // could be in upgrade_update
 
 	/*float force_x = other.mass / -other.vel_x;
 	float force_y = other.mass / -other.vel_y;
@@ -200,6 +194,9 @@ void Body::upgrade_update()
 	}
 
 	type = &TYPES[type_level];
+
+	// After updating type, recalculate body radius.
+	radius = std::max(((float)mass) / type->density, 1.0f);
 }
 
 void Body::pos_update(float wraparound_val)
@@ -247,6 +244,18 @@ const std::string& Body::get_debug_text() const
 void Body::clear_debug_text()
 {
 	debug_info.clear();
+}
+
+void Body::set_mass(long to_set)
+{
+	mass = std::max(1l, to_set);
+	upgrade_update();
+}
+
+void Body::change_mass(long to_change)
+{
+	mass = std::max(1l, mass + to_change);
+	upgrade_update();
 }
 
 void Body::notify_being_removed(Body* absorbed_by)
