@@ -127,6 +127,7 @@ public:
 	Rectangle get_bounding_box() const;
 
 	bool operator==(const Body& other) const;
+	bool operator!=(const Body& other) const;
 
 
 };

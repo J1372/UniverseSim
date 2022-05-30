@@ -279,3 +279,8 @@ bool Body::operator==(const Body& other) const
 {
 	return id == other.id;
 }
+
+bool Body::operator!=(const Body& other) const
+{
+	return id != other.id;
+}
