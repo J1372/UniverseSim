@@ -8,6 +8,7 @@
 
 #include "SpatialPartitioning.h"
 #include "Grid.h"
+#include "LineSweep.h"
 
 void SettingsScene::init_default()
 {
@@ -27,7 +28,7 @@ void SettingsScene::init_default()
 
 	partitioning_dropdown.add_choice("Quad tree");
 	partitioning_dropdown.add_choice("Grid");
-	partitioning_dropdown.add_choice("AABB");
+	partitioning_dropdown.add_choice("Line sweep");
 
 	partitioning_dropdown.set_on_selection([this](const std::string& selection) {
 		if (selection == "Quad tree") {
@@ -40,7 +41,7 @@ void SettingsScene::init_default()
 			gui.hide(quadtree_max_depth_input);
 			gui.hide(quad_max_bodies_input);
 		}
-		else if (selection == "Line Sweep") {
+		else if (selection == "Line sweep") {
 			gui.hide(grid_nodes_per_row_input);
 			gui.hide(quadtree_max_depth_input);
 			gui.hide(quad_max_bodies_input);
@@ -88,6 +89,7 @@ std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
 		// return null partitioning object
 		return nullptr;
 	}
+
 	std::string name_method = partitioning_dropdown.get_selected();
 
 	if (name_method == "Quad tree") {
@@ -100,8 +102,8 @@ std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
 		int nodes_per_row = std::stoi(grid_nodes_per_row_input.get_text());
 		return std::make_unique<Grid>(settings.universe_size_max, nodes_per_row);
 	}
-	else if (name_method == "Line Sweep") {
-		return nullptr;
+	else if (name_method == "Line sweep") {
+		return std::make_unique<LineSweep>();
 	}
 
 	return nullptr;
