@@ -120,7 +120,8 @@ public:
 	void change_mass(long to_change);
 
 	// Notifies the body that it is being removed.
-	void notify_being_removed(Body* absorbed_by);
+	void notify_being_removed(Body* absorbed_by); 
+	void notify_being_removed(Removal removal);
 
 	Event<Removal>& removal_event();
 

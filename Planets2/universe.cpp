@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include <vector>
+#include "Removal.h"
 
 Universe::Universe()
 {
@@ -92,6 +93,25 @@ void Universe::handle_gravity()
 	}
 }
 
+void Universe::handle_removal(Removal removal)
+{
+	Body& removed = removal.removed;
+	Body* absorbed = removal.absorbed_by;
+
+	if (has_partitioning()) {
+		partitioning_method->rem_body(removed);
+	}
+
+	if (absorbed) {
+		absorbed->absorb(removed);
+	}
+
+	removed.notify_being_removed(removal);
+
+	auto remove_it = get_iterator(removal.removed.id);
+	active_bodies.erase(remove_it);
+}
+
 void Universe::update_pos()
 {
 	for (int i = 0; i < active_bodies.size(); i++) {
@@ -151,7 +171,7 @@ bool Universe::in_bounds(Vector2 point) const
 	return Physics::point_in_rect(point, dimensions);
 }
 
-void Universe::handle_collision(Collision collision, std::vector<int>& to_remove)
+void Universe::handle_collision(Collision collision, std::vector<Removal>& to_remove)
 {
 	/*
 	* A simple handling of collisions. The bigger object completely absorbs the smaller object.
@@ -168,15 +188,13 @@ void Universe::handle_collision(Collision collision, std::vector<int>& to_remove
 	// or just loop through the presumably small to_remove vector
 
 	// already_removed == true if one of the bodies in this collision event are already set to be removed.
-	bool already_removed = std::any_of(to_remove.begin(), to_remove.end(), [&bigger, &smaller](int id) { return id == bigger.id or id == smaller.id; });
+	bool already_removed = std::any_of(to_remove.begin(), to_remove.end(), [&bigger, &smaller](Removal removal) { return removal.removed == bigger or removal.removed == smaller; });
 
 	if (already_removed) {
 		return;
 	}
 
-	to_remove.push_back(smaller.id);
-	rem_body(smaller, bigger);
-
+	to_remove.emplace_back(smaller, &bigger);
 
 	// smaller.notify could remove from partitioning if partitioning makes itself an observer of that body.
 	// but that would involve the partitioning systems managing their observer statuses of their bodies when they move.
@@ -186,11 +204,15 @@ void Universe::handle_collision(Collision collision, std::vector<int>& to_remove
 
 void Universe::handle_collisions(std::vector<Collision>& collisions)
 {
-	std::vector<int> to_remove;
+	std::vector<Removal> to_remove;
 	to_remove.reserve(active_bodies.size());
 
 	for (const Collision& collision : collisions) {
 		handle_collision(collision, to_remove);
+	}
+
+	for (Removal removal : to_remove) {
+		handle_removal(removal);
 	}
 }
 
@@ -372,20 +394,4 @@ void Universe::rem_body(Body& body)
 	body.notify_being_removed(nullptr);
 
 	active_bodies.erase(remove_it);
-}
-
-
-void Universe::rem_body(Body& body, Body& removed_by) {
-
-	auto remove_it = get_iterator(body.id);
-
-	if (has_partitioning()) {
-		partitioning_method->rem_body(**remove_it);
-	}
-
-	removed_by.absorb(body);
-	body.notify_being_removed(&removed_by);
-
-	active_bodies.erase(remove_it);
-
 }

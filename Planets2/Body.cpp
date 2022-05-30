@@ -170,8 +170,7 @@ void Body::absorb(const Body& other)
 
 
 	// upgrade its type if it meets mass requirements.
-	mass = combined_mass;
-	upgrade_update();
+	set_mass(combined_mass);
 
 	/*float force_x = other.mass / -other.vel_x;
 	float force_y = other.mass / -other.vel_y;
@@ -261,6 +260,11 @@ void Body::change_mass(long to_change)
 void Body::notify_being_removed(Body* absorbed_by)
 {
 	Removal removal { *this, absorbed_by };
+	on_removal_observers.notify_all(removal);
+}
+
+void Body::notify_being_removed(Removal removal)
+{
 	on_removal_observers.notify_all(removal);
 }
 

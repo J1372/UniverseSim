@@ -30,7 +30,8 @@ class Universe {
 	// O(n)
 	void handle_collisions(std::vector<Collision>& collisions);
 	// O(1)
-	void handle_collision(Collision collision, std::vector<int>& to_remove);
+	void handle_collision(Collision collision, std::vector<Removal>& to_remove);
+	void handle_removal(Removal removal);
 
 	// O(n^2)
 	void handle_gravity();
