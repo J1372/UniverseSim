@@ -292,13 +292,25 @@ Body* Universe::get_body(Vector2 point) const
 	else {
 		auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [point](const std::unique_ptr<Body>& body) {return body->contains_point(point); });
 		if (it != active_bodies.end()) {
-			return &**it; // Returns address of a dereference of an iterator to unique_ptr to Body. (Body*)
+			return it->get();
 		}
 		else {
 			return nullptr;
 		}
 	}
 	return nullptr;
+}
+
+Body* Universe::get_body(int id) const
+{
+	auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [id](const std::unique_ptr<Body>& body) { return body->id == id; });
+
+	if (it != active_bodies.end()) {
+		return it->get();
+	}
+	else {
+		return nullptr;
+	}
 }
 
 void Universe::grav_pull(Body& body1, Body& body2) const
@@ -334,11 +346,14 @@ void Universe::rem_body(int id)
 {
 	// Find iterator->body to remove.
 	auto remove_it = get_iterator(id);
-	(**remove_it).notify_being_removed(nullptr);
+
+	Body& body = **remove_it;
 
 	if (has_partitioning()) {
-		partitioning_method->rem_body(**remove_it);
+		partitioning_method->rem_body(body);
 	}
+
+	body.notify_being_removed(nullptr);
 
 	active_bodies.erase(remove_it);
 }
@@ -349,11 +364,12 @@ void Universe::rem_body(Body& body)
 
 	// Find iterator->body to remove.
 	auto remove_it = get_iterator(body.id);
-	body.notify_being_removed(nullptr);
 
 	if (has_partitioning()) {
 		partitioning_method->rem_body(**remove_it);
 	}
+
+	body.notify_being_removed(nullptr);
 
 	active_bodies.erase(remove_it);
 }
@@ -362,12 +378,13 @@ void Universe::rem_body(Body& body)
 void Universe::rem_body(Body& body, Body& removed_by) {
 
 	auto remove_it = get_iterator(body.id);
-	removed_by.absorb(body);
-	body.notify_being_removed(&removed_by);
 
 	if (has_partitioning()) {
 		partitioning_method->rem_body(**remove_it);
 	}
+
+	removed_by.absorb(body);
+	body.notify_being_removed(&removed_by);
 
 	active_bodies.erase(remove_it);
 

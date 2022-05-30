@@ -96,6 +96,8 @@ public:
 
 	// Returns the body at the coordinate, or nullptr if not found.
 	Body* get_body(Vector2 point) const;
+	// Returns the body associated with the id, or nullptr if not found.
+	Body* get_body(int id) const;
 
 	const std::vector<std::unique_ptr<Body>>& get_bodies() const { return active_bodies; }
 	int get_num_bodies() const { return active_bodies.size(); }
