@@ -7,6 +7,7 @@ struct Camera2D;
 class Universe;
 class FreeCamera;
 class AnchoredCamera;
+class Body;
 
 // Camera mode state machine.
 // Handles the policy and keybindings for updating and using a camera.
@@ -27,6 +28,8 @@ public:
 	static AnchoredCamera anchored_camera;
 
 	static void init_cameras(const AdvCamera& starting_config);
+
+	virtual void goto_body(Body& body) = 0;
 
 	virtual CameraState* update(const Universe& universe) = 0;
 

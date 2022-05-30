@@ -26,6 +26,8 @@ public:
 
 	void init(const AdvCamera& starting_config);
 
+	void goto_body(Body& body);
+
 	CameraState* update(const Universe& universe) override;
 
 	void enter(const AdvCamera& prev_camera, Body& anchor_to);

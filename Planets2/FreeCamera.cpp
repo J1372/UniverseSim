@@ -4,6 +4,8 @@
 #include "AnchoredCamera.h"
 #include <utility>
 
+#include "Body.h"
+
 #include "raylib.h"
 
 void FreeCamera::init(const AdvCamera & starting_config)
@@ -11,6 +13,11 @@ void FreeCamera::init(const AdvCamera & starting_config)
 	camera = starting_config;
 	Vector2 center = { GetScreenWidth() / 2, GetScreenHeight() / 2 };
 	camera.set_offset(center);
+}
+
+void FreeCamera::goto_body(Body& body)
+{
+	camera.set_target({ body.x, body.y });
 }
 
 CameraState* FreeCamera::update(const Universe& universe)

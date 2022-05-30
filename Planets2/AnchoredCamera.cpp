@@ -8,6 +8,12 @@ void AnchoredCamera::init(const AdvCamera& starting_config)
     camera = starting_config;
 }
 
+void AnchoredCamera::goto_body(Body& body)
+{
+    switch_to(body);
+    snap_camera_to_target();
+}
+
 void AnchoredCamera::snap_camera_to_target()
 {
     camera.set_target({ anchored_to->x, anchored_to->y });
