@@ -58,35 +58,11 @@ void LineSweep::add_bodies(std::span<Body*> bodies)
 
 void LineSweep::rem_body(const Body& body)
 {
-    if (body.id == 214) {
-        auto it = std::lower_bound(entry_events.cbegin(), entry_events.cend(), &body, left_less_than);
-
-        int dist = std::distance(entry_events.cbegin(), it);
-
-        float left214 = entry_events[dist - 2]->left();
-        float left285 = entry_events[dist - 1]->left();
-        float left281 = entry_events[dist - 0]->left();
-
-        int dontcare = 0;
-
-    }
-
     auto entry_event_it = get_entry_it(body);
     auto leave_event_it = get_leave_it(body);
 
     entry_events.erase(entry_event_it);
     leave_events.erase(leave_event_it);
-
-
-    // This is a very lazy way of handling mass changes due to collision.
-    // 
-    // Mass change -> radius change -> entry event and leave event states potentially being invalid.
-    // Which means other methods wont work with binary search.
-    // Ideally, we just need to reinsert the body whose mass has changed. Not sort both vectors.
-
-    // Could overload with rem_body(const Removal)
-    // This one for user commands, the other due to simulation.
-    sort_events();
 
 }
 
@@ -240,17 +216,10 @@ std::vector<Body*>::const_iterator LineSweep::get_entry_it(const Body& body) con
 {
     auto it = std::lower_bound(entry_events.cbegin(), entry_events.cend(), &body, left_less_than);
 
-    int dist = std::distance(entry_events.cbegin(), it);
-
     // it can be pointing at leftmost body whose leftmost point >= body's leftmost point. should be guaranteed == if in entry events.
     // might be multiple entry events with same point.
     while (it != entry_events.cend() and **it != body) { // if in events, shouldnt need to check for != cend().
         it++;
-        dist++;
-    }
-
-    if (it == entry_events.cend()) {
-        int NOONECARES = 2;
     }
 
     return it;

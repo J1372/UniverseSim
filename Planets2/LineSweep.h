@@ -70,4 +70,3 @@ public:
 	std::vector<Collision> get_collisions() const override;
 
 };
-

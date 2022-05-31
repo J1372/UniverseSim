@@ -103,12 +103,24 @@ void Universe::handle_removal(Removal removal)
 	}
 
 	if (absorbed) {
-		absorbed->absorb(removed);
+		if (has_partitioning()) {
+			// Remove the body before absorption re-add after to deal with radius change.
+			// A more efficient notify_radius_changed(Body, future_radius) can be a part of SpatialPartitioning,
+			// but it would be messier. we would need to use its future radius, not previous radius.
+			partitioning_method->rem_body(*absorbed);
+			absorbed->absorb(removed);
+			partitioning_method->add_body(*absorbed);
+		}
+		else {
+			absorbed->absorb(removed);
+		}
+
+
 	}
 
 	removed.notify_being_removed(removal);
 
-	auto remove_it = get_iterator(removal.removed.id);
+	auto remove_it = get_iterator(removed.id);
 	active_bodies.erase(remove_it);
 }
 
