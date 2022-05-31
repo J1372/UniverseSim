@@ -68,51 +68,7 @@ void QuadTree::get_collisions(std::vector<Collision>& collisions) const
 std::vector<Collision> QuadTree::get_collisions() const
 {
 	std::vector<Collision> collisions;
-
-	if (is_leaf()) {
-		if (!quad_bodies.empty()) {
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
-				Body& body = **it;
-				get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
-			}
-		}
-
-	}
-	else {
-
-		/* Need to do a collision check on our bodies.
-		* 
-		* This is different from a collision check in a leaf node.
-		* Our bodies can collide with each other, and with bodies in our child nodes.
-		* 
-		* Specifically the child nodes that contains_partially(our_body)
-		* This involves recursion downwards.
-		*/ 
-
-		if (!quad_bodies.empty()) {
-
-			// First, collision check with our node's bodies.
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
-				Body& body = **it;
-				get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
-			}
-
-			// Now, do a collision check on each body with the bodies of relevant child nodes.
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
-				Body& body = **it;
-				get_collisions_child(body, collisions);
-			}
-
-		}
-
-		// Can come before or after earlier checks.
-		UL->get_collisions(collisions);
-		UR->get_collisions(collisions);
-		LL->get_collisions(collisions);
-		LR->get_collisions(collisions);
-
-	}
-
+	get_collisions(collisions);
 	return collisions;
 }
 
