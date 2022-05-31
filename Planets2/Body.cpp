@@ -275,8 +275,7 @@ Event<Removal>& Body::removal_event()
 
 Rectangle Body::get_bounding_box() const
 {
-	float diameter = radius * 2;
-	return { left(), top(), diameter, diameter };
+	return { left(), top(), diameter(), diameter() };
 }
 
 bool Body::operator==(const Body& other) const
