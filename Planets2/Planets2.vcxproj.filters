@@ -159,6 +159,7 @@
     <ClInclude Include="LineSweep.h">
       <Filter>Partitioning</Filter>
     </ClInclude>
+    <ClInclude Include="Circle.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

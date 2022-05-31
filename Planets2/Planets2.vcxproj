@@ -148,6 +148,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="CameraState.h" />
     <ClInclude Include="CheckBoxList.h" />
+    <ClInclude Include="Circle.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Dropdown.h" />
     <ClInclude Include="Event.h" />
