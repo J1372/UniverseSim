@@ -16,8 +16,8 @@ class SimulationScene : public Scene
 	CameraState* camera_state;
 
 	bool running = false;
-	// Can only be true if universe.has_partitioning() is true.
 	bool should_render_tick_info = false;
+	// Can only be true if universe.has_partitioning() is true.
 	bool should_render_partitioning = false;
 	bool should_render_debug_text = false;
 	bool should_render_help_text = false;
