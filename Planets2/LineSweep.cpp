@@ -227,8 +227,7 @@ std::vector<Body*>::const_iterator LineSweep::get_entry_it(const Body& body) con
 
 std::vector<Body*>::const_iterator LineSweep::get_leave_it(const Body& body) const
 {
-    // currently using std::find because there is a bug when calling this in attach debug info method if using std::lower_bound.
-    auto it = std::find(leave_events.cbegin(), leave_events.cend(), &body);
+    auto it = std::lower_bound(leave_events.cbegin(), leave_events.cend(), &body, right_less_than);
 
     // it is pointing at first body whose rightmost point >= body's rightmost point. if in events, should be first ==.
     while (it != leave_events.cend() and **it != body) { // if in events, shouldnt need to check for != cend().
