@@ -10,4 +10,5 @@ struct Circle {
 	float top() const { return center.y - radius; }
 	float bottom() const { return center.y + radius; }
 	float diameter() const { return 2 * radius; }
+	Rectangle bounding_box() const { return { left(), top(), diameter(), diameter()}; };
 };
