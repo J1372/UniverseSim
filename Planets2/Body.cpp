@@ -27,9 +27,8 @@ void Body::do_wraparound(float wraparound_val)
 	}
 }
 
-Body::Body(int id, float sat_dist, const Body& orbiting, float ecc, float grav_const, long mass)
+Body::Body(float sat_dist, const Body& orbiting, float ecc, float grav_const, long mass)
 {
-	this->id = id;
 	this->mass = std::max(1l, mass);
 
 	upgrade_update();

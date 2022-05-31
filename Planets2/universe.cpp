@@ -10,21 +10,31 @@
 #include <vector>
 #include "Removal.h"
 
+float Universe::get_rand_sat_dist() const
+{
+	return Rand::real() * (settings.SATELLITE_MAX_DIST - settings.SATELLITE_MIN_DIST) + settings.SATELLITE_MIN_DIST;
+}
+
 Universe::Universe()
 {
 	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
-	generate_universe();
+	create_universe();
 	//std::cout << std::thread::hardware_concurrency();
 }
 
 Universe::Universe(const UniverseSettings& to_set) : settings(to_set),
-	dimensions{-settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
+dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
 {
 	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
-	generate_universe();
+	create_universe();
 }
 
-void Universe::add_body(std::unique_ptr<Body>&& body_ptr) {
+void Universe::add_body(std::unique_ptr<Body>&& body_ptr)
+{
+	if (!can_create_body()) {
+		return;
+	}
+
 	Body& body = *body_ptr;
 	body.id = generated_bodies++;
 
@@ -33,6 +43,40 @@ void Universe::add_body(std::unique_ptr<Body>&& body_ptr) {
 	if (has_partitioning()) {
 		partitioning_method->add_body(body);
 	}
+}
+
+void Universe::add_bodies(std::vector<std::unique_ptr<Body>>& bodies)
+{
+	int prev_size = active_bodies.size();
+
+	int remaining_space = settings.UNIVERSE_CAPACITY - prev_size;
+
+	// Enforce that adding bodies doesnt go over capacity.
+	int adding = std::min(static_cast<int>(bodies.size()), remaining_space);
+
+	auto end_it = bodies.begin() + adding;
+
+
+	for (auto it = bodies.begin(); it != end_it; it++) {
+		Body& body = **it;
+		body.id = generated_bodies++;
+	}
+
+	active_bodies.insert(active_bodies.end(), std::make_move_iterator(bodies.begin()), std::make_move_iterator(end_it));
+	bodies.clear();
+
+
+	if (has_partitioning()) {
+		auto it = std::next(active_bodies.begin(), prev_size);
+
+		while (it != active_bodies.end()) {
+			Body& body = **it;
+			partitioning_method->add_body(body);
+			it++;
+		}
+	}
+
+
 }
 
 std::vector<std::unique_ptr<Body>>::iterator Universe::get_iterator(int id)
@@ -51,10 +95,10 @@ Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartit
 	dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
 {
 	
-	generate_universe();
+	create_universe();
 }
 
-void Universe::generate_universe()
+void Universe::create_universe()
 {
 	// TODO make physics settings changeable while running. Keep universe settings const while running.
 	//		->move reserve/make unique out into constructor / run-once-at-start method.
@@ -72,7 +116,7 @@ void Universe::generate_universe()
 
 bool Universe::can_create_body() const
 {
-	return generated_bodies < INT_MAX;
+	return generated_bodies < settings.UNIVERSE_CAPACITY;
 	// interesting. no mass lost but bodies def decrease as absorption happens.
 	// time -> denser universe. but at a point no new objects ccreated.
 	// 
@@ -267,31 +311,13 @@ Body& Universe::create_rand_body()
 
 Body& Universe::create_rand_system()
 {
-	long system_mass = Rand::num(1, settings.RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
-
-	int num_planets = Rand::num(settings.system_min_planets, settings.system_max_planets);
-
-	float remaining_mass = 1 - settings.SYSTEM_STAR_MASS_RATIO;
-
-	
-
-
-
 	float star_x = Rand::num(-settings.universe_size_start, settings.universe_size_start);
 	float star_y = Rand::num(-settings.universe_size_start, settings.universe_size_start);
-	long star_mass = settings.SYSTEM_STAR_MASS_RATIO * system_mass;
+	std::vector<std::unique_ptr<Body>> system = generate_rand_system(star_x, star_y);
 
-	Body& star = create_body(star_x, star_y, star_mass);
-	
-	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
+	Body& star = *system[0];
 
-	for (int i = 0; i < num_planets; ++i) {
-		Body& planet = create_satellite(star, Rand::real(), mass_ratios[i] * system_mass);
-		if (Rand::real() < .1f) {
-			create_satellite(planet, Rand::real(), .1 * planet.mass);
-		}
-		// rand num moons (distribution based on mass maybe)
-	}
+	add_bodies(system);
 
 	return star;
 }
@@ -321,6 +347,41 @@ Body& Universe::create_rand_satellite(const Body& orbiting)
 
 	return create_satellite(orbiting, ecc, mass);
 }
+
+std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float y)
+{
+	std::vector<std::unique_ptr<Body>> system;
+
+	int num_planets = Rand::num(settings.system_min_planets, settings.system_max_planets);
+	system.reserve(num_planets + 10);
+
+	long system_mass = Rand::num(1, settings.RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
+	long star_mass = settings.SYSTEM_STAR_MASS_RATIO * system_mass;
+	//float remaining_mass = 1 - settings.SYSTEM_STAR_MASS_RATIO; // unused
+
+	Body& star = *system.emplace_back(std::make_unique<Body>(x, y, star_mass));
+
+	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
+
+	for (int i = 0; i < num_planets; ++i) {
+		float ecc = Rand::real();
+		// need to times mass ratio by remaining_mass, not system_mass.
+		Body& planet = *system.emplace_back(std::make_unique<Body>(get_rand_sat_dist(), star, ecc, settings.grav_const, mass_ratios[i] * system_mass));
+		
+
+		float moon_roll = Rand::real();
+		if (moon_roll < .1f) {
+			ecc = Rand::real();
+			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
+			system.emplace_back(std::make_unique<Body>(get_rand_sat_dist(), planet, ecc, settings.grav_const, .1f * planet.mass));
+		}
+
+		// rand num moons (distribution based on mass maybe)
+	}
+
+	return system;
+}
+
 
 Body* Universe::get_body(Vector2 point) const
 {

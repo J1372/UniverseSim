@@ -53,16 +53,14 @@ class Universe {
 
 	void rem_body(Body& body, Body& removed_by);
 
+	float get_rand_sat_dist() const;
+
 public:
 
 	Universe();
 
 	Universe(const UniverseSettings& to_set);
 	Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning);
-
-	// Generates a new universe, using the current settings.
-	void generate_universe();
-
 
 	bool can_create_body() const;
 
@@ -71,7 +69,8 @@ public:
 	{
 		int id = generated_bodies++;
 
-		Body& body = *active_bodies.emplace_back(std::make_unique<Body>(id, std::forward<ArgTypes>(args)...));
+		Body& body = *active_bodies.emplace_back(std::make_unique<Body>(std::forward<ArgTypes>(args)...));
+		body.id = id;
 
 		if (has_partitioning()) {
 			partitioning_method->add_body(body);
@@ -79,9 +78,18 @@ public:
 
 		return body;
 	}
-	
+
+	std::vector<std::unique_ptr<Body>> generate_rand_system(float x, float y);
+
 	// Command to add the body to the universe.
 	void add_body(std::unique_ptr<Body>&& body_ptr);
+
+	// Transfers all bodies from the vector and then clears the vector.
+	void add_bodies(std::vector<std::unique_ptr<Body>>& bodies);
+
+
+	// Creates a new universe, using the current settings.
+	void create_universe();
 
 	// should enforce mass <= orbiting.mass
 	Body& create_satellite(const Body& orbiting, float ecc, long mass);
