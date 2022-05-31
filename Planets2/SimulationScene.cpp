@@ -35,6 +35,11 @@ void SimulationScene::process_input()
 		}
 	}
 
+	
+	if (IsKeyPressed(KEY_N)) {
+		should_render_tick_info = !should_render_tick_info;
+	}
+
 	if (IsKeyPressed(KEY_H)) {
 		should_render_help_text = !should_render_help_text;
 	}
@@ -360,6 +365,13 @@ Scene* SimulationScene::update()
 
 		std::string num_bodies_str = "Number bodies: " + std::to_string(universe.get_num_bodies());
 		DrawText(num_bodies_str.c_str(), 50, 70, 20, RAYWHITE);
+
+		if (should_render_tick_info) {
+			std::string tick_info = "Tick " + std::to_string(universe.get_tick()) + "\n";
+			tick_info += "Collision checks (tick) : " + std::to_string(universe.get_num_collision_checks_tick()) + "\n";
+			tick_info += "Collision checks (total): " + std::to_string(universe.get_num_collision_checks());
+			DrawText(tick_info.c_str(), 50, 95, 20, RAYWHITE);
+		}
 
 		if (should_render_help_text) {
 			DrawText(help_text.c_str(), 1400, 100, 20, RAYWHITE);

@@ -7,6 +7,7 @@
 class CameraState;
 class Body;
 
+
 class SimulationScene : public Scene
 {
 
@@ -16,9 +17,11 @@ class SimulationScene : public Scene
 
 	bool running = false;
 	// Can only be true if universe.has_partitioning() is true.
+	bool should_render_tick_info = false;
 	bool should_render_partitioning = false;
 	bool should_render_debug_text = false;
 	bool should_render_help_text = false;
+
 	const std::string help_text =
 		"[H] to close help text\n"
 		"[V] to show partitioning representation\n"
