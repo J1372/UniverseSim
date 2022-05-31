@@ -1,5 +1,6 @@
 #include <random>
 #include "my_random.h"
+#include <numbers>
 
 float Rand::real()
 {
@@ -16,4 +17,9 @@ int Rand::num(int min, int max)
 
     int dif = max - min; // TODO: FIX THIS TO BE AN INT GENERATOR INDEPENDENT OF RANDF.
     return min + (int)(Rand::real() * dif);
+}
+
+float Rand::radian()
+{
+    return Rand::real() * 2 * std::numbers::pi;
 }
