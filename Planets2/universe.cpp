@@ -153,8 +153,10 @@ std::vector<float> Universe::gen_rand_portions(int num_slots) const
 	return slots;
 }
 
-std::vector<Collision> Universe::get_collisions_no_partitioning() const
+std::vector<Collision> Universe::get_collisions_no_partitioning()
 {
+	num_collision_checks_tick = 0;
+
 	std::vector<Collision> collisions;
 
 	if (active_bodies.empty()) {
@@ -167,6 +169,8 @@ std::vector<Collision> Universe::get_collisions_no_partitioning() const
 		Body& body1 = **it1;
 		for (auto it2 = it1 + 1; it2 != active_bodies.end(); it2++) {
 			Body& body2 = **it2;
+
+			num_collision_checks_tick++;
 
 			if (Physics::have_collided(body1, body2)) {
 				collisions.emplace_back(Body::get_sorted_pair(body1, body2));
@@ -238,14 +242,18 @@ void Universe::update()
 	if (has_partitioning()) {
 		partitioning_method->update();
 		collisions = partitioning_method->get_collisions();
+		num_collision_checks_tick = partitioning_method->get_collision_checks_this_tick();
+
 	}
 	else {
 		collisions = get_collisions_no_partitioning();
 	}
 
+	num_collision_checks += num_collision_checks_tick;
+
 	handle_collisions(collisions);
 
-
+	tick++;
 }
 
 Body& Universe::create_rand_body()

@@ -21,7 +21,7 @@ class LineSweep : public SpatialPartitioning
 	SweepEvent get_next_event(int entries_processed, int leaves_processed) const;
 
 	// Scans for and adds any collision events between the entering body and the currently active bodies to the collisions vector.
-	void get_collisions(Body& entry, std::vector<Body*>& currently_active, std::vector<Collision>& collisions) const;
+	int get_collisions(Body& entry, std::vector<Body*>& currently_active, std::vector<Collision>& collisions) const;
 
 	// Sorts entry and leave events in ascending order.
 	void sort_events();
@@ -67,6 +67,6 @@ public:
 	// # bodies being compared with
 	void attach_debug_text(Body& body) const override;
 
-	std::vector<Collision> get_collisions() const override;
+	std::vector<Collision> get_collisions() override;
 
 };

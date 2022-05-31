@@ -25,6 +25,9 @@ class Universe {
 
 	Rectangle dimensions;
 
+	int tick = 0;
+	int num_collision_checks = 0;
+	int num_collision_checks_tick = 0;
 	int generated_bodies = 0;
 
 	// O(n)
@@ -42,7 +45,7 @@ class Universe {
 	std::vector<float> gen_rand_portions(int num_slots) const;
 
 	// O(n^2)
-	std::vector<Collision> get_collisions_no_partitioning() const;
+	std::vector<Collision> get_collisions_no_partitioning();
 
 	bool in_bounds(Vector2 point) const;
 
@@ -106,5 +109,9 @@ public:
 	void update();
 
 	void grav_pull(Body& body1, Body& body2) const;
+
+	int get_num_collision_checks() const { return num_collision_checks; }
+	int get_num_collision_checks_tick() const { return num_collision_checks_tick; }
+	int get_tick() const { return tick; }
 
 };

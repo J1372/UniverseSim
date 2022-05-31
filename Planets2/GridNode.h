@@ -34,7 +34,7 @@ public:
 	Rectangle get_representation() const;
 	void attach_debug_text(Body& body) const;
 
-	void get_collisions(std::vector<Collision>& collisions) const;
+	int get_collisions(std::vector<Collision>& collisions) const;
 
 };
 

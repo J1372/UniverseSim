@@ -20,13 +20,15 @@ QuadTree::QuadTree(float x, float y, float size, int depth) :
 	dimensions{ x, y, size, size }, quad_id(quads_generated++), depth(depth)
 {}
 
-void QuadTree::get_collisions(std::vector<Collision>& collisions) const
+int QuadTree::get_collisions(std::vector<Collision>& collisions) const
 {
+	int checks = 0;
+
 	if (is_leaf()) {
 		if (!quad_bodies.empty()) {
 			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
 				Body& body = **it;
-				get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+				checks += get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
 			}
 		}
 	}
@@ -46,33 +48,35 @@ void QuadTree::get_collisions(std::vector<Collision>& collisions) const
 			// First, collision check with our node's bodies.
 			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
 				Body& body = **it;
-				get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
+				checks += get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
 			}
 
 			// Now, do a collision check on each body with the bodies of relevant child nodes.
 			for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
 				Body& body = **it;
-				get_collisions_child(body, collisions);
+				checks += get_collisions_child(body, collisions);
 			}
 		}
 
 		// Can come before or after earlier checks.
-		UL->get_collisions(collisions);
-		UR->get_collisions(collisions);
-		LL->get_collisions(collisions);
-		LR->get_collisions(collisions);
+		checks += UL->get_collisions(collisions);
+		checks += UR->get_collisions(collisions);
+		checks += LL->get_collisions(collisions);
+		checks += LR->get_collisions(collisions);
 
 	}
+
+	return checks;
 }
 
-std::vector<Collision> QuadTree::get_collisions() const
+std::vector<Collision> QuadTree::get_collisions()
 {
 	std::vector<Collision> collisions;
-	get_collisions(collisions);
+	num_collision_checks_tick = get_collisions(collisions);
 	return collisions;
 }
 
-void QuadTree::get_collisions_child(Body& checking, std::vector<Collision>& collisions) const
+int QuadTree::get_collisions_child(Body& checking, std::vector<Collision>& collisions) const
 {
 	/* 
 	* 
@@ -81,6 +85,8 @@ void QuadTree::get_collisions_child(Body& checking, std::vector<Collision>& coll
 	* 
 	*/
 
+	int checks = 0;
+
 	// Get a list of all our child quads (max depth) that at least partially contain the body.
 	auto partially_in_child = [&checking](const QuadTree& quad) { return quad.contains_partially(checking); };
 	std::vector<QuadTree*> to_check = get_quads(partially_in_child);
@@ -88,21 +94,27 @@ void QuadTree::get_collisions_child(Body& checking, std::vector<Collision>& coll
 	// Check for collisions between the given body and the bodies of relevant child nodes.
 	for (QuadTree* quad : to_check) {
 		// get_collisions_internal can be static, and renamed.
-		quad->get_collisions_internal(checking, quad->quad_bodies.begin(), quad->quad_bodies.end(), collisions);
+		checks += quad->get_collisions_internal(checking, quad->quad_bodies.begin(), quad->quad_bodies.end(), collisions);
 
 		// can remove if use get_all_quads instead.
 		if (!quad->is_leaf()) {
-			quad->get_collisions_child(checking, collisions);
+			checks += quad->get_collisions_child(checking, collisions);
 		}
 
 	}
 
+	return checks;
+
 }
 
-void QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const
+int QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const
 {
+	int checks = 0;
+
 	while (it != end) {
 		Body& body2 = **it;
+
+		checks++;
 
 		if (Physics::have_collided(checking, body2)) {
 			collisions.emplace_back(Body::get_sorted_pair(checking, body2));
@@ -111,6 +123,8 @@ void QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const
 
 		it++;
 	}
+
+	return checks;
 }
 
 bool QuadTree::in_more_than_one_child(const Body& body) const

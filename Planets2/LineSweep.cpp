@@ -74,12 +74,14 @@ void LineSweep::update()
 Body* LineSweep::find_body(Vector2 point) const
 {
 
+    // Currently does not work sometimes.
+
     // Body may contain point if:
     //      point.x >= body.left
     //      point.x <= body.right
 
     // parameter types for lower bound and upper ound must be switched.
-    auto left_less_than_point = [](float entry_x, const Body* body) { return body->left() < entry_x; };
+    auto left_less_than_point = [](float entry_x, const Body* body) { return entry_x < body->left(); };
     auto it = std::upper_bound(entry_events.rbegin(), entry_events.rend(), point.x, left_less_than_point);
 
     // this is the first body whose left is > of the point.
@@ -138,8 +140,10 @@ void LineSweep::attach_debug_text(Body& body) const
     body.add_debug_text("# Compared with: " + std::to_string(compared_with));
 }
 
-std::vector<Collision> LineSweep::get_collisions() const
+std::vector<Collision> LineSweep::get_collisions()
 {
+    num_collision_checks_tick = 0;
+
     std::vector<Collision> collisions;
     collisions.reserve(entry_events.size());
 
@@ -172,7 +176,7 @@ std::vector<Collision> LineSweep::get_collisions() const
 
             Body& entry = *entry_events[entries_processed];
 
-            get_collisions(entry, currently_active, collisions);
+            num_collision_checks_tick += get_collisions(entry, currently_active, collisions);
 
             currently_active.push_back(&entry);
 
@@ -197,13 +201,15 @@ std::vector<Collision> LineSweep::get_collisions() const
     return collisions;
 }
 
-void LineSweep::get_collisions(Body& entry, std::vector<Body*>& currently_active, std::vector<Collision>& collisions) const
+int LineSweep::get_collisions(Body& entry, std::vector<Body*>& currently_active, std::vector<Collision>& collisions) const
 {
     for (Body* body : currently_active) {
         if (Physics::have_collided(entry, *body)) {
             collisions.emplace_back(Body::get_sorted_pair(entry, *body));
         }
     }
+
+    return currently_active.size();
 }
 
 void LineSweep::sort_events()

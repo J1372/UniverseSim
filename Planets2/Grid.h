@@ -39,6 +39,6 @@ public:
 	std::vector<Rectangle> get_representation() const override;
 	void attach_debug_text(Body& body) const override;
 
-	std::vector<Collision> get_collisions() const override;
+	std::vector<Collision> get_collisions() override;
 };
 

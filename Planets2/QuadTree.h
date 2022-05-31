@@ -39,7 +39,7 @@ public:
 	void attach_debug_text(Body& body) const;
 
 	// Performs a collision check, and returns all collision events.
-	std::vector<Collision> get_collisions() const;
+	std::vector<Collision> get_collisions();
 
 	~QuadTree() = default;
 
@@ -75,13 +75,13 @@ private:
 	// Will assume body is in the quad that this method was called on.
 	void rem_body_internal(const Body& body);
 
-	void get_collisions(std::vector<Collision>& collisions) const;
+	int get_collisions(std::vector<Collision>& collisions) const;
 
 	// Performs a collision check between the body and all bodies starting at the given iterator until the end iterator.
 	// If a collision is detected, adds a Collision event to the collision vector.
-	void get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const;
+	int get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const;
 
-	void get_collisions_child(Body& checking, std::vector<Collision>& collisions) const;
+	int get_collisions_child(Body& checking, std::vector<Collision>& collisions) const;
 
 	bool is_root() const { return parent == nullptr; }
 

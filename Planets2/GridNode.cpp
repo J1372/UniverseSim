@@ -60,16 +60,20 @@ void GridNode::attach_debug_text(Body& body) const
     body.add_debug_text("Grid bodies: " + std::to_string(bodies.size()));
 }
 
-void GridNode::get_collisions(std::vector<Collision>& collisions) const
+int GridNode::get_collisions(std::vector<Collision>& collisions) const
 {
+    int checks = 0;
+
     if (bodies.empty()) {
-        return;
+        return checks;
     }
 
     for (auto it1 = bodies.begin(); it1 != bodies.end() - 1; it1++) {
         Body& body1 = **it1;
         for (auto it2 = it1 + 1; it2 != bodies.end(); it2++) {
             Body& body2 = **it2;
+
+            checks++;
 
             if (Physics::have_collided(body1, body2)) {
                 Collision collision { Body::get_sorted_pair(body1, body2) };
@@ -85,4 +89,6 @@ void GridNode::get_collisions(std::vector<Collision>& collisions) const
 
         }
     }
+
+    return checks;
 }

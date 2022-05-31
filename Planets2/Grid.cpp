@@ -130,12 +130,14 @@ void Grid::attach_debug_text(Body& body) const
     // No general grid debug text to attach. Just node-specific.
 }
 
-std::vector<Collision> Grid::get_collisions() const
+std::vector<Collision> Grid::get_collisions()
 {
+    num_collision_checks_tick = 0;
+
     std::vector<Collision> collisions;
 
     for (const GridNode& node : nodes) {
-        node.get_collisions(collisions);
+        num_collision_checks_tick += node.get_collisions(collisions);
     }
 
     return collisions;
