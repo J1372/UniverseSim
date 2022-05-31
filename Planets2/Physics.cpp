@@ -2,6 +2,7 @@
 #include "Collision.h"
 
 #include "Body.h"
+#include "Circle.h"
 	
 // Collision event observers to be called when a collision happens.
 Event<Collision> on_collision_observers;
@@ -38,6 +39,18 @@ bool Physics::point_in_circle(Vector2 point, float circle_x, float circle_y, flo
 	return dist <= radius;
 }
 
+bool Physics::point_in_circle(Vector2 point, Circle circle)
+{
+	// Can remove absolute calls, since they are squared anyway.
+	float dist_x = std::abs(point.x - circle.center.x);
+	float dist_y = std::abs(point.y - circle.center.y);
+
+	float dist_squared = std::pow(dist_x, 2) + std::pow(dist_y, 2);
+	float dist = std::sqrt(dist_squared); // can compare to radius^2 instead.
+
+	return dist <= circle.radius;
+}
+
 bool Physics::point_in_rect(Vector2 point, Rectangle rect)
 {
 	return point.x >= rect.x and point.x < rect.x + rect.width and
@@ -48,6 +61,12 @@ bool Physics::body_inside_rect(const Body& body, Rectangle rect)
 {
 	return body.top() >= rect.y and body.bottom() <= rect.y + rect.height and
 		body.left() >= rect.x and body.right() <= rect.x + rect.width;
+}
+
+bool Physics::circle_inside_rect(Circle circle, Rectangle rect)
+{
+	return circle.top() >= rect.y and circle.bottom() <= rect.y + rect.height and
+		circle.left() >= rect.x and circle.right() <= rect.x + rect.width;
 }
 
 bool Physics::body_intersects_rect(const Body& body, Rectangle rect)
@@ -64,4 +83,20 @@ bool Physics::body_intersects_rect(const Body& body, Rectangle rect)
 	int corner_dist = std::pow((dist_x - rect.width / 2), 2) + std::pow((dist_y - rect.height / 2), 2);
 
 	return corner_dist <= std::pow(body.radius, 2);
+}
+
+bool Physics::circle_intersects_rect(Circle circle, Rectangle rect)
+{
+	float dist_x = std::abs(circle.center.x - rect.x - rect.width / 2);
+	float dist_y = std::abs(circle.center.y - rect.y - rect.height / 2);
+
+	if (dist_x > (rect.width / 2 + circle.radius)) { return false; }
+	if (dist_y > (rect.height / 2 + circle.radius)) { return false; }
+
+	if (dist_x <= (rect.width / 2)) { return true; }
+	if (dist_y <= (rect.height / 2)) { return true; }
+
+	int corner_dist = std::pow((dist_x - rect.width / 2), 2) + std::pow((dist_y - rect.height / 2), 2);
+
+	return corner_dist <= std::pow(circle.radius, 2);
 }
