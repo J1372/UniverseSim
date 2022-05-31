@@ -7,7 +7,6 @@
 #include "Physics.h"
 
 
-
 void Body::do_wraparound(float wraparound_val)
 {
 	float reset_val = 2 * wraparound_val;
@@ -25,6 +24,11 @@ void Body::do_wraparound(float wraparound_val)
 	else if (y < -wraparound_val) {
 		y = reset_val - y;
 	}
+}
+
+Body::Body(float x, float y, long mass) : x(x), y(y), mass(std::max(1l, mass))
+{
+	upgrade_update();
 }
 
 Body::Body(float sat_dist, const Body& orbiting, float ecc, float grav_const, long mass)
@@ -55,8 +59,6 @@ Body::Body(float sat_dist, const Body& orbiting, float ecc, float grav_const, lo
 	float periapsis = sat_dist * (orbiting.radius + radius);
 	float periapsis_angle = (Rand::real() * 2) * std::numbers::pi; // angle from orbiting body where periapsis is.
 	float periapsis_pos[2] = { periapsis * std::cos(periapsis_angle), periapsis * std::sin(periapsis_angle) };
-	// for some reason x = sin and y = cos;
-	// this should be valid x and y for pos and negative. hope so :)
 
 	float apoapsis = periapsis * (1 + ecc) / (1 - ecc); // apoapsis on opposite end. pi radians degrees.
 	float semi_major_axis = (periapsis + apoapsis) / 2;
@@ -101,21 +103,6 @@ Body::Body(float sat_dist, const Body& orbiting, float ecc, float grav_const, lo
 	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
 	vel_x = relative_velocity[0] + orbiting.vel_x;
 	vel_y = relative_velocity[1] + orbiting.vel_y;
-
-#ifdef MY_DEBUG
-	std::cout << "Periapsis: " << periapsis << '\n';
-	std::cout << "Per_theta: " << periapsis_angle * 57.2958 << '\n';
-	std::cout << "Per_x    : " << periapsis_v[0] << '\n';
-	std::cout << "Per_y    : " << periapsis_v[1] << "\n\n";
-	std::cout << "Vel_p    : " << v_per << '\n';
-	std::cout << "Vel_theta: " << v_angle * 57.2958 << '\n';
-	std::cout << "Vel_x    : " << vel_v[0] << '\n';
-	std::cout << "Vel_y    : " << vel_v[1] << "\n\n";
-
-	std::cout << "Semi-maj : " << semi_major_axis << '\n';
-	std::cout << "Apoapsis : " << apoapsis << '\n';
-	std::cout << "Sat_dist : " << sat_dist << "\n\n";
-#endif
 
 }
 

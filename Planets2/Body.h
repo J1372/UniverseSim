@@ -11,6 +11,16 @@
 
 struct Removal;
 
+struct OrbitalParameters {
+
+	float sat_dist;
+	float periapsis_angle;
+
+	float eccentricity;
+	bool retrograde;
+
+};
+
 struct TypeExt {
 	int density;
 	long min_mass;
@@ -55,6 +65,7 @@ class Body {
 
 
 public:
+
 	int id = -1;
 
 	float x = 0.0;
@@ -71,13 +82,7 @@ public:
 
 	Body() = default;
 
-	Body(float x, float y, long mass) : x(x), y(y), mass(std::max(1l, mass))
-	{
-		upgrade_update();
-
-		radius = std::max(((float)mass) / type->density, 1.0f);
-
-	};
+	Body(float x, float y, long mass);
 
 	// satellite constructor
 	Body(float sat_dist, const Body& orbiting, float ecc, float grav_const, long mass);
