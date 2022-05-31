@@ -26,6 +26,7 @@ class SimulationScene : public Scene
 		"[H] to close help text\n"
 		"[V] to show partitioning representation\n"
 		"[B] to show debug text info\n"
+		"[N] to show tick # and collision stats\n"
 		"[SPACE] to toggle pause\n"
 		"[W] [A] [S] [D] to move the camera\n"
 		"[-, +] to control the camera's speed\n"
