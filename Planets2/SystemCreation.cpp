@@ -47,9 +47,18 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 	return this;
 }
 
-const std::string& SystemCreation::get_help_text() const
+std::string SystemCreation::get_help_text() const
 {
-    return std::string();
+	std::string help_text;
+
+	help_text += "Left click to add to universe and generate another system\n";
+	help_text += "Right click to go to default mode\n";
+	help_text += "[Enter] to add to universe and return to default mode\n";
+	help_text += "[1] to go to default mode\n";
+	help_text += "[2] to go to planet creator\n";
+	help_text += "[3] to generate another system\n";
+
+	return help_text;
 }
 
 std::span<const std::unique_ptr<Body>> SystemCreation::get_creating_bodies() const

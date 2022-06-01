@@ -25,7 +25,7 @@ public:
 
 	std::string get_name() const override { return "Planet creation mode"; }
 
-	const std::string& get_help_text() const override;
+	std::string get_help_text() const override;
 	std::span<const std::unique_ptr<Body>> get_creating_bodies() const override;
 
 };

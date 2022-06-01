@@ -248,7 +248,11 @@ Scene* SimulationScene::update()
 		}
 
 		if (should_render_help_text) {
-			DrawText(help_text.c_str(), 1400, 100, 20, RAYWHITE);
+			// Can just copy help_text + interaction_state->get_help_text() to a concatenated help_text
+			// when we detect state change, instead of every tick.
+			// Can do same for title drawing.
+			std::string concatenated_help = help_text + interaction_state->get_help_text();
+			DrawText(concatenated_help.c_str(), 1400, 100, 20, RAYWHITE);
 		}
 
 		std::string interaction_title = interaction_state->get_name();

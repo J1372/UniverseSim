@@ -93,6 +93,12 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 		DefaultInteraction& ret_state = InteractionState::default_interaction;
 		return &ret_state;
 	}
+	else if (IsKeyPressed(KEY_ONE)) {
+		creating = nullptr;
+
+		DefaultInteraction& ret_state = InteractionState::default_interaction;
+		return &ret_state;
+	}
 	else if (IsKeyPressed(KEY_THREE)) {
 		creating = nullptr;
 
@@ -104,9 +110,18 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 	return this;
 }
 
-const std::string& PlanetCreation::get_help_text() const
+std::string PlanetCreation::get_help_text() const
 {
-    return std::string();
+	std::string help_text;
+
+	help_text += "Drag center of planet to change velocity\n";
+	help_text += "Drag edge of planet to change mass\n";
+	help_text += "Shift+click to add to universe and create another body\n";
+	help_text += "[Enter] to add to universe and return to default mode\n";
+	help_text += "[1] to go to default mode\n";
+	help_text += "[3] to go to system generator\n";
+
+	return help_text;
 }
 
 std::span<const std::unique_ptr<Body>> PlanetCreation::get_creating_bodies() const
