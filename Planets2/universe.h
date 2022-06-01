@@ -91,12 +91,8 @@ public:
 	// Creates a new universe, using the current settings.
 	void create_universe();
 
-	// should enforce mass <= orbiting.mass
-	Body& create_satellite(const Body& orbiting, float ecc, long mass);
-
 	Body& create_rand_body();
 	Body& create_rand_system();
-	Body& create_rand_satellite(const Body& orbiting);
 
 
 	bool has_partitioning() const { return partitioning_method.get() != nullptr; }

@@ -322,32 +322,6 @@ Body& Universe::create_rand_system()
 	return star;
 }
 
-Body& Universe::create_satellite(const Body& orbiting, float ecc, long mass)
-{
-	// create a satellite in range of 1.5-10 sat_dist size distance from orbited body.
-	// 1 sat_dist = orbiting.size + my_size
-	// 1 size away == touch edge of orbiting body
-	// if sat_dist < 1, immediate collision.
-
-	// Performs no checks on whether its initial position collides with another satellite of the body.
-	// maybe perform the check in the create_system call
-
-	float sat_dist = Rand::real() * (settings.SATELLITE_MAX_DIST - settings.SATELLITE_MIN_DIST) + settings.SATELLITE_MIN_DIST;
-
-	return create_body(sat_dist, orbiting, ecc, settings.grav_const, mass);
-
-}
-
-Body& Universe::create_rand_satellite(const Body& orbiting)
-{
-	//long mass = std::max((rand() % orbiting.mass) / 2, 1l);
-	long mass = Rand::num(1, (int)(orbiting.mass / 2)); // randi is 32-bit.
-
-	float ecc = Rand::real(); // needs to be random in between 0 and 0.99. cannot be 1 unless use different calculation.
-
-	return create_satellite(orbiting, ecc, mass);
-}
-
 std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float y)
 {
 	std::vector<std::unique_ptr<Body>> system;
@@ -367,7 +341,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 		float ecc = Rand::real();
 		// need to times mass ratio by remaining_mass, not system_mass.
 		Body& planet = *system.emplace_back(std::make_unique<Body>(get_rand_sat_dist(), star, ecc, settings.grav_const, mass_ratios[i] * system_mass));
-		
+
 
 		float moon_roll = Rand::real();
 		if (moon_roll < .1f) {
