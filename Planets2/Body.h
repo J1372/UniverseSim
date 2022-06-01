@@ -9,17 +9,9 @@
 
 #include "Event.h"
 
+struct Orbit;
 struct Removal;
 
-struct OrbitalParameters {
-
-	float sat_dist;
-	float periapsis_angle;
-
-	float eccentricity;
-	bool retrograde;
-
-};
 
 struct TypeExt {
 	int density;
@@ -85,7 +77,8 @@ public:
 	Body(float x, float y, long mass);
 
 	// satellite constructor
-	Body(float sat_dist, const Body& orbiting, float ecc, float grav_const, long mass);
+	// later: float [0,1) of point on orbit.
+	Body(long mass, const Orbit& orbit);
 
 	// Returns a pair of body pointers, where the first has more mass than the second.
 	static std::pair<Body*, Body*> get_sorted_pair(Body& body1, Body& body2);

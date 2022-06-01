@@ -6,6 +6,8 @@
 #include "Removal.h"
 #include "Physics.h"
 
+#include "Orbit.h"
+
 
 void Body::do_wraparound(float wraparound_val)
 {
@@ -31,78 +33,22 @@ Body::Body(float x, float y, long mass) : x(x), y(y), mass(std::max(1l, mass))
 	upgrade_update();
 }
 
-Body::Body(float sat_dist, const Body& orbiting, float ecc, float grav_const, long mass)
+Body::Body(long mass, const Orbit& orbit) :
+	mass(std::max(1l, mass))
 {
-	this->mass = std::max(1l, mass);
-
 	upgrade_update();
 
-	radius = std::max(((float)mass) / type->density, 1.0f);
+	// Currently all satellites start at periapsis.
+	Vector2 relative_pos = orbit.periapsis_point();
+	x = orbit.orbited.x + relative_pos.x;
+	y = orbit.orbited.y + relative_pos.y;
 
-
-
-	/*
-	*
-	* ecc = 0.0		Circular
-	* ecc < 1.0		Elliptical
-	* ecc = 1.0		Parabolic
-	* ecc > 1.0		Hyperbolic
-	*
-	*
-	*/
-	// find random (x,y) pair using ecc.
-	// e = (Ra-Rp)/(Ra+Rp)
-	// find apoapsis
-	// 
-
-
-	float periapsis = sat_dist * (orbiting.radius + radius);
-	float periapsis_angle = (Rand::real() * 2) * std::numbers::pi; // angle from orbiting body where periapsis is.
-	float periapsis_pos[2] = { periapsis * std::cos(periapsis_angle), periapsis * std::sin(periapsis_angle) };
-
-	float apoapsis = periapsis * (1 + ecc) / (1 - ecc); // apoapsis on opposite end. pi radians degrees.
-	float semi_major_axis = (periapsis + apoapsis) / 2;
-
-	// this is a random degree from periapsis;
-	// for now, every planet starts at their periapsis. the periapsis is random.
-	// in the future, I'd like every planet to start at a random point on there orbit.
-
-	/*float true_anomaly = (randf() * 2) * std::numbers::pi;
-	float dist_at_point = semi_major_axis * (1 - std::pow(ecc, 2)) / (1 + ecc * std::cos(true_anomaly));*/
-
-	// find x and y using dist_at_point and true_anomaly
-	// 
-	// int x = dist_at_point
-	// ecc >= 1.0 has possibility of divide by 0.
-
-	x = periapsis_pos[0] + orbiting.x;
-	y = periapsis_pos[1] + orbiting.y;
-
-	// currently sets velocity for if they're at periapsis with no implementation for random point in there orbit.
-
-	//periapsis_angle at periapsis_v[0][1];
-	// all velocity at periapsis and apoapsis is tangental to body. 90 degrees = pi/2
-	float num = (1 + ecc) * grav_const * (orbiting.mass + mass); // orbiting.mass at least, possibly + mass
-	float den = (1 - ecc) * semi_major_axis;
-	float velocity_periapsis = std::sqrt(num / den);
-
-	//float v_angle = periapsis_angle;
-	float velocity_angle = 2 * std::numbers::pi - periapsis_angle; // flip on y-axis
-
-	// Relative velocity of the body around the body it is orbiting.
-	float relative_velocity[2] = { velocity_periapsis * sin(velocity_angle), velocity_periapsis * cos(velocity_angle) };
-
-	constexpr double RETROGRADE_CHANCE = 0.12;
-	bool retrograde_roll = Rand::real() < RETROGRADE_CHANCE;
-
-	if (retrograde_roll) {
-		relative_velocity[0] = -relative_velocity[0];
-		relative_velocity[1] = -relative_velocity[1];
-	}
+	// Relative velocity of this satellite around the body it is orbiting.
+	Vector2 relative_velocity = orbit.velocity_periapsis_vector(*this); // might not need to send *this if use orbital period.
 
 	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
-	vel_x = relative_velocity[0] + orbiting.vel_x;
-	vel_y = relative_velocity[1] + orbiting.vel_y;
+	vel_x = orbit.orbited.vel_x + relative_velocity.x;
+	vel_y = orbit.orbited.vel_y + relative_velocity.y;
 
 }
 

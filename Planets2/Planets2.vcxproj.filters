@@ -72,6 +72,21 @@
     <ClCompile Include="LineSweep.cpp">
       <Filter>Partitioning</Filter>
     </ClCompile>
+    <ClCompile Include="InteractionState.cpp">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultInteraction.cpp">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanetCreation.cpp">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemCreation.cpp">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClCompile>
+    <ClCompile Include="Orbit.cpp">
+      <Filter>Sim_Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my_random.h" />
@@ -160,6 +175,21 @@
       <Filter>Partitioning</Filter>
     </ClInclude>
     <ClInclude Include="Circle.h" />
+    <ClInclude Include="InteractionState.h">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultInteraction.h">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemCreation.h">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetCreation.h">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClInclude>
+    <ClInclude Include="Orbit.h">
+      <Filter>Sim_Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
@@ -182,6 +212,9 @@
     </Filter>
     <Filter Include="Sim_Model\Events">
       <UniqueIdentifier>{062d3d50-5fc8-4357-b9f3-8ba5bb76e8ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes\SimScene\InteractionStates">
+      <UniqueIdentifier>{8c2c30d8-8c7e-43c0-a2c9-dc239bba250e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
