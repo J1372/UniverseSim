@@ -10,6 +10,8 @@
 #include <vector>
 #include "Removal.h"
 
+#include "Orbit.h"
+
 float Universe::get_rand_sat_dist() const
 {
 	return Rand::real() * (settings.SATELLITE_MAX_DIST - settings.SATELLITE_MIN_DIST) + settings.SATELLITE_MIN_DIST;
@@ -337,17 +339,35 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 
 	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
 
+	Orbit planet_orbit { star };
+
+	// can move this into Physics or just static Orbit.
+	planet_orbit.grav_const = settings.grav_const;
+
+	constexpr double RETROGRADE_CHANCE = 0.12;
 	for (int i = 0; i < num_planets; ++i) {
-		float ecc = Rand::real();
 		// need to times mass ratio by remaining_mass, not system_mass.
-		Body& planet = *system.emplace_back(std::make_unique<Body>(get_rand_sat_dist(), star, ecc, settings.grav_const, mass_ratios[i] * system_mass));
+		long planet_mass = mass_ratios[i] * system_mass;
 
+		planet_orbit.set_periapsis(Body::calc_radius(planet_mass), get_rand_sat_dist());
+		planet_orbit.periapsis_angle = Rand::radian();
+		planet_orbit.eccentricity = Rand::real();
+		planet_orbit.prograde = Rand::real() < RETROGRADE_CHANCE ? false : true;
 
-		float moon_roll = Rand::real();
-		if (moon_roll < .1f) {
-			ecc = Rand::real();
+		Body& planet = *system.emplace_back(std::make_unique<Body>(planet_mass, planet_orbit));
+		
+
+		constexpr double MOON_CHANCE = 0.1;
+		if (Rand::real() < MOON_CHANCE) {
+			long moon_mass = .1f * planet.mass;
+
+			Orbit moon_orbit { planet };
+			moon_orbit.set_periapsis(Body::calc_radius(moon_mass), get_rand_sat_dist());
+			moon_orbit.periapsis_angle = Rand::radian();
+			moon_orbit.eccentricity = Rand::real();
+			moon_orbit.prograde = Rand::real() < RETROGRADE_CHANCE ? false : true;
 			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
-			system.emplace_back(std::make_unique<Body>(get_rand_sat_dist(), planet, ecc, settings.grav_const, .1f * planet.mass));
+			system.emplace_back(std::make_unique<Body>(moon_mass, moon_orbit));
 		}
 
 		// rand num moons (distribution based on mass maybe)
