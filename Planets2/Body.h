@@ -58,9 +58,6 @@ class Body {
 
 public:
 
-	// Return the expected radius of a body with the given mass.
-	static float calc_radius(long mass);
-
 	// Returns a pair of body pointers, where the first has more mass than the second.
 	static std::pair<Body*, Body*> get_sorted_pair(Body& body1, Body& body2);
 

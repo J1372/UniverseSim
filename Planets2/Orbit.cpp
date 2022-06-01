@@ -4,9 +4,9 @@
 #include "Body.h"
 #include <numbers>
 
-void Orbit::set_periapsis(float satellite_radius, float sat_dist)
+void Orbit::set_periapsis(const Body& orbiter, float sat_dist)
 {
-    periapsis = sat_dist * (orbited.radius + satellite_radius);
+    periapsis = sat_dist * (orbited.radius + orbiter.radius);
 }
 
 Vector2 Orbit::periapsis_point() const

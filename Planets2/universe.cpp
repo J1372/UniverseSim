@@ -448,7 +448,7 @@ Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter, float r
 {
 	Orbit orbit { orbited };
 
-	orbit.set_periapsis(Body::calc_radius(orbiter.mass), get_rand_sat_dist());
+	orbit.set_periapsis(orbiter, get_rand_sat_dist());
 	orbit.grav_const = settings.grav_const;
 	orbit.periapsis_angle = Rand::radian();
 	orbit.eccentricity = Rand::real();

@@ -34,11 +34,11 @@ struct Orbit
 	// If false, satellite orbital movement is reversed.
 	bool prograde = true;
 
-	// sets periapsis of orbit to units of sat_dists (orbited.radius + satellite_radius).
+	// sets periapsis of orbit to units of sat_dists (orbited.radius + orbiter.radius).
 	// sat_dist < 1, immediate collision
 	// sat_dist = 1, touching.
 	// sat_dist > 1, no collision
-	void set_periapsis(float satellite_radius, float sat_dist);
+	void set_periapsis(const Body& orbiter, float sat_dist);
 
 	// Returns the periapsis point of the satellite relative to the orbited body.
 	Vector2 periapsis_point() const;
