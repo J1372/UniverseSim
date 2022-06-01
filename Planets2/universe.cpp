@@ -147,6 +147,10 @@ void Universe::set_partitioning(std::unique_ptr<SpatialPartitioning>&& partition
 
 void Universe::handle_gravity()
 {
+	if (active_bodies.empty()) {
+		return;
+	}
+
 	for (int i = 0; i < active_bodies.size() - 1; i++) {
 		Body& body1 = *active_bodies[i];
 		for (int j = i + 1; j < active_bodies.size(); j++) {
