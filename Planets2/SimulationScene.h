@@ -3,9 +3,11 @@
 
 #include "universe.h"
 #include "AdvCamera.h"
+#include <span>
 
 class CameraState;
 class Body;
+class InteractionState;
 
 
 class SimulationScene : public Scene
@@ -14,6 +16,7 @@ class SimulationScene : public Scene
 	Universe universe;
 	AdvCamera starting_config { Vector2{0,0}, Vector2{0,0} };
 	CameraState* camera_state;
+	InteractionState* interaction_state;
 
 	bool running = false;
 	bool should_render_tick_info = false;
@@ -37,17 +40,10 @@ class SimulationScene : public Scene
 
 	std::vector<Body*> on_screen_bodies;
 
-	std::unique_ptr<Body> creating = nullptr;
-
-	bool in_creation_mode() const;
-
 	void process_input();
-	void handle_creation_interaction();
-	void handle_default_interaction();
 
 	// Updates the list of bodies that are on screen
 	void update_on_screen_bodies();
-
 
 	void attach_debug_info() const;
 	void attach_partitioning_debug_info() const;
@@ -60,7 +56,7 @@ class SimulationScene : public Scene
 	void draw_debug_text(int font_size, int spacing) const;
 	bool on_screen(const Body& body) const;
 	void render_bodies() const;
-	void render_creation_body() const;
+	void render_creating_bodies(std::span<const std::unique_ptr<Body>> bodies) const;
 	void render() const;
 
 	Scene* return_scene = this;
