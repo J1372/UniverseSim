@@ -49,6 +49,28 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 
 		return this;
 	}
+	else {
+		// Currently doesn't follow mouse after zoom. But will snap to mouse after mouse moves.
+		// Later, can just use screen position and translate to universe coords before we add to universe.
+		Vector2 movement = GetMouseDelta();
+
+		// if mouse has moved
+		if (movement.x != 0 or movement.y != 0) {
+			// Keep central body of new system centered on the mouse.
+			// By extension, keep entire system centered on the mouse.
+			Body& central_body = *system[0];
+
+			// We are assuming that the central body was previously centered on the mouse.
+			Vector2 movement = { universe_point.x - central_body.x,
+										universe_point.y - central_body.y };
+
+			for (std::unique_ptr<Body>& body : system) {
+				body->x += movement.x;
+				body->y += movement.y;
+			}
+		}
+
+	}
 
 	return this;
 }
