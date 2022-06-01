@@ -37,18 +37,7 @@ Body::Body(long mass, const Orbit& orbit) :
 	mass(std::max(1l, mass))
 {
 	upgrade_update();
-
-	// Currently all satellites start at periapsis.
-	Vector2 relative_pos = orbit.periapsis_point();
-	x = orbit.orbited.x + relative_pos.x;
-	y = orbit.orbited.y + relative_pos.y;
-
-	// Relative velocity of this satellite around the body it is orbiting.
-	Vector2 relative_velocity = orbit.velocity_periapsis_vector(*this); // might not need to send *this if use orbital period.
-
-	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
-	vel_x = orbit.orbited.vel_x + relative_velocity.x;
-	vel_y = orbit.orbited.vel_y + relative_velocity.y;
+	set_orbit(orbit);
 
 }
 
@@ -87,6 +76,21 @@ std::pair<Body*, Body*> Body::get_sorted_pair(Body& body1, Body& body2)
 	else {
 		return std::make_pair<Body*, Body*>(&body2, &body1);
 	}
+}
+
+void Body::set_orbit(const Orbit& orbit)
+{
+	// Currently all satellites start at periapsis.
+	Vector2 relative_pos = orbit.periapsis_point();
+	x = orbit.orbited.x + relative_pos.x;
+	y = orbit.orbited.y + relative_pos.y;
+
+	// Relative velocity of this satellite around the body it is orbiting.
+	Vector2 relative_velocity = orbit.velocity_periapsis_vector(*this); // might not need to send *this if use orbital period.
+
+	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
+	vel_x = orbit.orbited.vel_x + relative_velocity.x;
+	vel_y = orbit.orbited.vel_y + relative_velocity.y;
 }
 
 bool Body::can_eat(const Body& other) const

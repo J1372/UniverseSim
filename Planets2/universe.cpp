@@ -339,35 +339,24 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 
 	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
 
-	Orbit planet_orbit { star };
-
-	// can move this into Physics or just static Orbit.
-	planet_orbit.grav_const = settings.grav_const;
-
 	constexpr double RETROGRADE_CHANCE = 0.12;
 	for (int i = 0; i < num_planets; ++i) {
 		// need to times mass ratio by remaining_mass, not system_mass.
 		long planet_mass = mass_ratios[i] * system_mass;
 
-		planet_orbit.set_periapsis(Body::calc_radius(planet_mass), get_rand_sat_dist());
-		planet_orbit.periapsis_angle = Rand::radian();
-		planet_orbit.eccentricity = Rand::real();
-		planet_orbit.prograde = Rand::real() < RETROGRADE_CHANCE ? false : true;
-
-		Body& planet = *system.emplace_back(std::make_unique<Body>(planet_mass, planet_orbit));
+		Body& planet = *system.emplace_back(std::make_unique<Body>(0, 0, planet_mass));
+		Orbit planet_orbit = gen_rand_orbit(star, planet, RETROGRADE_CHANCE);
+		planet.set_orbit(planet_orbit);
 		
 
 		constexpr double MOON_CHANCE = 0.1;
-		if (Rand::real() < MOON_CHANCE) {
+		if (Rand::chance(MOON_CHANCE)) {
+			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
 			long moon_mass = .1f * planet.mass;
 
-			Orbit moon_orbit { planet };
-			moon_orbit.set_periapsis(Body::calc_radius(moon_mass), get_rand_sat_dist());
-			moon_orbit.periapsis_angle = Rand::radian();
-			moon_orbit.eccentricity = Rand::real();
-			moon_orbit.prograde = Rand::real() < RETROGRADE_CHANCE ? false : true;
-			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
-			system.emplace_back(std::make_unique<Body>(moon_mass, moon_orbit));
+			Body& moon = *system.emplace_back(std::make_unique<Body>(0, 0, moon_mass));
+			Orbit moon_orbit = gen_rand_orbit(planet, moon, RETROGRADE_CHANCE);
+			moon.set_orbit(moon_orbit);
 		}
 
 		// rand num moons (distribution based on mass maybe)
@@ -453,6 +442,19 @@ void Universe::rem_body(int id)
 	body.notify_being_removed(nullptr);
 
 	active_bodies.erase(remove_it);
+}
+
+Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter, float retrograde_chance) const
+{
+	Orbit orbit { orbited };
+
+	orbit.set_periapsis(Body::calc_radius(orbiter.mass), get_rand_sat_dist());
+	orbit.grav_const = settings.grav_const;
+	orbit.periapsis_angle = Rand::radian();
+	orbit.eccentricity = Rand::real();
+	orbit.prograde = Rand::chance(retrograde_chance) ? false : true;
+
+	return orbit;
 }
 
 

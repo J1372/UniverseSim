@@ -91,6 +91,10 @@ public:
 	// Creates a new universe, using the current settings.
 	void create_universe();
 
+	// Returns a random orbit
+	Orbit gen_rand_orbit(const Body& orbited, const Body& orbiter, float retrograde_chance) const;
+
+
 	Body& create_rand_body();
 	Body& create_rand_system();
 
