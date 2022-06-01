@@ -6,9 +6,11 @@ struct Vector2;
 class SystemCreation : public InteractionState
 {
 
+	std::vector<std::unique_ptr<Body>> system;
+
 public:
 
-	void enter(Vector2 mouse_pos);
+	void enter(Vector2 mouse_pos, Universe& universe);
 
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;
 

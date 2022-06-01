@@ -93,6 +93,13 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 		DefaultInteraction& ret_state = InteractionState::default_interaction;
 		return &ret_state;
 	}
+	else if (IsKeyPressed(KEY_THREE)) {
+		creating = nullptr;
+
+		SystemCreation& ret_state = InteractionState::system_interaction;
+		ret_state.enter(universe_point, universe);
+		return &ret_state;
+	}
 
 	return this;
 }
