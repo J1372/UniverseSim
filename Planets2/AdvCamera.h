@@ -64,6 +64,8 @@ public:
 	void set_target(Vector2 vec);
 	void set_offset(Vector2 vec);
 
+	void set_offset_bounds(float min_x, float min_y, float width, float height);
+
 
 	void zoom_in();
 	void zoom_out();

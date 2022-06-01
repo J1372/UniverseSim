@@ -8,6 +8,12 @@ class TextBox;
 class Dropdown;
 class SpatialPartitioning;
 
+// need actual includes now to use gui.add<T> in static class. 
+#include "Button.h"
+#include "Dropdown.h"
+#include "Label.h"
+#include "Textbox.h"
+
 
 class SettingsScene : public GuiScene
 {
@@ -78,7 +84,6 @@ class SettingsScene : public GuiScene
 	// Grid settings
 	TextBox& grid_nodes_per_row_input = gui.add<TextBox>("10", 700, 500, TEXTBOX_WIDTH);
 
-	void init_default(); // register event handling and other gui setup.
 	void generate_settings();
 
 	void read_settings_to_gui(); // set gui elements to reflect the current universe settings.
@@ -90,9 +95,8 @@ class SettingsScene : public GuiScene
 
 public:
 
-	SettingsScene(int width, int height);
-	SettingsScene(int width, int height, UniverseSettings& settings);
-
+	void init(); // register event handling and other gui setup.
+	void enter();
 
 };
 

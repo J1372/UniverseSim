@@ -16,8 +16,6 @@ protected:
 	Scene* return_scene = this;
 	Color background_color = RAYWHITE;
 
-	GuiScene(int width, int height) : Scene{ width, height } {}
-
 public:
 
 	Scene* update();

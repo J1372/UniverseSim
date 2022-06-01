@@ -25,6 +25,8 @@ public:
 	static PlanetCreation planet_interaction;
 	static SystemCreation system_interaction;
 
+	static void init_states();
+
 	virtual InteractionState* process_input(const CameraState& camera_state, Universe& universe) = 0;
 
 	virtual std::string get_name() const = 0;

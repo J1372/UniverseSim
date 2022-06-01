@@ -144,3 +144,11 @@ void AdvCamera::set_offset(Vector2 vec)
 {
 	camera.offset = vec;
 }
+
+void AdvCamera::set_offset_bounds(float min_x, float min_y, float width, float height)
+{
+	offset_bounds.x = min_x;
+	offset_bounds.y = min_y;
+	offset_bounds.width = width;
+	offset_bounds.height = height;
+}

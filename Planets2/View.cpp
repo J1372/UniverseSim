@@ -17,22 +17,19 @@ int main() {
 
 	MaximizeWindow();
 
-	std::unique_ptr<Scene> active_scene = std::make_unique<SettingsScene>(GetScreenWidth(), GetScreenHeight());
+	Scene::init_scenes();
+	Scene* active_scene = &Scene::settings_scene;
 
 	while (!WindowShouldClose()) {
 
 		if (IsWindowResized()) {
-			active_scene->resize(GetScreenWidth(), GetScreenHeight());
+			//active_scene->resize(GetScreenWidth(), GetScreenHeight());
 		}
 
-		Scene *next_scene = active_scene->update();
+		active_scene = active_scene->update();
 
-		if (next_scene == nullptr) {
+		if (active_scene == nullptr) {
 			break;
-		}
-
-		if (next_scene != active_scene.get()) {
-			active_scene = std::unique_ptr<Scene>(next_scene);
 		}
 	}
 

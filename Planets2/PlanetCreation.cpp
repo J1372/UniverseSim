@@ -7,6 +7,11 @@
 #include "SystemCreation.h"
 #include "DefaultInteraction.h"
 
+void PlanetCreation::init()
+{
+	creating = nullptr;
+}
+
 void PlanetCreation::enter(Vector2 mouse_pos) // universe point of mouse param
 {
 	long mass = 100;

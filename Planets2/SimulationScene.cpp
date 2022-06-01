@@ -13,13 +13,35 @@
 #include "DefaultInteraction.h"
 #include <iostream>
 
-SimulationScene::SimulationScene(int width, int height, UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning) : 
-	Scene(width, height), universe{ settings, std::move(partitioning) }, camera_state(&CameraState::free_camera),
-	interaction_state(&InteractionState::default_interaction)
+
+void SimulationScene::init()
 {
 	CameraState::init_cameras(starting_config);
+}
 
-	on_screen_bodies.reserve(universe.get_num_bodies());
+void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
+{
+	camera_state = &CameraState::free_camera;
+	CameraState::init_cameras(starting_config); // Set cameras back to default. Could separate camerastate.exit() logic from this.
+
+	interaction_state = &InteractionState::default_interaction;
+	InteractionState::init_states(); // Set all states back to default. could just .exit() current state.
+
+	universe.set_settings(settings);
+	universe.set_partitioning(std::move(partitioning));
+	universe.create_universe();
+
+	on_screen_bodies.reserve(universe.get_settings().UNIVERSE_CAPACITY);
+
+	// set default toggles
+	running = false;
+	should_render_tick_info = false;
+	should_render_partitioning = false;
+	should_render_debug_text = false;
+	should_render_help_text = false;
+
+
+	return_scene = this;
 }
 
 void SimulationScene::process_input()
@@ -54,7 +76,10 @@ void SimulationScene::process_input()
 	// Exiting to settings
 
 	if (IsKeyPressed(KEY_ESCAPE)) {
-		return_scene = new SettingsScene(screen_width, screen_height, universe.get_settings());
+		SettingsScene& settings = Scene::settings_scene;
+		settings.enter();
+
+		return_scene = &settings;
 	}
 
 	
@@ -203,14 +228,6 @@ void SimulationScene::render_creating_bodies(std::span<const std::unique_ptr<Bod
 
 		DrawText(info_text.c_str(), text_x, text_y, font_size, planet_color);
 	}
-}
-
-void SimulationScene::resize(int width, int height)
-{
-	screen_width = width;
-	screen_height = height;
-
-	//camera_state->resize(static_cast<float>(screen_width), static_cast<float>(screen_height));
 }
 
 Scene* SimulationScene::update()

@@ -2,24 +2,24 @@
 #include <vector>
 #include <memory>
 
+class SettingsScene;
+class SimulationScene;
+
+
 class Scene
 {
 
-protected:
-	int screen_width;
-	int screen_height;
-
-	Scene(int width, int height) : screen_width(width), screen_height(height) {}
-
 public:
+
+	static SettingsScene settings_scene;
+	static SimulationScene simulation_scene;
+
+	static void init_scenes();
 
 	virtual Scene* update() = 0;
 
 	virtual void resize(int width, int height)
-	{ 
-		screen_width = width;
-		screen_height = height;
-	}
+	{}
 
 	virtual ~Scene() = default;
 };

@@ -63,9 +63,9 @@ class SimulationScene : public Scene
 
 public:
 
-	SimulationScene(int width, int height, UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning);
+	void init();
 
-	void resize(int width, int height);
+	void enter(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning);
 
 	Scene* update();
 

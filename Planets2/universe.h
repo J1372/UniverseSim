@@ -62,6 +62,10 @@ public:
 	Universe(const UniverseSettings& to_set);
 	Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning);
 
+	void set_settings(const UniverseSettings& to_set);
+	void set_partitioning(std::unique_ptr<SpatialPartitioning>&& partitioning);
+
+
 	bool can_create_body() const;
 
 	template <class... ArgTypes>

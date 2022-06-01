@@ -19,6 +19,8 @@ class PlanetCreation : public InteractionState
 
 public:
 
+	void init();
+
 	void enter(Vector2 mouse_pos);
 
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;

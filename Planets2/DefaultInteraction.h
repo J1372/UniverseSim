@@ -6,6 +6,8 @@ class DefaultInteraction : public InteractionState
 
 public:
 
+	void init();
+
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;
 
 	std::string get_name() const override { return "Default interaction mode"; }

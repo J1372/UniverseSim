@@ -8,6 +8,12 @@
 #include "PlanetCreation.h"
 
 
+void SystemCreation::init()
+{
+	system.clear();
+}
+
+
 void SystemCreation::enter(Vector2 mouse_pos, Universe& universe)
 {
     system = std::move(universe.generate_rand_system(mouse_pos.x, mouse_pos.y));

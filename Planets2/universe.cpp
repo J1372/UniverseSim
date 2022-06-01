@@ -20,7 +20,6 @@ float Universe::get_rand_sat_dist() const
 Universe::Universe()
 {
 	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
-	create_universe();
 	//std::cout << std::thread::hardware_concurrency();
 }
 
@@ -104,7 +103,17 @@ void Universe::create_universe()
 {
 	// TODO make physics settings changeable while running. Keep universe settings const while running.
 	//		->move reserve/make unique out into constructor / run-once-at-start method.
+	dimensions = { -settings.universe_size_max / 2.0f,
+		-settings.universe_size_max / 2.0f,
+		settings.universe_size_max ,
+		settings.universe_size_max };
 
+	tick = 0;
+	num_collision_checks = 0;
+	num_collision_checks_tick = 0;
+	generated_bodies = 0;
+
+	active_bodies.clear();
 	active_bodies.reserve(settings.UNIVERSE_CAPACITY);
 
 	for (int i = 0; i < settings.num_rand_planets; ++i) {
@@ -124,6 +133,16 @@ bool Universe::can_create_body() const
 	// 
 	// would like an efficient way to reuse ids, or just use a long.
 	// 
+}
+
+void Universe::set_settings(const UniverseSettings& to_set)
+{
+	settings = to_set;
+}
+
+void Universe::set_partitioning(std::unique_ptr<SpatialPartitioning>&& partitioning)
+{
+	partitioning_method = std::move(partitioning);
 }
 
 void Universe::handle_gravity()

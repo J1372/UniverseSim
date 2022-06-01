@@ -10,11 +10,14 @@
 #include "Grid.h"
 #include "LineSweep.h"
 
-void SettingsScene::init_default()
+void SettingsScene::init()
 {
 	start_button.set_on_action([this]() {
 		generate_settings();
-		return_scene = new SimulationScene{ screen_width, screen_height, settings, gen_partitioning() };
+
+		SimulationScene& sim = Scene::simulation_scene;
+		sim.enter(settings, gen_partitioning());
+		return_scene = &sim;
 
 	});
 
@@ -56,6 +59,9 @@ void SettingsScene::init_default()
 	partitioning_dropdown.deselect();
 
 	background_color = SKYBLUE;
+
+	read_settings_to_gui();
+
 }
 
 void SettingsScene::generate_settings()
@@ -109,14 +115,9 @@ std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
 	return nullptr;
 }
 
-SettingsScene::SettingsScene(int width, int height) : GuiScene{ width, height }
+void SettingsScene::enter()
 {
-	init_default();
-	read_settings_to_gui();
-}
+	// set tab back to universe generation
 
-SettingsScene::SettingsScene(int width, int height, UniverseSettings& settings) : GuiScene{ width, height }, settings(settings)
-{
-	init_default();
-	read_settings_to_gui();
+	return_scene = this;
 }

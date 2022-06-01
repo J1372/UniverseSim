@@ -6,6 +6,13 @@
 void AnchoredCamera::init(const AdvCamera& starting_config)
 {
     camera = starting_config;
+
+    // restrict panning so anchored body's center never goes off screen.
+    camera.set_offset_bounds(0, 0, GetScreenWidth(), GetScreenHeight()); 
+
+    if (anchored_to) {
+        switch_to(nullptr);
+    }
 }
 
 void AnchoredCamera::goto_body(Body& body)
