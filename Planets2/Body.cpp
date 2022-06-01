@@ -52,6 +52,17 @@ Body::Body(long mass, const Orbit& orbit) :
 
 }
 
+float Body::calc_radius(long mass)
+{
+	int rank = 0;
+
+	while (mass >= TYPES[rank].min_mass) {
+		rank++;
+	}
+
+	return std::max(((float)mass / TYPES[rank].density), 1.0f);
+}
+
 std::array<float, 2> Body::distv_body(const Body& other) const
 {
 	return { other.x - x , other.y - y };
