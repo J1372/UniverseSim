@@ -27,7 +27,7 @@ public:
 
 	virtual InteractionState* process_input(const CameraState& camera_state, Universe& universe) = 0;
 
-	virtual const std::string& get_name() const = 0;
+	virtual std::string get_name() const = 0;
 	virtual const std::string& get_help_text() const = 0;
 
 	virtual std::span<const std::unique_ptr<Body>> get_creating_bodies() const = 0;

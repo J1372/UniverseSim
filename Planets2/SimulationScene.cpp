@@ -11,6 +11,7 @@
 #include "Physics.h"
 #include "InteractionState.h"
 #include "DefaultInteraction.h"
+#include <iostream>
 
 SimulationScene::SimulationScene(int width, int height, UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning) : 
 	Scene(width, height), universe{ settings, std::move(partitioning) }, camera_state(&CameraState::free_camera),
@@ -249,6 +250,9 @@ Scene* SimulationScene::update()
 		if (should_render_help_text) {
 			DrawText(help_text.c_str(), 1400, 100, 20, RAYWHITE);
 		}
+
+		std::string interaction_title = interaction_state->get_name();
+		DrawText(interaction_title.c_str(), 50, 900, 20, RAYWHITE);
 
 	EndDrawing();
 
