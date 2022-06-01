@@ -12,6 +12,9 @@ namespace Rand {
 	// Returns a float in range [0, 2*pi).
 	float radian();
 
+	// Returns true if an event with the given possibility occurred.
+	bool chance(float possibility);
+
 }
 
 #endif

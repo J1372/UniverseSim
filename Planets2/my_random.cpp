@@ -23,3 +23,8 @@ float Rand::radian()
 {
     return Rand::real() * 2 * std::numbers::pi;
 }
+
+bool Rand::chance(float possibility)
+{
+    return Rand::real() < possibility;
+}
