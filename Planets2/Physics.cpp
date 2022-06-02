@@ -109,9 +109,21 @@ float Physics::dist(Vector2 point1, Vector2 point2)
 	return std::sqrt(c_squared);
 }
 
+std::array<float, 2> Physics::distv(Vector2 point1, Vector2 point2)
+{
+	return { point2.x - point1.x , point2.y - point1.y };
+}
+
 float Physics::net_force(const Body& body1, const Body& body2, float grav_const)
 {
-	return (grav_const * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
+	float dist = body1.dist_body(body2);
+	return (grav_const * body1.mass * body2.mass) / std::pow(dist, 2);
+}
+
+float Physics::net_force(const Body& body, Vector2 center_mass, long point_mass, float grav_const)
+{
+	float dist = Physics::dist({ body.x, body.y }, center_mass);
+	return (grav_const * body.mass * point_mass) / std::pow(dist, 2);
 }
 
 void Physics::grav_pull(Body& body1, Body& body2, float grav_const)
@@ -133,5 +145,21 @@ void Physics::grav_pull(Body& body1, Body& body2, float grav_const)
 	force_vectors[1] = -force_vectors[1];
 
 	body2.grav_pull(force_vectors);
+
+}
+
+void Physics::grav_pull(Body& body, Vector2 center_mass, long point_mass, float grav_const)
+{
+	double force = Physics::net_force(body, center_mass, point_mass, grav_const);
+
+	// may be able to optimize by computing force vectors directly.
+
+	std::array<float, 2> dist_v = Physics::distv({ body.x, body.y }, center_mass);
+
+	float theta = atan2(dist_v[0], dist_v[1]); // radians
+
+	std::array<float, 2> force_vectors{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
+
+	body.grav_pull(force_vectors);
 
 }

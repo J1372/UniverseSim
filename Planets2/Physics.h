@@ -33,9 +33,12 @@ namespace Physics {
 	bool circle_intersects_rect(Circle circle, Rectangle rect);
 
 	float dist(Vector2 point1, Vector2 point2);
+	std::array<float, 2> distv(Vector2 point1, Vector2 point2);
 
 	float net_force(const Body& body1, const Body& body2, float grav_const);
+	float net_force(const Body& body, Vector2 center_mass, long point_mass, float grav_const);
 
 	void grav_pull(Body& body1, Body& body2, float grav_const);
+	void grav_pull(Body& body, Vector2 center_mass, long point_mass, float grav_const);
 
 }
