@@ -48,6 +48,7 @@ std::array<float, 2> Body::distv_body(const Body& other) const
 
 float Body::dist_body(const Body& other) const
 {
+	// can remove abs
 	float c_squared = std::pow(std::abs(other.x - x), 2) + std::pow(std::abs(other.y - y), 2);
 	return std::sqrt(c_squared);
 }
@@ -212,6 +213,11 @@ Event<Removal>& Body::removal_event()
 Rectangle Body::get_bounding_box() const
 {
 	return { left(), top(), diameter(), diameter() };
+}
+
+Vector2 Body::get_mass_moment() const
+{
+	return { mass * x, mass * y };
 }
 
 bool Body::operator==(const Body& other) const

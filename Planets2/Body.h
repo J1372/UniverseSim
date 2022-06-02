@@ -128,6 +128,8 @@ public:
 
 	Rectangle get_bounding_box() const;
 
+	Vector2 get_mass_moment() const;
+
 	bool operator==(const Body& other) const;
 	bool operator!=(const Body& other) const;
 
