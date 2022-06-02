@@ -133,9 +133,9 @@ void Physics::grav_pull(Body& body1, Body& body2, float grav_const)
 
 	// may be able to optimize by computing force vectors directly.
 
-	std::array<float, 2> dist_v = body1.distv_body(body2);
+	std::array<float, 2> dist_vector = body1.distv_body(body2);
 
-	float theta = atan2(dist_v[0], dist_v[1]); // radians
+	float theta = atan2(dist_vector[0], dist_vector[1]); // radians
 
 	std::array<float, 2> force_vectors{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
 
@@ -154,9 +154,9 @@ void Physics::grav_pull(Body& body, Vector2 center_mass, long point_mass, float 
 
 	// may be able to optimize by computing force vectors directly.
 
-	std::array<float, 2> dist_v = Physics::distv({ body.x, body.y }, center_mass);
+	std::array<float, 2> dist_vector = Physics::distv({ body.x, body.y }, center_mass);
 
-	float theta = atan2(dist_v[0], dist_v[1]); // radians
+	float theta = atan2(dist_vector[0], dist_vector[1]); // radians
 
 	std::array<float, 2> force_vectors{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
 
