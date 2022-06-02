@@ -14,6 +14,7 @@ Event<Collision>& Physics::collision_event()
 
 bool Physics::have_collided(const Body& body1, const Body& body2)
 {
+	// can remove abs
 	float c_squared = std::pow(std::abs(body2.x - body1.x), 2) + std::pow(std::abs(body2.y - body1.y), 2);
 	return c_squared < std::pow((body2.radius + body1.radius), 2);
 }
@@ -99,4 +100,38 @@ bool Physics::circle_intersects_rect(Circle circle, Rectangle rect)
 	int corner_dist = std::pow((dist_x - rect.width / 2), 2) + std::pow((dist_y - rect.height / 2), 2);
 
 	return corner_dist <= std::pow(circle.radius, 2);
+}
+
+float Physics::dist(Vector2 point1, Vector2 point2)
+{
+	// can remove abs
+	float c_squared = std::pow(std::abs(point2.x - point1.x), 2) + std::pow(std::abs(point2.y - point1.y), 2);
+	return std::sqrt(c_squared);
+}
+
+float Physics::net_force(const Body& body1, const Body& body2, float grav_const)
+{
+	return (grav_const * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
+}
+
+void Physics::grav_pull(Body& body1, Body& body2, float grav_const)
+{	
+	// can move this to Body, and have physics' just be net_force for center of masses.
+	double force = Physics::net_force(body1, body2, grav_const);
+
+	// may be able to optimize by computing force vectors directly.
+
+	std::array<float, 2> dist_v = body1.distv_body(body2);
+
+	float theta = atan2(dist_v[0], dist_v[1]); // radians
+
+	std::array<float, 2> force_vectors{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
+
+	body1.grav_pull(force_vectors);
+
+	force_vectors[0] = -force_vectors[0];
+	force_vectors[1] = -force_vectors[1];
+
+	body2.grav_pull(force_vectors);
+
 }

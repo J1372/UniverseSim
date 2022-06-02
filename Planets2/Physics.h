@@ -31,4 +31,11 @@ namespace Physics {
 	// Returns true if a body intersects a rectangle.
 	bool body_intersects_rect(const Body& body, Rectangle rect);
 	bool circle_intersects_rect(Circle circle, Rectangle rect);
+
+	float dist(Vector2 point1, Vector2 point2);
+
+	float net_force(const Body& body1, const Body& body2, float grav_const);
+
+	void grav_pull(Body& body1, Body& body2, float grav_const);
+
 }

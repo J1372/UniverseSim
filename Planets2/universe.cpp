@@ -156,7 +156,7 @@ void Universe::handle_gravity()
 		for (int j = i + 1; j < active_bodies.size(); j++) {
 			Body& body2 = *active_bodies[j];
 
-			grav_pull(body1, body2);
+			Physics::grav_pull(body1, body2, settings.grav_const);
 
 		}
 	}
@@ -420,35 +420,6 @@ Body* Universe::get_body(int id) const
 	else {
 		return nullptr;
 	}
-}
-
-void Universe::grav_pull(Body& body1, Body& body2) const
-{
-	// minor optimization, don't call dist_body. calc it from distv_body
-	// 3 mass scalar makes very cool
-	double force = (settings.grav_const * body1.mass * body2.mass) / std::pow(body1.dist_body(body2), 2);
-	// this is the net force
-
-
-	std::array<float, 2> dist_v = body1.distv_body(body2);
-
-	float theta = atan2(dist_v[0], dist_v[1]); // radians
-	// float dtheta = (double)theta * 180 / std::numbers::pi; // degrees
-
-	// F = ma
-
-	// calc net (x, y) force vectors for both. are they the same / reversed?
-
-	std::array<float, 2> force_vectors { (float)(force * sin(theta)), (float)(force * cos(theta)) };
-
-	body1.grav_pull(force_vectors);
-
-	force_vectors[0] = -force_vectors[0];
-	force_vectors[1] = -force_vectors[1];
-
-	body2.grav_pull(force_vectors);
-
-
 }
 
 void Universe::rem_body(int id)
