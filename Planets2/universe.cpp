@@ -17,16 +17,25 @@ float Universe::get_rand_sat_dist() const
 	return Rand::real() * (settings.SATELLITE_MAX_DIST - settings.SATELLITE_MIN_DIST) + settings.SATELLITE_MIN_DIST;
 }
 
-Universe::Universe()
+Universe::Universe() : barnes_quad { settings.universe_size_max, .5f }
 {
 	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
 	//std::cout << std::thread::hardware_concurrency();
 }
 
 Universe::Universe(const UniverseSettings& to_set) : settings(to_set),
-dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
+	dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
+	barnes_quad{ settings.universe_size_max, 200000.0f }
 {
 	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
+	create_universe();
+}
+
+Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning) : settings(to_set),
+	partitioning_method(std::move(partitioning)),
+	dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
+	barnes_quad{ settings.universe_size_max, 10.0f }
+{
 	create_universe();
 }
 
@@ -90,15 +99,6 @@ std::vector<std::unique_ptr<Body>>::iterator Universe::get_iterator(int id)
 	return std::lower_bound(active_bodies.begin(), active_bodies.end(), id, predicate);
 }
 
-
-Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning) : settings(to_set), 
-	partitioning_method(std::move(partitioning)),
-	dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
-{
-	
-	create_universe();
-}
-
 void Universe::create_universe()
 {
 	// TODO make physics settings changeable while running. Keep universe settings const while running.
@@ -112,6 +112,9 @@ void Universe::create_universe()
 	num_collision_checks = 0;
 	num_collision_checks_tick = 0;
 	generated_bodies = 0;
+
+	barnes_quad.set_size(settings.universe_size_max);
+	BarnesHut::set_approximation(1.0f);
 
 	active_bodies.clear();
 	active_bodies.reserve(settings.UNIVERSE_CAPACITY);
@@ -151,14 +154,17 @@ void Universe::handle_gravity()
 		return;
 	}
 
-	for (int i = 0; i < active_bodies.size() - 1; i++) {
+	for (int i = 0; i < active_bodies.size(); i++) {
 		Body& body1 = *active_bodies[i];
-		for (int j = i + 1; j < active_bodies.size(); j++) {
+
+		barnes_quad.handle_gravity(body1, settings.grav_const);
+
+		/*for (int j = i + 1; j < active_bodies.size(); j++) {
 			Body& body2 = *active_bodies[j];
 
 			Physics::grav_pull(body1, body2, settings.grav_const);
 
-		}
+		}*/
 	}
 }
 
@@ -303,6 +309,7 @@ void Universe::handle_collisions(std::vector<Collision>& collisions)
 
 void Universe::update()
 {
+	barnes_quad.update(active_bodies);
 	handle_gravity(); // do grav pulls (update acceleration)
 	update_pos(); // update velocities and positions
 

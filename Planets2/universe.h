@@ -8,6 +8,7 @@
 #include "Collision.h"
 
 #include <functional>
+#include "BarnesHut.h"
 
 struct Vector2;
 class SpatialPartitioning;
@@ -20,6 +21,7 @@ class Universe {
 	UniverseSettings settings{};
 
 	std::unique_ptr<SpatialPartitioning> partitioning_method;
+	BarnesHut barnes_quad;
 
 	std::vector<std::unique_ptr<Body>> active_bodies;
 
