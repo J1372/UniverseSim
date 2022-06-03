@@ -87,6 +87,10 @@
     <ClCompile Include="Orbit.cpp">
       <Filter>Sim_Model</Filter>
     </ClCompile>
+    <ClCompile Include="Slider.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="BarnesHut.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my_random.h" />
@@ -190,6 +194,10 @@
     <ClInclude Include="Orbit.h">
       <Filter>Sim_Model</Filter>
     </ClInclude>
+    <ClInclude Include="Slider.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="BarnesHut.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

@@ -117,12 +117,20 @@ std::array<float, 2> Physics::distv(Vector2 point1, Vector2 point2)
 float Physics::net_force(const Body& body1, const Body& body2, float grav_const)
 {
 	float dist = body1.dist_body(body2);
+	if (dist == 0) {
+		return 0.0f;
+	}
+
 	return (grav_const * body1.mass * body2.mass) / std::pow(dist, 2);
 }
 
 float Physics::net_force(const Body& body, Vector2 center_mass, long point_mass, float grav_const)
 {
 	float dist = Physics::dist({ body.x, body.y }, center_mass);
+	if (dist == 0) {
+		return 0.0f;
+	}
+
 	return (grav_const * body.mass * point_mass) / std::pow(dist, 2);
 }
 
