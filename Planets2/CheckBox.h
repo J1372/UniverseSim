@@ -1,0 +1,38 @@
+#pragma once
+
+#include "UIElement.h"
+#include <raylib.h>
+#include <functional>
+
+class CheckBox : public UIElement
+{
+	std::string description;
+	int font_size = 20;
+
+	Rectangle rect;
+
+	Color background_color = BLACK;
+	Color check_color = RED;
+
+
+	static constexpr float padding = .3f;
+
+	bool checked = false;
+
+
+	std::function<void(bool)> callback = nullptr;
+
+public:
+
+	CheckBox(const std::string& description, float x, float y, float size);
+
+
+	bool is_checked() const;
+
+	void click();
+	bool contains_point(Vector2 point) const;
+	void render() const;
+
+	void set_on_click(std::function<void(bool)> action);
+
+};

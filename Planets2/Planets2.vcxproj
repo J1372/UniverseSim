@@ -152,7 +152,7 @@
     <ClInclude Include="Body.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CameraState.h" />
-    <ClInclude Include="CheckBoxList.h" />
+    <ClInclude Include="CheckBox.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="DefaultInteraction.h" />
@@ -191,7 +191,7 @@
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="CameraState.cpp" />
-    <ClCompile Include="CheckBoxList.cpp" />
+    <ClCompile Include="CheckBox.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DefaultInteraction.cpp" />
     <ClCompile Include="Dropdown.cpp" />

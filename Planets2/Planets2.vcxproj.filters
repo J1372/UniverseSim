@@ -6,7 +6,7 @@
     <ClCompile Include="Button.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="CheckBoxList.cpp">
+    <ClCompile Include="CheckBox.cpp">
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
@@ -97,7 +97,7 @@
     <ClInclude Include="Button.h">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="CheckBoxList.h">
+    <ClInclude Include="CheckBox.h">
       <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
