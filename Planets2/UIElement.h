@@ -20,6 +20,7 @@ public:
 
 	virtual void click() {};
 	virtual bool send_keypress(int key_code) { return false; }
+	virtual void notify_drag() {};
 	virtual bool contains_point(Vector2 point) const;
 	virtual void render() const = 0;
 
