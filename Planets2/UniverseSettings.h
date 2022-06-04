@@ -11,7 +11,7 @@ struct UniverseSettings {
 	// physics
 	//static constexpr double GRAV_CONST = 1;
 	static constexpr long RAND_MASS = 100; // The maximum amount of mass to allocate to a body created with create_rand_body.
-	double grav_const = 0.75;
+	double grav_const = 1.0;
 
 	// create_system settings.
 	int system_min_planets = 100; // Minimum number of planets to generate in a system.
