@@ -38,23 +38,35 @@ void SettingsScene::init()
 	partitioning_dropdown.set_on_selection([this](const std::string& selection) {
 		if (selection == "Quad tree") {
 			gui.hide(grid_nodes_per_row_input);
+			gui.hide(grid_label);
 			gui.show(quadtree_max_depth_input);
 			gui.show(quad_max_bodies_input);
+			gui.show(quad_bodies_label);
+			gui.show(quad_depth_label);
 		}
 		else if (selection == "Grid") {
 			gui.show(grid_nodes_per_row_input);
+			gui.show(grid_label);
 			gui.hide(quadtree_max_depth_input);
 			gui.hide(quad_max_bodies_input);
+			gui.hide(quad_bodies_label);
+			gui.hide(quad_depth_label);
 		}
 		else if (selection == "Line sweep") {
 			gui.hide(grid_nodes_per_row_input);
+			gui.hide(grid_label);
 			gui.hide(quadtree_max_depth_input);
 			gui.hide(quad_max_bodies_input);
+			gui.hide(quad_bodies_label);
+			gui.hide(quad_depth_label);
 		}
 		else {
 			gui.hide(grid_nodes_per_row_input);
+			gui.hide(grid_label);
 			gui.hide(quadtree_max_depth_input);
 			gui.hide(quad_max_bodies_input);
+			gui.hide(quad_bodies_label);
+			gui.hide(quad_depth_label);
 		}
 	});
 
@@ -90,15 +102,20 @@ void SettingsScene::init()
 
 void SettingsScene::generate_settings()
 {
-	settings.universe_size_start = std::stoi(start_size_input.get_text());
-	settings.universe_size_max = 200 * settings.universe_size_start;
+	settings.universe_capacity = std::stoi(capacity_input.get_text());
+	settings.universe_size_start = std::stof(start_size_input.get_text());
+	settings.universe_size_max = std::stof(max_size_input.get_text());
 	settings.num_rand_planets = std::stoi(num_planets_input.get_text());
 	settings.num_rand_systems = std::stoi(num_systems_input.get_text());
 
 	settings.grav_const = std::stod(grav_const_input.get_text());
 
-	settings.system_min_planets = std::stod(sys_min_planets_input.get_text());
-	settings.system_max_planets = std::stod(sys_max_planets_input.get_text());
+	settings.system_mass_ratio = std::stof(sys_mass_ratio_input.get_text());
+
+	settings.system_min_planets = std::stoi(sys_min_planets_input.get_text());
+	settings.system_max_planets = std::stoi(sys_max_planets_input.get_text());
+	settings.satellite_min_dist = std::stof(sys_min_dist_input.get_text());
+	settings.satellite_max_dist = std::stof(sys_max_dist_input.get_text());
 	settings.moon_chance = std::stod(sys_moon_chance_input.get_text());
 	settings.retrograde_chance = std::stod(sys_retrograde_input.get_text());
 }
@@ -106,14 +123,19 @@ void SettingsScene::generate_settings()
 void SettingsScene::read_settings_to_gui()
 {
 	constexpr int rounding = 3; // round floating point digits.
-	start_size_input.set_text(std::to_string(settings.universe_size_start));
+	capacity_input.set_text(std::to_string(settings.universe_capacity));
+	start_size_input.set_text(std::to_string(static_cast<int>(settings.universe_size_start)));
+	max_size_input.set_text(std::to_string(static_cast<int>(settings.universe_size_max)));
 	num_planets_input.set_text(std::to_string(settings.num_rand_planets));
 	num_systems_input.set_text(std::to_string(settings.num_rand_systems));
 
 	grav_const_input.set_text(std::to_string(settings.grav_const).substr(0, rounding + 1));
 
+	sys_mass_ratio_input.set_text(std::to_string(settings.system_mass_ratio).substr(0, rounding + 1));
 	sys_min_planets_input.set_text(std::to_string(settings.system_min_planets));
 	sys_max_planets_input.set_text(std::to_string(settings.system_max_planets));
+	sys_min_dist_input.set_text(std::to_string(settings.satellite_min_dist).substr(0, rounding + 1));
+	sys_max_dist_input.set_text(std::to_string(settings.satellite_max_dist).substr(0, rounding + 1));
 	sys_moon_chance_input.set_text(std::to_string(settings.moon_chance).substr(0, rounding + 1));
 	sys_retrograde_input.set_text(std::to_string(settings.retrograde_chance).substr(0, rounding + 1));
 }
