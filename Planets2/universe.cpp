@@ -14,7 +14,7 @@
 
 float Universe::get_rand_sat_dist() const
 {
-	return Rand::real() * (settings.SATELLITE_MAX_DIST - settings.SATELLITE_MIN_DIST) + settings.SATELLITE_MIN_DIST;
+	return Rand::real() * (settings.satellite_max_dist - settings.satellite_min_dist) + settings.satellite_min_dist;
 }
 
 Universe::Universe() : barnes_quad { settings.universe_size_max, .5f }
@@ -59,7 +59,7 @@ void Universe::add_bodies(std::vector<std::unique_ptr<Body>>& bodies)
 {
 	int prev_size = active_bodies.size();
 
-	int remaining_space = settings.UNIVERSE_CAPACITY - prev_size;
+	int remaining_space = settings.universe_capacity - prev_size;
 
 	// Enforce that adding bodies doesnt go over capacity.
 	int adding = std::min(static_cast<int>(bodies.size()), remaining_space);
@@ -117,7 +117,7 @@ void Universe::create_universe()
 	BarnesHut::set_approximation(1.0f);
 
 	active_bodies.clear();
-	active_bodies.reserve(settings.UNIVERSE_CAPACITY);
+	active_bodies.reserve(settings.universe_capacity);
 
 	for (int i = 0; i < settings.num_rand_planets; ++i) {
 		create_rand_body();
@@ -130,7 +130,7 @@ void Universe::create_universe()
 
 bool Universe::can_create_body() const
 {
-	return generated_bodies < settings.UNIVERSE_CAPACITY;
+	return generated_bodies < settings.universe_capacity;
 	// interesting. no mass lost but bodies def decrease as absorption happens.
 	// time -> denser universe. but at a point no new objects ccreated.
 	// 
@@ -362,7 +362,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 	system.reserve(num_planets + 10);
 
 	long system_mass = Rand::num(1, settings.RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
-	long star_mass = settings.SYSTEM_STAR_MASS_RATIO * system_mass;
+	long star_mass = settings.system_mass_ratio * system_mass;
 	//float remaining_mass = 1 - settings.SYSTEM_STAR_MASS_RATIO; // unused
 
 	Body& star = *system.emplace_back(std::make_unique<Body>(x, y, star_mass));

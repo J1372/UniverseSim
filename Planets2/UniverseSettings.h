@@ -4,8 +4,8 @@
 struct UniverseSettings {
 
 	// Max number bodies and area.
-	static constexpr int UNIVERSE_CAPACITY = 1000; // Maximum number of bodies to be active at one time.
-	int universe_size_start = 1000; // initialize all starting bodies in this area. 
+	int universe_capacity = 1000; // Maximum number of bodies to be active at one time.
+	float universe_size_start = 1000; // initialize all starting bodies in this area. 
 	float universe_size_max = 100000; // bodies will wraparound if going past this area.
 
 	// physics
@@ -17,9 +17,9 @@ struct UniverseSettings {
 	int system_min_planets = 100; // Minimum number of planets to generate in a system.
 	int system_max_planets = 300; // Roughly, maximum number of planets to generate in a system. May be more, since some planets will also have satellites.
 
-	static constexpr float SYSTEM_STAR_MASS_RATIO = .95f; // How much mass (%) of the system will be allocated to the star.  
-	static constexpr float SATELLITE_MIN_DIST = 1.1F; // The minimum distance a body's periapsis can be from its orbiting body at start.
-	static constexpr float SATELLITE_MAX_DIST = 40;   // The maximum distance a body's periapsis can be from its orbiting body at start.
+	float system_mass_ratio = .95f; // How much mass (%) of the system will be allocated to the star.  
+	float satellite_min_dist = 1.1F; // The minimum distance a body's periapsis can be from its orbiting body at start.
+	float satellite_max_dist = 40;   // The maximum distance a body's periapsis can be from its orbiting body at start.
 
 	// Chance a planet will have its own satellite
 	double moon_chance = 0.1;

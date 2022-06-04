@@ -31,7 +31,7 @@ void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPa
 	universe.set_partitioning(std::move(partitioning));
 	universe.create_universe();
 
-	on_screen_bodies.reserve(universe.get_settings().UNIVERSE_CAPACITY);
+	on_screen_bodies.reserve(universe.get_settings().universe_capacity);
 
 	// set default toggles
 	running = false;
