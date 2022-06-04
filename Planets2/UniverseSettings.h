@@ -21,6 +21,11 @@ struct UniverseSettings {
 	static constexpr float SATELLITE_MIN_DIST = 1.1F; // The minimum distance a body's periapsis can be from its orbiting body at start.
 	static constexpr float SATELLITE_MAX_DIST = 40;   // The maximum distance a body's periapsis can be from its orbiting body at start.
 
+	// Chance a planet will have its own satellite
+	double moon_chance = 0.1;
+
+	// Chance a satellite's orbit will be retrograde.
+	double retrograde_chance = 0.12;
 
 	// Start generation settings
 	int num_rand_planets = 0;
