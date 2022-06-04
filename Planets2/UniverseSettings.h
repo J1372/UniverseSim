@@ -9,9 +9,12 @@ struct UniverseSettings {
 	float universe_size_max = 100000; // bodies will wraparound if going past this area.
 
 	// physics
-	//static constexpr double GRAV_CONST = 1;
 	static constexpr long RAND_MASS = 100; // The maximum amount of mass to allocate to a body created with create_rand_body.
 	double grav_const = 1.0;
+
+	// If more methods added, this should be removed and a gravityhandler interface should be added.
+	bool use_gravity_approximation = false; 
+	float grav_approximation_value = 0.0f;
 
 	// create_system settings.
 	int system_min_planets = 100; // Minimum number of planets to generate in a system.

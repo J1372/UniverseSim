@@ -109,6 +109,8 @@ void SettingsScene::generate_settings()
 	settings.num_rand_systems = std::stoi(num_systems_input.get_text());
 
 	settings.grav_const = std::stod(grav_const_input.get_text());
+	settings.use_gravity_approximation = approximate_gravity_checkbox.is_checked();
+	settings.grav_approximation_value = approximation_slider.get_val();
 
 	settings.system_mass_ratio = std::stof(sys_mass_ratio_input.get_text());
 
