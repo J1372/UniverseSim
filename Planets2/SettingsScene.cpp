@@ -99,18 +99,23 @@ void SettingsScene::generate_settings()
 
 	settings.system_min_planets = std::stod(sys_min_planets_input.get_text());
 	settings.system_max_planets = std::stod(sys_max_planets_input.get_text());
+	settings.moon_chance = std::stod(sys_moon_chance_input.get_text());
+	settings.retrograde_chance = std::stod(sys_retrograde_input.get_text());
 }
 
 void SettingsScene::read_settings_to_gui()
 {
+	constexpr int rounding = 3; // round floating point digits.
 	start_size_input.set_text(std::to_string(settings.universe_size_start));
 	num_planets_input.set_text(std::to_string(settings.num_rand_planets));
 	num_systems_input.set_text(std::to_string(settings.num_rand_systems));
 
-	grav_const_input.set_text(std::to_string(settings.grav_const));
+	grav_const_input.set_text(std::to_string(settings.grav_const).substr(0, rounding + 1));
 
 	sys_min_planets_input.set_text(std::to_string(settings.system_min_planets));
 	sys_max_planets_input.set_text(std::to_string(settings.system_max_planets));
+	sys_moon_chance_input.set_text(std::to_string(settings.moon_chance).substr(0, rounding + 1));
+	sys_retrograde_input.set_text(std::to_string(settings.retrograde_chance).substr(0, rounding + 1));
 }
 
 std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()

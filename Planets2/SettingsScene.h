@@ -77,9 +77,14 @@ class SettingsScene : public GuiScene
 
 	TextBox& sys_min_planets_input = gui.add<TextBox>(SYSTEMS_START_X, COLUMN_Y + 100, TEXTBOX_WIDTH);
 	TextBox& sys_max_planets_input = gui.add<TextBox>(SYSTEMS_START_X, COLUMN_Y + 200, TEXTBOX_WIDTH);
+	TextBox& sys_moon_chance_input = gui.add<TextBox>(SYSTEMS_START_X, COLUMN_Y + 300, TEXTBOX_WIDTH);
+	TextBox& sys_retrograde_input = gui.add<TextBox>(SYSTEMS_START_X, COLUMN_Y + 400, TEXTBOX_WIDTH);
+
 
 	Label& sys_min_planets_label = gui.add<Label>("Min planets", SYSTEMS_START_X + LABEL_OFFSET, COLUMN_Y + 120, 12);
 	Label& sys_max_planets_label = gui.add<Label>("Max planets", SYSTEMS_START_X + LABEL_OFFSET, COLUMN_Y + 220, 12);
+	Label& sys_moon_chance_label = gui.add<Label>("Moon chance", SYSTEMS_START_X + LABEL_OFFSET, COLUMN_Y + 320, 12);
+	Label& sys_retrograde_label = gui.add<Label>("Retrograde chance", SYSTEMS_START_X + LABEL_OFFSET, COLUMN_Y + 420, 12);
 
 
 
