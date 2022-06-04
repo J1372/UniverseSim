@@ -35,7 +35,7 @@ void CheckBox::render() const
 {
 	DrawRectangle(rect.x, rect.y, rect.width, rect.height, background_color);
 
-	DrawText(description.c_str(), rect.x + rect.width + 10, rect.y + .2 * rect.height, 20, BLACK);
+	DrawText(description.c_str(), rect.x + rect.width + 10, rect.y + .1 * rect.height, 20, BLACK);
 
 	float start_x = rect.x + .5 * padding * rect.width;
 	float start_y = rect.y + .5 * padding * rect.height;

@@ -18,8 +18,6 @@ class Button : public UIElement
 	Color background_color = GRAY;
 	Color edge_color = DARKGRAY;
 
-
-	bool clickable = true;
 	static constexpr int edge_width = 5;
 
 
@@ -45,16 +43,14 @@ public:
 		rect{ x, y, get_default_width(), 50}
 	{}
 
+	// Late initialization for Buttons that are in a static object. Raylib's MeasureText won't work well with static objects.
+	void init();
 
 	void set_min_width(float min_width) {
 		rect.width = std::max(min_width, get_default_width());
 	}
 
 	void set_on_action(std::function<void(void)> on_action) { callback = on_action; }
-
-	void set_clickable(bool to_set) { clickable = to_set; }
-
-
 
 	bool contains_point(Vector2 point) const {
 		return point.x >= rect.x and point.x < rect.x + rect.width
@@ -63,7 +59,7 @@ public:
 
 	void render() const;
 
-	void click() { if (clickable) callback(); }
+	void click() { if (callback) callback(); }
 	bool send_keypress(int key_code);
 };
 
