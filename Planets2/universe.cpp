@@ -369,23 +369,21 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 
 	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
 
-	constexpr double RETROGRADE_CHANCE = 0.12;
 	for (int i = 0; i < num_planets; ++i) {
 		// need to times mass ratio by remaining_mass, not system_mass.
 		long planet_mass = mass_ratios[i] * system_mass;
 
 		Body& planet = *system.emplace_back(std::make_unique<Body>(0, 0, planet_mass));
-		Orbit planet_orbit = gen_rand_orbit(star, planet, RETROGRADE_CHANCE);
+		Orbit planet_orbit = gen_rand_orbit(star, planet, settings.retrograde_chance);
 		planet.set_orbit(planet_orbit);
 		
 
-		constexpr double MOON_CHANCE = 0.1;
-		if (Rand::chance(MOON_CHANCE)) {
+		if (Rand::chance(settings.moon_chance)) {
 			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
 			long moon_mass = .1f * planet.mass;
 
 			Body& moon = *system.emplace_back(std::make_unique<Body>(0, 0, moon_mass));
-			Orbit moon_orbit = gen_rand_orbit(planet, moon, RETROGRADE_CHANCE);
+			Orbit moon_orbit = gen_rand_orbit(planet, moon, settings.retrograde_chance);
 			moon.set_orbit(moon_orbit);
 		}
 
