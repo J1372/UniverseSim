@@ -35,7 +35,7 @@ void CheckBox::render() const
 {
 	DrawRectangle(rect.x, rect.y, rect.width, rect.height, background_color);
 
-	DrawText(description.c_str(), rect.x + rect.width + 10, rect.y + .1 * rect.height, 20, BLACK);
+	DrawText(description.c_str(), rect.x + rect.width + 10, rect.y + .2 * rect.height, font_size, BLACK);
 
 	float start_x = rect.x + .5 * padding * rect.width;
 	float start_y = rect.y + .5 * padding * rect.height;
@@ -43,6 +43,10 @@ void CheckBox::render() const
 	float height = (1 - padding) * rect.height;
 
 	DrawRectangle(start_x, start_y, width, height, check_color);
+}
+
+void CheckBox::set_desc_font_size(int to_set) {
+	font_size = to_set;
 }
 
 void CheckBox::set_on_click(std::function<void(bool)> action)

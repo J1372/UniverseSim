@@ -13,6 +13,8 @@ class SpatialPartitioning;
 #include "Dropdown.h"
 #include "Label.h"
 #include "Textbox.h"
+#include "Slider.h"
+#include "CheckBox.h"
 
 
 class SettingsScene : public GuiScene
@@ -59,6 +61,13 @@ class SettingsScene : public GuiScene
 	Label& grav_const_label = gui.add<Label>("Grav const", PHYSICS_START_X + LABEL_OFFSET, COLUMN_Y + 120, 12);
 
 
+	// Barnes hut gravity settings
+	static constexpr int SLIDER_WIDTH = 250;
+	CheckBox& approximate_gravity_checkbox = gui.add<CheckBox>("Use an approximation for gravity calculations to increase performance", PHYSICS_START_X, COLUMN_Y + 200, 20);
+	Slider& approximation_slider = gui.add<Slider>(PHYSICS_START_X, COLUMN_Y + 300, SLIDER_WIDTH, 0.0f, 1.0f);
+	Label& approximation_label = gui.add<Label>("Approximation value", PHYSICS_START_X + SLIDER_WIDTH + 20, COLUMN_Y + 300, 12);
+	Label& approximation_description = gui.add<Label>("Increasing this value improves performance\nbut decreases accuracy",
+		PHYSICS_START_X, COLUMN_Y + 350, 20);
 
 
 	// System generation settings column
@@ -83,6 +92,8 @@ class SettingsScene : public GuiScene
 
 	// Grid settings
 	TextBox& grid_nodes_per_row_input = gui.add<TextBox>("10", 700, 500, TEXTBOX_WIDTH);
+
+
 
 	void generate_settings();
 

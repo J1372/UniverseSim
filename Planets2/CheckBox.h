@@ -33,6 +33,7 @@ public:
 	bool contains_point(Vector2 point) const;
 	void render() const;
 
+	void set_desc_font_size(int to_set);
 	void set_on_click(std::function<void(bool)> action);
 
 };

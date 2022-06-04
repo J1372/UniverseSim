@@ -7,6 +7,9 @@ Scene* GuiScene::update()
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		gui.send_click(GetMousePosition());
 	}
+	else if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+		gui.notify_drag();
+	}
 
 	// send keypresses to gui components
 	// GetKeyPressed returns from a queue. Returns 0 when empty.

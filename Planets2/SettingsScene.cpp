@@ -23,6 +23,8 @@ void SettingsScene::init()
 
 	exit_button.set_on_action([this]() { return_scene = nullptr; });
 
+	start_button.init();
+	exit_button.init();
 	start_button.set_min_width(100);
 	exit_button.set_min_width(100);
 
@@ -55,6 +57,28 @@ void SettingsScene::init()
 			gui.hide(quad_max_bodies_input);
 		}
 	});
+
+	gui.hide(approximation_slider);
+	gui.hide(approximation_label);
+	gui.hide(approximation_description);
+
+
+	approximate_gravity_checkbox.set_desc_font_size(10);
+	approximate_gravity_checkbox.set_on_click([this](bool checked) {
+		if (checked) {
+			gui.show(approximation_slider);
+			gui.show(approximation_label);
+			gui.show(approximation_description);
+
+		}
+		else {
+			gui.hide(approximation_slider);
+			gui.hide(approximation_label);
+			gui.hide(approximation_description);
+		}
+	}
+	);
+
 
 	partitioning_dropdown.deselect();
 

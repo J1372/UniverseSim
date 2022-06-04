@@ -71,5 +71,5 @@ void Slider::render() const
 {
 	DrawRectangleRec(rail, rail_color);
 	DrawCircleV(slider_node.center, slider_node.radius, slider_color);
-	DrawText(cur_val_str.c_str(), slider_node.center.x, slider_node.center.y - 30, 20, BLACK);
+	DrawText(cur_val_str.c_str(), slider_node.center.x - 30, slider_node.center.y - 30, 20, BLACK);
 }

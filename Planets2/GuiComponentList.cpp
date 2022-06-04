@@ -69,6 +69,13 @@ bool GuiComponentList::send_keypress(int key_code)
 	return false;
 }
 
+void GuiComponentList::notify_drag()
+{
+	if (active_element) {
+		active_element->notify_drag();
+	}
+}
+
 void GuiComponentList::show(UIElement& element)
 {
 	if (element.is_hidden()) {

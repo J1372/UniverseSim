@@ -45,6 +45,7 @@ public:
 
 	void send_click(Vector2 point);
 	bool send_keypress(int key_code);
+	void notify_drag();
 
 	void show(UIElement& element);
 	void hide(UIElement& element);
