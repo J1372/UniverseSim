@@ -367,6 +367,9 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 
 	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
 
+	// Compress the maximum possible distance of a moon to its planet.
+	float moon_max_dist = std::max(settings.satellite_min_dist, settings.satellite_max_dist / 10);
+
 	for (int i = 0; i < num_planets; ++i) {
 		long planet_mass = mass_ratios[i] * remaining_mass;
 
@@ -381,6 +384,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 
 			Body& moon = *system.emplace_back(std::make_unique<Body>(0, 0, moon_mass));
 			Orbit moon_orbit = gen_rand_orbit(planet, moon, settings.retrograde_chance);
+			moon_orbit.set_periapsis(planet, Rand::real(settings.satellite_min_dist, moon_max_dist));
 			moon.set_orbit(moon_orbit);
 		}
 
