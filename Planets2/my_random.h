@@ -5,6 +5,8 @@ namespace Rand {
 
 	// Returns a float in range [0, 1)
 	float real();
+	// Returns a float in range [min, max)
+	float real(float min, float max);
 	
 	// Returns an int in range [min, max)
 	int num(int min, int max);

@@ -12,11 +12,6 @@
 
 #include "Orbit.h"
 
-float Universe::get_rand_sat_dist() const
-{
-	return Rand::real() * (settings.satellite_max_dist - settings.satellite_min_dist) + settings.satellite_min_dist;
-}
-
 Universe::Universe() : barnes_quad { settings.universe_size_max, .5f }
 {
 	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
@@ -449,7 +444,7 @@ Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter, float r
 {
 	Orbit orbit { orbited };
 
-	orbit.set_periapsis(orbiter, get_rand_sat_dist());
+	orbit.set_periapsis(orbiter, Rand::real(settings.satellite_min_dist, settings.satellite_max_dist));
 	orbit.grav_const = settings.grav_const;
 	orbit.periapsis_angle = Rand::radian();
 	orbit.eccentricity = Rand::real();

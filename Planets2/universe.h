@@ -56,8 +56,6 @@ class Universe {
 
 	void rem_body(Body& body, Body& removed_by);
 
-	float get_rand_sat_dist() const;
-
 public:
 
 	Universe();

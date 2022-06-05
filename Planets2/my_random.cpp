@@ -9,6 +9,11 @@ float Rand::real()
     return dis(e);
 }
 
+float Rand::real(float min, float max)
+{
+    return min + Rand::real() * (max - min);
+}
+
 int Rand::num(int min, int max)
 {
     //static std::random_device dev;
