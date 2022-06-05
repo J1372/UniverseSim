@@ -40,6 +40,7 @@ class Universe {
 
 	// O(n^2)
 	void handle_gravity();
+	void handle_gravity_approximation();
 
 	// O(n)
 	void update_pos();

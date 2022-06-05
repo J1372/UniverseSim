@@ -114,7 +114,7 @@ void Universe::create_universe()
 	generated_bodies = 0;
 
 	barnes_quad.set_size(settings.universe_size_max);
-	BarnesHut::set_approximation(1.0f);
+	BarnesHut::set_approximation(settings.grav_approximation_value);
 
 	active_bodies.clear();
 	active_bodies.reserve(settings.universe_capacity);
@@ -154,17 +154,27 @@ void Universe::handle_gravity()
 		return;
 	}
 
-	for (int i = 0; i < active_bodies.size(); i++) {
+	for (int i = 0; i < active_bodies.size() - 1; i++) {
 		Body& body1 = *active_bodies[i];
 
-		barnes_quad.handle_gravity(body1, settings.grav_const);
-
-		/*for (int j = i + 1; j < active_bodies.size(); j++) {
+		for (int j = i + 1; j < active_bodies.size(); j++) {
 			Body& body2 = *active_bodies[j];
 
 			Physics::grav_pull(body1, body2, settings.grav_const);
 
-		}*/
+		}
+	}
+}
+
+void Universe::handle_gravity_approximation()
+{
+	if (active_bodies.empty()) {
+		return;
+	}
+	
+	for (int i = 0; i < active_bodies.size(); i++) {
+		Body& body1 = *active_bodies[i];
+		barnes_quad.handle_gravity(body1, settings.grav_const);
 	}
 }
 
@@ -309,8 +319,15 @@ void Universe::handle_collisions(std::vector<Collision>& collisions)
 
 void Universe::update()
 {
-	barnes_quad.update(active_bodies);
-	handle_gravity(); // do grav pulls (update acceleration)
+	// do grav pulls (update acceleration)
+	if (settings.use_gravity_approximation) {
+		barnes_quad.update(active_bodies);
+		handle_gravity_approximation();
+	}
+	else {
+		handle_gravity(); 
+	}
+
 	update_pos(); // update velocities and positions
 
 	std::vector<Collision> collisions;
@@ -319,7 +336,6 @@ void Universe::update()
 		partitioning_method->update();
 		collisions = partitioning_method->get_collisions();
 		num_collision_checks_tick = partitioning_method->get_collision_checks_this_tick();
-
 	}
 	else {
 		collisions = get_collisions_no_partitioning();
