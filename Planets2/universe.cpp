@@ -380,7 +380,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 
 		if (Rand::chance(settings.moon_chance)) {
 			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
-			long moon_mass = .1f * planet.mass;
+			long moon_mass = Rand::real(0.01f, 0.1f) * planet.mass;
 
 			Body& moon = *system.emplace_back(std::make_unique<Body>(0, 0, moon_mass));
 			Orbit moon_orbit = gen_rand_orbit(planet, moon, settings.retrograde_chance);
