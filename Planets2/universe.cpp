@@ -69,28 +69,15 @@ void Universe::add_bodies(std::vector<std::unique_ptr<Body>>& bodies)
 	// Enforce that adding bodies doesnt go over capacity.
 	int adding = std::min(static_cast<int>(bodies.size()), remaining_space);
 
+	auto it = bodies.begin();
 	auto end_it = bodies.begin() + adding;
-
-
-	for (auto it = bodies.begin(); it != end_it; it++) {
-		Body& body = **it;
-		body.id = generated_bodies++;
+	while (it != end_it and can_create_body()) {
+		std::unique_ptr<Body>& body = *it;
+		add_body(std::move(body));
+		it++;
 	}
 
-	active_bodies.insert(active_bodies.end(), std::make_move_iterator(bodies.begin()), std::make_move_iterator(end_it));
 	bodies.clear();
-
-
-	if (has_partitioning()) {
-		auto it = std::next(active_bodies.begin(), prev_size);
-
-		while (it != active_bodies.end()) {
-			Body& body = **it;
-			partitioning_method->add_body(body);
-			it++;
-		}
-	}
-
 
 }
 
