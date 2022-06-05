@@ -159,6 +159,7 @@ bool BarnesHut::contains(Body& body) const
 void BarnesHut::update(std::span<const std::unique_ptr<Body>> bodies)
 {
 	concatenate();
+	node_body = nullptr;
 	center_of_mass = { 0,0 };
 	mass_sum = 0;
 
