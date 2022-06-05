@@ -187,6 +187,22 @@ bool BarnesHut::contains(Body& body) const
 	return Physics::point_in_rect({ body.x, body.y }, dimensions);
 }
 
+bool BarnesHut::is_leaf() const
+{
+	// Non-leaf nodes always have all 4 quads.
+	return UL == nullptr;
+}
+
+bool BarnesHut::is_empty() const
+{
+	return !node_body;
+}
+
+bool BarnesHut::is_full() const
+{
+	return node_body != nullptr;
+}
+
 void BarnesHut::update(std::span<const std::unique_ptr<Body>> bodies)
 {
 	concatenate();

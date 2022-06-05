@@ -52,6 +52,7 @@ class BarnesHut
 
 public:
 
+	// Sets the approximation value to use in the Barnes Hut algorithm. Increasing approximation will improve performance and decrease accuracy.
 	static void set_approximation(float to_set);
 
 	BarnesHut(float size, float approximation_value); // can have max depth just in case
@@ -59,6 +60,7 @@ public:
 	// internal constructor. still needs to be public for make_unique.
 	BarnesHut(float x, float y, float size);
 
+	// Resizes this node's dimensions.
 	void set_size(float size);
 
 	// Will add a body to the most appropriate quad node. Potentially splits that node if it reached its capacity.
@@ -68,18 +70,22 @@ public:
 	void add_to_child(Body& body);
 
 	// Returns true if this is a leaf node.
-	bool is_leaf() const { return UL == nullptr; } // Non-leaf nodes always have all 4 quads.
-
+	bool is_leaf() const;
+	
+	// Uses Barnes-Hut approximation to calculate net gravitational force applied to the body.
 	void handle_gravity(Body& body, float grav_const) const;
 
-	// I'm not sure whether it'd be better to rebuild every frame or try to use reinsertion.
+	// Rebuilds the quadtree used for Barnes-Hut approximation.
 	void update(std::span<const std::unique_ptr<Body>> bodies);
 
 	// Returns true if the body's center is inside the quad's dimensions.
 	bool contains(Body& body) const;
 
-	bool is_empty() const { return !node_body; }
-	bool is_full() const { return node_body != nullptr; }
+	// Returns true if the node has no body in it.
+	bool is_empty() const;
+
+	// Returns true if the node has a body in it.
+	bool is_full() const;
 
 	// Creates 4 new child nodes. The current body is moved into the child node that contains it.
 	void split();
