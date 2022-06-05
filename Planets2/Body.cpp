@@ -17,14 +17,14 @@ void Body::do_wraparound(float wraparound_val)
 		x = -reset_val + x;
 	}
 	else if (x < -wraparound_val) {
-		x = reset_val - x;
+		x = reset_val + x;
 	}
 
 	if (y > wraparound_val) {
 		y = -reset_val + y;
 	}
 	else if (y < -wraparound_val) {
-		y = reset_val - y;
+		y = reset_val + y;
 	}
 }
 
