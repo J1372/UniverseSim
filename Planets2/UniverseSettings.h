@@ -8,7 +8,7 @@ struct UniverseSettings {
 	float universe_size_start = 1000; // initialize all starting bodies in this area. 
 	float universe_size_max = 1000000; // bodies will wraparound if going past this area.
 
-	// physics
+	// Physics settings
 	static constexpr long RAND_MASS = 100; // The maximum amount of mass to allocate to a body created with create_rand_body.
 	double grav_const = 1.0;
 
@@ -16,11 +16,11 @@ struct UniverseSettings {
 	bool use_gravity_approximation = false; 
 	float grav_approximation_value = 0.0f;
 
-	// create_system settings.
+	// System generator settings.
 	int system_min_planets = 100; // Minimum number of planets to generate in a system.
 	int system_max_planets = 300; // Roughly, maximum number of planets to generate in a system. May be more, since some planets will also have satellites.
 
-	float system_mass_ratio = .95f; // How much mass (%) of the system will be allocated to the star.  
+	float system_mass_ratio = .95f; // How much mass (%) of the system will be allocated to the central body.  
 	float satellite_min_dist = 1.1F; // The minimum distance a body's periapsis can be from its orbiting body at start.
 	float satellite_max_dist = 40;   // The maximum distance a body's periapsis can be from its orbiting body at start.
 
