@@ -122,12 +122,7 @@ void Universe::create_universe()
 
 bool Universe::can_create_body() const
 {
-	return generated_bodies < settings.universe_capacity;
-	// interesting. no mass lost but bodies def decrease as absorption happens.
-	// time -> denser universe. but at a point no new objects ccreated.
-	// 
-	// would like an efficient way to reuse ids, or just use a long.
-	// 
+	return active_bodies.size() < settings.universe_capacity;
 }
 
 void Universe::set_settings(const UniverseSettings& to_set)
