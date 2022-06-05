@@ -366,15 +366,14 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 
 	long system_mass = Rand::num(1, settings.RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
 	long star_mass = settings.system_mass_ratio * system_mass;
-	//float remaining_mass = 1 - settings.SYSTEM_STAR_MASS_RATIO; // unused
+	long remaining_mass = system_mass * (1 - settings.system_mass_ratio);
 
 	Body& star = *system.emplace_back(std::make_unique<Body>(x, y, star_mass));
 
 	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
 
 	for (int i = 0; i < num_planets; ++i) {
-		// need to times mass ratio by remaining_mass, not system_mass.
-		long planet_mass = mass_ratios[i] * system_mass;
+		long planet_mass = mass_ratios[i] * remaining_mass;
 
 		Body& planet = *system.emplace_back(std::make_unique<Body>(0, 0, planet_mass));
 		Orbit planet_orbit = gen_rand_orbit(star, planet, settings.retrograde_chance);
