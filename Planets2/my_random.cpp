@@ -14,6 +14,11 @@ float Rand::real(float min, float max)
     return min + Rand::real() * (max - min);
 }
 
+float Rand::radian()
+{
+    return Rand::real() * 2 * std::numbers::pi;
+}
+
 int Rand::num(int min, int max)
 {
     //static std::random_device dev;
@@ -22,11 +27,6 @@ int Rand::num(int min, int max)
 
     int dif = max - min; // TODO: FIX THIS TO BE AN INT GENERATOR INDEPENDENT OF RANDF.
     return min + (int)(Rand::real() * dif);
-}
-
-float Rand::radian()
-{
-    return Rand::real() * 2 * std::numbers::pi;
 }
 
 bool Rand::chance(float possibility)
