@@ -6,7 +6,7 @@ struct UniverseSettings {
 	// Max number bodies and area.
 	int universe_capacity = 1000; // Maximum number of bodies to be active at one time.
 	float universe_size_start = 1000; // initialize all starting bodies in this area. 
-	float universe_size_max = 100000; // bodies will wraparound if going past this area.
+	float universe_size_max = 1000000; // bodies will wraparound if going past this area.
 
 	// physics
 	static constexpr long RAND_MASS = 100; // The maximum amount of mass to allocate to a body created with create_rand_body.
