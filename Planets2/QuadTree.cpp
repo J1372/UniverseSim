@@ -164,7 +164,13 @@ void QuadTree::add_body(Body& new_body)
 		}
 	}
 	else {
-		selective_add(new_body);
+		if (is_root() and !contains_fully(new_body)) {
+			// Body is slightly out of bounds of the entire quad tree.
+			quad_bodies.push_back(&new_body);
+		}
+		else {
+			selective_add(new_body);
+		}
 	}
 }
 
@@ -211,7 +217,7 @@ void QuadTree::update()
 		for (auto it = quad_bodies.begin(); it != quad_bodies.end();) {
 			Body& body = **it;
 
-			if (contains_fully(body)) { // still fully contains this body, no changes needed.
+			if (contains_fully(body) or is_root()) { // still fully contains this body, no changes needed.
 				it++;
 			}
 			else { // body no longer completely inside this leaf node.
@@ -460,8 +466,14 @@ void QuadTree::split()
 			it++;
 		}
 		else {
-			// move body to child.
-			move_to_child(it);
+			// Body is slightly out of bounds of the entire quad tree.
+			if (is_root() and !contains_fully(body)) {
+				it++;
+			}
+			else {
+				// move body to child.
+				move_to_child(it);
+			}
 		}
 	}
 }
