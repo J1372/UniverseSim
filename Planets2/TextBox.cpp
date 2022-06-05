@@ -1,5 +1,16 @@
 #include "TextBox.h"
 
+int TextBox::get_start_x_text() const
+{
+	return rect.x + rect.width * (width_padding / 2);
+}
+
+TextBox::TextBox(float x, float y, float width) : rect{ x, y, width, 50 }{}
+
+TextBox::TextBox(const std::string& start_text, float x, float y, float width) : entered_text(start_text), rect{ x, y, width, 50 }
+{}
+
+
 void TextBox::click() {
 	double mouse_x_in_box = GetMouseX() - get_start_x_text();
 
@@ -8,6 +19,11 @@ void TextBox::click() {
 	int len_text = entered_text.size();
 	cursor_pos = std::min(len_text, static_cast<int>(mouse_pct * len_text));
 
+}
+
+bool TextBox::contains_point(Vector2 point) const
+{
+	return CheckCollisionPointRec(point, rect);
 }
 
 void TextBox::render() const {
@@ -58,4 +74,24 @@ bool TextBox::send_keypress(int key_code)
 	cursor_pos++;
 
 	return true;
+}
+
+void TextBox::set_text(std::string& to_set)
+{
+	entered_text = to_set;
+}
+
+void TextBox::set_text(std::string&& to_set)
+{
+	entered_text = to_set;
+}
+
+const std::string& TextBox::get_text() const
+{
+	return entered_text;
+}
+
+void TextBox::set_prompt_text(const std::string& text)
+{
+	prompt_text = text;
 }
