@@ -63,7 +63,10 @@ int Dropdown::translate_click() const
 	return click_selection - 1;
 }
 
-
+bool Dropdown::has_selected() const
+{ 
+	return selected >= 0 and selected < choices.size();
+}
 
 std::string Dropdown::get_selected() const
 {

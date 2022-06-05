@@ -20,47 +20,29 @@ class Button : public UIElement
 
 	static constexpr int edge_width = 5;
 
-
 	std::function<void(void)> callback = nullptr;
 
-	float get_default_width() const {
-		return text_length_pixels * (1 + width_padding);
-	}
+	float get_default_width() const;
 
 public:
 
-	Button(const std::string& text, float x, float y) :
-		text(text),
-		font_size(12),
-		text_length_pixels(MeasureText(text.c_str(), font_size)),
-		rect{ x, y, get_default_width(), 50}
-	{}
+	Button(const std::string& text, float x, float y);
 
-	Button(const std::string &text, float x, float y, int font_size) :
-		text(text),
-		font_size(font_size),
-		text_length_pixels(MeasureText(text.c_str(), font_size)),
-		rect{ x, y, get_default_width(), 50}
-	{}
+	Button(const std::string& text, float x, float y, int font_size);
 
 	// Late initialization for Buttons that are in a static object. Raylib's MeasureText won't work well with static objects.
 	void init();
 
-	void set_min_width(float min_width) {
-		rect.width = std::max(min_width, get_default_width());
-	}
+	// Sets width of background to be at least min_width.
+	void set_min_width(float min_width);
 
-	void set_on_action(std::function<void(void)> on_action) { callback = on_action; }
+	// Sets function to call when button clicked.
+	void set_on_action(std::function<void(void)> on_action);
 
-	bool contains_point(Vector2 point) const {
-		return point.x >= rect.x and point.x < rect.x + rect.width
-			and point.y >= rect.y and point.y < rect.y + rect.height;
-	}
+	bool contains_point(Vector2 point) const;
 
 	void render() const;
 
-	void click() { if (callback) callback(); }
+	void click();
 	bool send_keypress(int key_code);
 };
-
-

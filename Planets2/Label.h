@@ -14,8 +14,7 @@ class Label : public UIElement
 
 public:
 
-	Label(const std::string& text, int x, int y, int font_size) : text(text), x(x), y(y), font_size(font_size)
-	{}
+	Label(const std::string& text, int x, int y, int font_size);
 
 	void render() const;
 };

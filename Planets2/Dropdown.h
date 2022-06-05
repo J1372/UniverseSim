@@ -39,7 +39,9 @@ public:
 
 	void set_selected(int number);
 	void deselect();
-	bool has_selected() const { return selected >= 0 and selected < choices.size(); }
+
+	// Returns if any option has been selected.
+	bool has_selected() const;
 
 	std::string get_selected() const;
 
