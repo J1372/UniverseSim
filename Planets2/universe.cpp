@@ -46,6 +46,11 @@ void Universe::add_body(std::unique_ptr<Body>&& body_ptr)
 	}
 
 	Body& body = *body_ptr;
+
+	if (!in_bounds({ body.x, body.y })) {
+		return;
+	}
+
 	body.id = generated_bodies++;
 
 	active_bodies.emplace_back(std::move(body_ptr));
