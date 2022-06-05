@@ -129,7 +129,38 @@ void BarnesHut::add_to_child(Body& to_add)
 	// Get the child quad that fully contains the body.
 	BarnesHut* contained_in = get_quad([&to_add](const BarnesHut& quad) { return quad.contains(to_add); });
 
-	contained_in->add_body(to_add);
+	if (contained_in) {
+		contained_in->add_body(to_add);
+	}
+	else {
+		/*
+		* This should be rare.
+		* 
+		* Due to every node only being able to hold one body before splitting,
+		* this quadtree reaches a very high depth often.
+		* Since its dimensions are defined as a Rectangle (Raylib struct with 4 floats),
+		* this can produce significant floating point error. This is exacerbated when the universe's max size
+		* is increased.
+		* 
+		* Changing this quad's dimensions to use 4 doubles may help, though may still be unreliable with
+		* increasing universe max size.
+		* 
+		* Since we only use this quadtree for gravity calculation approximation, it's better
+		* to potentially place to_add in a wrong quad (especially since the quads at this depth are very small),
+		* than it is to crash because the depth got too high and the quad boxes don't line up perfectly.
+		*/
+
+		// Try to place in any empty quad, to avoid splitting even further.
+		BarnesHut* empty_quad = get_quad([](const BarnesHut& quad) { return quad.is_empty(); });
+		if (empty_quad) { // empty == is a leaf.
+			empty_quad->add_body(to_add);
+		}
+		else { // if none are empty, which should be even rarer, just add to the upper left quad.
+			UL->add_body(to_add);
+		}
+
+	}
+
 }
 
 
