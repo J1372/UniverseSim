@@ -214,11 +214,6 @@ void BarnesHut::split()
 	LL = std::make_unique<BarnesHut>(x, mid_y, size);
 	LR = std::make_unique<BarnesHut>(mid_x, mid_y, size);
 
-	UL->parent = this;
-	UR->parent = this;
-	LL->parent = this;
-	LR->parent = this;
-
 	// add current body to correct quad
 	add_to_child(*node_body);
 	node_body = nullptr;

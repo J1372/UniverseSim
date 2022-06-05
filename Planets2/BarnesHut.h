@@ -20,10 +20,9 @@ class BarnesHut
 
 	Rectangle dimensions;
 
-	// References to the parent and owning pointers to the node's 4 potential children.
+	// Owning pointers to the node's 4 potential children.
 	// For this quad tree implementation in particular (Maximum 1 body per node, AND rebuilt on tick), 
 	// should look into object pooling.
-	BarnesHut* parent = nullptr; // We never recurse upwards
 	std::unique_ptr<BarnesHut> UL = nullptr;
 	std::unique_ptr<BarnesHut> UR = nullptr;
 	std::unique_ptr<BarnesHut> LL = nullptr;
@@ -68,6 +67,7 @@ public:
 	// Adds the body to the correct child quad.
 	void add_to_child(Body& body);
 
+	// Returns true if this is a leaf node.
 	bool is_leaf() const { return UL == nullptr; } // Non-leaf nodes always have all 4 quads.
 
 	void handle_gravity(Body& body, float grav_const) const;
@@ -77,11 +77,8 @@ public:
 
 	// Returns true if the body's center is inside the quad's dimensions.
 	bool contains(Body& body) const;
-	
-	bool is_root() const { return parent == nullptr; }
 
 	bool is_empty() const { return !node_body; }
-	bool has_room() const { return !node_body; }
 	bool is_full() const { return node_body != nullptr; }
 
 	// Creates 4 new child nodes. The current body is moved into the child node that contains it.

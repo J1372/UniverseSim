@@ -90,7 +90,9 @@
     <ClCompile Include="Slider.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="BarnesHut.cpp" />
+    <ClCompile Include="BarnesHut.cpp">
+      <Filter>Sim_Model\GravityApproximations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my_random.h" />
@@ -197,7 +199,9 @@
     <ClInclude Include="Slider.h">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="BarnesHut.h" />
+    <ClInclude Include="BarnesHut.h">
+      <Filter>Sim_Model\GravityApproximations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
@@ -223,6 +227,9 @@
     </Filter>
     <Filter Include="Scenes\SimScene\InteractionStates">
       <UniqueIdentifier>{8c2c30d8-8c7e-43c0-a2c9-dc239bba250e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sim_Model\GravityApproximations">
+      <UniqueIdentifier>{6d6eace0-b366-4056-9c16-63d944e5b3f5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
