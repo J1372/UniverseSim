@@ -16,8 +16,14 @@ Vector2 Orbit::periapsis_point() const
 
 float Orbit::apoapsis() const
 {
-    // ecc = 1.0 will divide by 0.
-    return periapsis * (1 + eccentricity) / (1 - eccentricity);
+    // I think there is another formula which handles eccentricity == 1 without an if check.
+
+    if (eccentricity == 1.0f) { // would divide by 0.
+        // Ecc == 1 means orbit is parabolic, apoapsis goes to infinity.
+        return std::numeric_limits<float>::max();
+    }
+
+    return periapsis * (1.0f + eccentricity) / (1.0f - eccentricity);
 }
 
 float Orbit::semi_major_axis() const

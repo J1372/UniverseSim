@@ -8,10 +8,10 @@ struct Orbit
 	// The body being orbited.
 	const Body& orbited;
 
-	// Closest point of satellite to orbiting.
+	// Closest point of satellite to orbited body.
 	float periapsis = 0;
 
-	// Angle in radians of satellite's periapsis relative to orbiting's center.
+	// Angle in radians of satellite's periapsis relative to orbited's center.
 	float periapsis_angle = 0;
 
 
@@ -28,7 +28,7 @@ struct Orbit
 	// e = (Ra-Rp)/(Ra+Rp)
 	float eccentricity = 0;
 
-
+	// The universe's gravitational constant.
 	float grav_const = 0;
 
 	// If false, satellite orbital movement is reversed.
@@ -45,11 +45,12 @@ struct Orbit
 
 	// The farthest distance of the satellite from the orbited body in the orbit.
 	float apoapsis() const;
-
+	
+	// Returns the orbit's semi major axis (periapsis + apoapsis) / 2
 	float semi_major_axis() const;
 
 
-	// Relative velocity of orbiter around orbiting at orbiter's periapsis.
+	// Relative velocity of orbiter around orbited at orbiter's periapsis.
 	float velocity_periapsis(const Body& orbiter) const;
 
 	// Relative velocity vector of orbiter around orbiting at orbiter's periapsis.
