@@ -23,10 +23,10 @@ int Grid::get_index(int pos) const
     return (pos + grid_size / 2) / node_size;
 }
 
-GridNode& Grid::get_node(int x, float y)
+GridNode& Grid::get_node(Vector2 pos)
 {
-    int row = get_index(y);
-    int col = get_index(x);
+    int row = get_index(pos.y);
+    int col = get_index(pos.x);
 
     int grid_num = row * nodes_per_row + col;
 
@@ -34,10 +34,10 @@ GridNode& Grid::get_node(int x, float y)
 
 }
 
-const GridNode& Grid::get_node(int x, float y) const
+const GridNode& Grid::get_node(Vector2 pos) const
 {
-    int row = get_index(y);
-    int col = get_index(x);
+    int row = get_index(pos.y);
+    int col = get_index(pos.x);
 
     int grid_num = row * nodes_per_row + col;
 
@@ -106,7 +106,7 @@ void Grid::rem_body(const Body& body)
 
 Body* Grid::find_body(Vector2 point) const
 {
-    const GridNode& node = get_node(point.x, point.y);
+    const GridNode& node = get_node(point);
     return node.find_body(point);
 }
 
@@ -124,7 +124,7 @@ std::vector<Rectangle> Grid::get_representation() const
 
 void Grid::attach_debug_text(Body& body) const
 {
-    const GridNode& node = get_node(body.x, body.y);
+    const GridNode& node = get_node(body.pos());
     node.attach_debug_text(body);
 
     // No general grid debug text to attach. Just node-specific.

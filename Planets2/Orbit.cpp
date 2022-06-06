@@ -6,7 +6,7 @@
 
 void Orbit::set_periapsis(const Body& orbiter, float sat_dist)
 {
-    periapsis = sat_dist * (orbited.radius + orbiter.radius);
+    periapsis = sat_dist * (orbited.get_radius() + orbiter.get_radius());
 }
 
 Vector2 Orbit::periapsis_point() const
@@ -34,7 +34,7 @@ float Orbit::semi_major_axis() const
 float Orbit::velocity_periapsis(const Body& orbiter) const
 {
     // all velocity at periapsis and apoapsis is tangental to body. 90 degrees = pi/2
-    float num = (1 + eccentricity) * grav_const * (orbited.mass + orbiter.mass);
+    float num = (1 + eccentricity) * grav_const * (orbited.get_mass() + orbiter.get_mass());
     float den = (1 - eccentricity) * semi_major_axis();
     float velocity_periapsis = std::sqrt(num / den);
 

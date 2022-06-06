@@ -45,8 +45,9 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 
 		}
 		else {
+			Vector2 creating_pos = creating->pos();
 			// select modifying mode based on where user clicked.
-			if (Physics::point_in_circle(universe_point, creating->x, creating->y, creating->radius * .7)) {
+			if (Physics::point_in_circle(universe_point, creating_pos.x, creating_pos.y, creating->get_radius() * .7)) {
 				// Clicked on the inside section of the body.
 				modify_mode = Modifying::VELOCITY;
 
@@ -72,10 +73,11 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 
 		if (modify_mode == Modifying::MASS) {
 			// User is altering body's mass.
+			Vector2 creating_pos = creating->pos();
 
 			// This determines whether the user dragged the mouse towards the body.
-			float towards_body_x = creating->x < universe_point.x ? -movement.x : movement.x;
-			float towards_body_y = creating->y < universe_point.y ? -movement.y : movement.y;
+			float towards_body_x = creating_pos.x < universe_point.x ? -movement.x : movement.x;
+			float towards_body_y = creating_pos.y < universe_point.y ? -movement.y : movement.y;
 			float towards_body_delta = towards_body_x + towards_body_y;
 
 			// Increase mass if dragged towards, else decrease.
@@ -86,8 +88,7 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 			// User is altering body's velocity.
 
 			// Increase velocity in opposite direction of the mouse drag.
-			creating->vel_x -= movement.x / 2;
-			creating->vel_y -= movement.y / 2;
+			creating->change_vel({ -movement.x / 2 , -movement.y / 2 });
 		}
 	}
 	else if (IsKeyPressed(KEY_ENTER)) {

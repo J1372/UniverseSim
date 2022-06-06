@@ -41,6 +41,64 @@ Body::Body(long mass, const Orbit& orbit) :
 
 }
 
+void Body::set_id(int to_set)
+{
+	id = to_set;
+}
+
+void Body::set_pos(Vector2 to_set)
+{
+	x = to_set.x;
+	y = to_set.y;
+}
+
+void Body::change_pos(Vector2 movement)
+{
+	x += movement.x;
+	y += movement.y;
+}
+
+void Body::change_vel(Vector2 acceleration)
+{
+	vel_x += acceleration.x;
+	vel_y += acceleration.y;
+}
+
+int Body::get_id() const
+{
+	return id;
+}
+
+Vector2 Body::pos() const
+{
+	return {x, y};
+}
+
+Vector2 Body::vel() const
+{
+	return { vel_x, vel_y };
+}
+
+Vector2 Body::acc() const
+{
+	return { acc_x, acc_y };
+}
+
+float Body::get_radius() const
+{
+	return radius;
+}
+
+long Body::get_mass() const
+{
+	return mass;
+}
+
+Color Body::color() const
+{
+	return type->color;
+}
+
 std::array<float, 2> Body::distv(const Body& other) const
 {
 	return { other.x - x , other.y - y };

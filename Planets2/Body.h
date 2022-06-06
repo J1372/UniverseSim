@@ -46,6 +46,9 @@ class Body {
 		END_TYPE
 	};
 
+	void do_wraparound(float wraparound_val);
+
+
 	// The current body's type index in TYPES.
 	int type_level = 0;
 
@@ -56,14 +59,6 @@ class Body {
 	Event<Removal> on_removal_observers;
 
 
-	void do_wraparound(float wraparound_val);
-
-
-public:
-
-	// Returns a pair of body pointers, where the first has more mass than the second.
-	static std::pair<Body*, Body*> get_sorted_pair(Body& body1, Body& body2);
-
 	int id = -1;
 
 	float x = 0.0;
@@ -73,11 +68,16 @@ public:
 	float acc_x = 0;
 	float acc_y = 0;
 
-	float radius = 0.0; // in units. same as distance.
+	float radius = 0.0f; // in units. same as distance.
 	long mass = 0l; // in kg
 
 	// A pointer to this body's current planetary type.
 	const TypeExt* type;
+
+public:
+
+	// Returns a pair of body pointers, where the first has more mass than the second.
+	static std::pair<Body*, Body*> get_sorted_pair(Body& body1, Body& body2);
 
 	Body() = default;
 
@@ -85,6 +85,40 @@ public:
 
 	// satellite constructor
 	Body(long mass, const Orbit& orbit);
+
+	// Sets this body's id.
+	void set_id(int to_set);
+
+	// Sets this body's position.
+	void set_pos(Vector2 to_set);
+
+	// Changes this body's position by the given vectors.
+	void change_pos(Vector2 movement);
+
+	// Changes this body's velocity by the given vectors.
+	void change_vel(Vector2 acceleration);
+
+	// Returns this body's id.
+	int get_id() const;
+
+	// Returns this body's position vectors.
+	Vector2 pos() const;
+
+	// Returns this body's velocity vectors.
+	Vector2 vel() const;
+
+	// Returns this body's acceleration vectors.
+	Vector2 acc() const;
+
+	// Returns this body's radius vectors.
+	float get_radius() const;
+
+	// Returns this body's mass.
+	long get_mass() const;
+
+	// Returns this body's color.
+	Color color() const;
+
 
 	// Adjusts body's position and velocity such that its path is that of the given orbit.
 	// Body starts at the orbit's periapsis.

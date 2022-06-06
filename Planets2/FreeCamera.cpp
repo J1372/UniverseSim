@@ -17,7 +17,7 @@ void FreeCamera::init(const AdvCamera & starting_config)
 
 void FreeCamera::goto_body(Body& body)
 {
-	camera.set_target({ body.x, body.y });
+	camera.set_target(body.pos());
 }
 
 CameraState* FreeCamera::update(const Universe& universe)

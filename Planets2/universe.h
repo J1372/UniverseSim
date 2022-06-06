@@ -90,7 +90,7 @@ public:
 		int id = generated_bodies++;
 
 		Body& body = *active_bodies.emplace_back(std::make_unique<Body>(std::forward<ArgTypes>(args)...));
-		body.id = id;
+		body.set_id(id);
 
 		if (has_partitioning()) {
 			partitioning_method->add_body(body);

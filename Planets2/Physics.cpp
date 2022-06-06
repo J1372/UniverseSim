@@ -6,8 +6,11 @@
 
 bool Physics::have_collided(const Body& body1, const Body& body2)
 {
-	float c_squared = std::pow(body2.x - body1.x, 2) + std::pow(body2.y - body1.y, 2);
-	return c_squared < std::pow((body2.radius + body1.radius), 2);
+	Vector2 pos1 = body1.pos();
+	Vector2 pos2 = body2.pos();
+
+	float c_squared = std::pow(pos2.x - pos1.x, 2) + std::pow(pos2.y - pos1.y, 2);
+	return c_squared < std::pow((body2.get_radius() + body1.get_radius()), 2);
 }
 
 bool Physics::point_in_circle(Vector2 point, float circle_x, float circle_y, float radius)
@@ -52,18 +55,19 @@ bool Physics::circle_inside_rect(Circle circle, Rectangle rect)
 
 bool Physics::body_intersects_rect(const Body& body, Rectangle rect)
 {
-	float dist_x = std::abs(body.x - rect.x - rect.width / 2);
-	float dist_y = std::abs(body.y - rect.y - rect.height / 2);
+	Vector2 pos = body.pos();
+	float dist_x = std::abs(pos.x - rect.x - rect.width / 2);
+	float dist_y = std::abs(pos.y - rect.y - rect.height / 2);
 
-	if (dist_x > (rect.width / 2 + body.radius)) { return false; }
-	if (dist_y > (rect.height / 2 + body.radius)) { return false; }
+	if (dist_x > (rect.width / 2 + body.get_radius())) { return false; }
+	if (dist_y > (rect.height / 2 + body.get_radius())) { return false; }
 
 	if (dist_x <= (rect.width / 2)) { return true; }
 	if (dist_y <= (rect.height / 2)) { return true; }
 
 	int corner_dist = std::pow((dist_x - rect.width / 2), 2) + std::pow((dist_y - rect.height / 2), 2);
 
-	return corner_dist <= std::pow(body.radius, 2);
+	return corner_dist <= std::pow(body.get_radius(), 2);
 }
 
 bool Physics::circle_intersects_rect(Circle circle, Rectangle rect)
@@ -106,17 +110,17 @@ float Physics::net_force(const Body& body1, const Body& body2, float grav_const)
 		return 0.0f;
 	}
 
-	return (grav_const * body1.mass * body2.mass) / std::pow(dist, 2);
+	return (grav_const * body1.get_mass() * body2.get_mass()) / std::pow(dist, 2);
 }
 
 float Physics::net_force(const Body& body, Vector2 center_mass, long point_mass, float grav_const)
 {
-	float dist = Physics::dist({ body.x, body.y }, center_mass);
+	float dist = Physics::dist(body.pos(), center_mass);
 	if (dist == 0) {
 		return 0.0f;
 	}
 
-	return (grav_const * body.mass * point_mass) / std::pow(dist, 2);
+	return (grav_const * body.get_mass() * point_mass) / std::pow(dist, 2);
 }
 
 void Physics::grav_pull(Body& body1, Body& body2, float grav_const)
@@ -147,7 +151,7 @@ void Physics::grav_pull(Body& body, Vector2 center_mass, long point_mass, float 
 
 	// may be able to optimize by computing force vectors directly.
 
-	std::array<float, 2> dist_vector = Physics::distv({ body.x, body.y }, center_mass);
+	std::array<float, 2> dist_vector = Physics::distv(body.pos(), center_mass);
 
 	float theta = atan2(dist_vector[0], dist_vector[1]); // radians
 

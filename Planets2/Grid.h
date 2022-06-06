@@ -18,8 +18,8 @@ class Grid : public SpatialPartitioning
 	int get_index(int pos) const;
 
 
-	GridNode& get_node(int x, float y);
-	const GridNode& get_node(int x, float y) const;
+	GridNode& get_node(Vector2 pos);
+	const GridNode& get_node(Vector2 pos) const;
 
 	// Returns a list of all grid nodes that the body overlaps with.
 	std::vector<GridNode*> get_all_nodes(const Body& body);

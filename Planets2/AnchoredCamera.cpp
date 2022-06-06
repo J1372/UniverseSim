@@ -23,7 +23,7 @@ void AnchoredCamera::goto_body(Body& body)
 
 void AnchoredCamera::snap_camera_to_target()
 {
-    camera.set_target({ anchored_to->x, anchored_to->y });
+    camera.set_target(anchored_to->pos());
 }
 
 CameraState* AnchoredCamera::goto_free_camera()
@@ -130,7 +130,7 @@ void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to)
     // offset to the targets original screen_pos
 
     camera.set_offset(ray_cam.offset);
-    camera.set_target({anchored_to->x, anchored_to->y});
+    camera.set_target(anchored_to->pos());
     camera.set_zoom(ray_cam.zoom);
 
 }

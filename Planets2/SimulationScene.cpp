@@ -105,12 +105,15 @@ void SimulationScene::attach_debug_info() const
 	for (Body* body_ptr : on_screen_bodies) {
 		Body& body = *body_ptr;
 
-		body.add_debug_text("ID: " + std::to_string(body.id));
-		body.add_debug_text("X: " + std::to_string(body.x));
-		body.add_debug_text("Y: " + std::to_string(body.y));
-		body.add_debug_text("Vel(x): " + std::to_string(body.vel_x));
-		body.add_debug_text("Vel(y): " + std::to_string(body.vel_y));
-		body.add_debug_text("Mass: " + std::to_string(body.mass));
+		Vector2 pos = body.pos();
+		Vector2 vel = body.vel();
+
+		body.add_debug_text("ID: " + std::to_string(body.get_id()));
+		body.add_debug_text("X: " + std::to_string(pos.x));
+		body.add_debug_text("Y: " + std::to_string(pos.y));
+		body.add_debug_text("Vel(x): " + std::to_string(vel.x));
+		body.add_debug_text("Vel(y): " + std::to_string(vel.y));
+		body.add_debug_text("Mass: " + std::to_string(body.get_mass()));
 	}
 }
 
@@ -136,11 +139,12 @@ void SimulationScene::clear_debug_text()
 void SimulationScene::draw_debug_text(int font_size, int spacing) const {
 	for (const Body* body_ptr : on_screen_bodies) {
 		const Body& body = *body_ptr;
-		Color planet_color = body.type->color;
+		Vector2 pos = body.pos();
+		Color planet_color = body.color();
 
 		const std::string& debug_texts = body.get_debug_text();
-		int text_x = body.x + body.radius + 20;
-		int text_y = body.y + body.radius + 20;
+		int text_x = pos.x + body.get_radius() + 20;
+		int text_y = pos.y + body.get_radius() + 20;
 
 		DrawText(debug_texts.c_str(), text_x, text_y, font_size, planet_color);
 
@@ -188,11 +192,13 @@ void SimulationScene::render() const
 bool SimulationScene::on_screen(const Body& body) const
 {
 	const Camera2D& camera = camera_state->get_raylib_camera();
-	Vector2 leftmost = GetWorldToScreen2D({ body.x - body.radius, body.y }, camera);
-	Vector2 rightmost = GetWorldToScreen2D({ body.x + body.radius, body.y }, camera);
+	Vector2 pos = body.pos();
 
-	Vector2 lowest = GetWorldToScreen2D({ body.x, body.y + body.radius }, camera);
-	Vector2 highest = GetWorldToScreen2D({ body.x, body.y - body.radius }, camera);
+	Vector2 leftmost = GetWorldToScreen2D({ body.left(), pos.y}, camera);
+	Vector2 rightmost = GetWorldToScreen2D({ body.right(), pos.y }, camera);
+
+	Vector2 lowest = GetWorldToScreen2D({ pos.x, body.bottom() }, camera);
+	Vector2 highest = GetWorldToScreen2D({ pos.x, body.top() }, camera);
 
 	// can optimize : screen_pos.x >= -body.radius && screen_pos.y >= -body.radius
 
@@ -203,9 +209,10 @@ void SimulationScene::render_bodies() const
 {
 	for (const Body* body_ptr : on_screen_bodies) {
 		const Body& body = *body_ptr;
+		Vector2 pos = body.pos();
+		Color planet_color = body.color();
 
-		Color planet_color = body.type->color;
-		DrawCircle(body.x, body.y, body.radius, planet_color);
+		DrawCircle(pos.x, pos.y, body.get_radius(), planet_color);
 	}
 }
 
@@ -213,18 +220,22 @@ void SimulationScene::render_creating_bodies(std::span<const std::unique_ptr<Bod
 {
 	for (const std::unique_ptr<Body>& body_ptr : bodies) {
 		const Body& body = *body_ptr;
-		Color planet_color = body.type->color;
-		DrawCircle(body.x, body.y, body.radius, planet_color);
+		Vector2 pos = body.pos();
+		Vector2 vel = body.vel();
+		float radius = body.get_radius();
+		Color planet_color = body.color();
+
+		DrawCircle(pos.x, pos.y, radius, planet_color);
 
 		constexpr int font_size = 25;
-		int text_x = body.x + body.radius + 20;
-		int text_y = body.y + body.radius + 20;
-		std::string info_text { "X: " + std::to_string(body.x) + "\n" };
+		int text_x = pos.x + radius + 20;
+		int text_y = pos.y + radius + 20;
+		std::string info_text { "X: " + std::to_string(pos.x) + "\n" };
 
-		info_text += "Y: " + std::to_string(body.y) + "\n";
-		info_text += "Vel(x): " + std::to_string(body.vel_x) + "\n";
-		info_text += "Vel(y): " + std::to_string(body.vel_y) + "\n";
-		info_text += "Mass: " + std::to_string(body.mass) + "\n";
+		info_text += "Y: " + std::to_string(pos.y) + "\n";
+		info_text += "Vel(x): " + std::to_string(vel.x) + "\n";
+		info_text += "Vel(y): " + std::to_string(vel.y) + "\n";
+		info_text += "Mass: " + std::to_string(body.get_mass()) + "\n";
 
 		DrawText(info_text.c_str(), text_x, text_y, font_size, planet_color);
 	}

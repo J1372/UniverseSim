@@ -27,7 +27,7 @@ BarnesHut::BarnesHut(float x, float y, float size) :
 
 float BarnesHut::dist_ratio(const Body& body) const
 {
-	return dimensions.width / Physics::dist(center_of_mass, { body.x, body.y });
+	return dimensions.width / Physics::dist(center_of_mass, body.pos());
 }
 
 bool BarnesHut::sufficiently_far(const Body& body) const
@@ -84,10 +84,12 @@ void BarnesHut::update_mass_add(const Body& to_add)
 		// This is only a problem in leaf nodes, parent nodes' center of masses should not have this problem, even with rounding error.
 
 		// This body is the only one affecting this node's center mass, so
-		center_of_mass.x = to_add.x;
-		center_of_mass.y = to_add.y;
+		Vector2 pos = to_add.pos();
 
-		mass_sum += to_add.mass;
+		center_of_mass.x = pos.x;
+		center_of_mass.y = pos.y;
+
+		mass_sum += to_add.get_mass();
 		return;
 	}
 
@@ -96,7 +98,7 @@ void BarnesHut::update_mass_add(const Body& to_add)
 	// find current moment sum for x and y.
 	Vector2 current_moment_sum { center_of_mass.x * mass_sum , center_of_mass.y * mass_sum };
 
-	float combined_mass = mass_sum + to_add.mass;
+	float combined_mass = mass_sum + to_add.get_mass();
 
 	center_of_mass.x = (current_moment_sum.x + body_moment.x) / combined_mass;
 	center_of_mass.y = (current_moment_sum.y + body_moment.y) / combined_mass;
@@ -184,7 +186,7 @@ BarnesHut* BarnesHut::get_quad(std::function<bool(const BarnesHut&)> predicate) 
 
 bool BarnesHut::contains(Body& body) const
 {
-	return Physics::point_in_rect({ body.x, body.y }, dimensions);
+	return Physics::point_in_rect(body.pos(), dimensions);
 }
 
 bool BarnesHut::is_leaf() const

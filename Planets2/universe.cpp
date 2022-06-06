@@ -32,11 +32,11 @@ void Universe::add_body(std::unique_ptr<Body>&& body_ptr)
 
 	Body& body = *body_ptr;
 
-	if (!in_bounds({ body.x, body.y })) {
+	if (!in_bounds(body.pos())) {
 		return;
 	}
 
-	body.id = generated_bodies++;
+	body.set_id(generated_bodies++);
 
 	active_bodies.emplace_back(std::move(body_ptr));
 
@@ -69,7 +69,7 @@ void Universe::add_bodies(std::vector<std::unique_ptr<Body>>& bodies)
 std::vector<std::unique_ptr<Body>>::iterator Universe::get_iterator(int id)
 {
 	auto predicate = [](const std::unique_ptr<Body>& ptr, int id) {
-		return ptr->id < id;
+		return ptr->get_id() < id;
 	};
 
 	// active_bodies is sorted by id. Find iterator to body by id using binary search.
@@ -173,7 +173,7 @@ void Universe::handle_removal(Removal removal)
 
 	removed.notify_being_removed(removal);
 
-	auto remove_it = get_iterator(removed.id);
+	auto remove_it = get_iterator(removed.get_id());
 	active_bodies.erase(remove_it);
 }
 
@@ -364,7 +364,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 		if (Rand::chance(settings.moon_chance)) {
 			// Currently only one moon can be generated per planet.
 			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
-			long moon_mass = Rand::real(0.01f, 0.1f) * planet.mass;
+			long moon_mass = Rand::real(0.01f, 0.1f) * planet.get_mass();
 
 			Body& moon = *system.emplace_back(std::make_unique<Body>(0, 0, moon_mass));
 			Orbit moon_orbit = gen_rand_orbit(planet, moon, settings.retrograde_chance);
@@ -404,7 +404,7 @@ Body* Universe::get_body(Vector2 point) const
 Body* Universe::get_body(int id) const
 {
 	// Can use binary search.
-	auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [id](const std::unique_ptr<Body>& body) { return body->id == id; });
+	auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [id](const std::unique_ptr<Body>& body) { return body->get_id() == id; });
 
 	if (it != active_bodies.end()) {
 		return it->get();
@@ -448,7 +448,7 @@ void Universe::rem_body(Body& body)
 {
 
 	// Find iterator->body to remove.
-	auto remove_it = get_iterator(body.id);
+	auto remove_it = get_iterator(body.get_id());
 
 	if (has_partitioning()) {
 		partitioning_method->rem_body(**remove_it);

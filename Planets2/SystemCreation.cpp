@@ -59,14 +59,14 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 			// Keep central body of new system centered on the mouse.
 			// By extension, keep entire system centered on the mouse.
 			Body& central_body = *system[0];
+			Vector2 central_pos = central_body.pos();
 
 			// We are assuming that the central body was previously centered on the mouse.
-			Vector2 movement = { universe_point.x - central_body.x,
-										universe_point.y - central_body.y };
+			Vector2 movement = { universe_point.x - central_pos.x,
+										universe_point.y - central_pos.y };
 
 			for (std::unique_ptr<Body>& body : system) {
-				body->x += movement.x;
-				body->y += movement.y;
+				body->change_pos(movement);
 			}
 		}
 

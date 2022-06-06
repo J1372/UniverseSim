@@ -328,9 +328,10 @@ void QuadTree::add_to_child(Body& new_body)
 		contained_in->add_body(new_body);
 	}
 	else {
+		Vector2 pos = new_body.pos();
 		std::cout << "add_to_child added nothing to nowhere !!!" << '\n';
-		std::cout << "\tBody ID: " << new_body.id << '\n';
-		std::cout << "\tBody Position: (" << new_body.x << ", " << new_body.y << ")\n";
+		std::cout << "\tBody ID: " << new_body.get_id() << '\n';
+		std::cout << "\tBody Position: (" << pos.x << ", " << pos.y << ")\n";
 		std::cout << "\tQuad Dimensions:\n";
 		std::cout << "\t\tx:\t" << dimensions.x << '\n';
 		std::cout << "\t\ty:\t" << dimensions.y << '\n';
