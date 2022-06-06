@@ -101,7 +101,7 @@ std::array<float, 2> Physics::distv(Vector2 point1, Vector2 point2)
 
 float Physics::net_force(const Body& body1, const Body& body2, float grav_const)
 {
-	float dist = body1.dist_body(body2);
+	float dist = body1.dist(body2);
 	if (dist == 0) {
 		return 0.0f;
 	}
@@ -126,7 +126,7 @@ void Physics::grav_pull(Body& body1, Body& body2, float grav_const)
 
 	// may be able to optimize by computing force vectors directly.
 
-	std::array<float, 2> dist_vector = body1.distv_body(body2);
+	std::array<float, 2> dist_vector = body1.distv(body2);
 
 	float theta = atan2(dist_vector[0], dist_vector[1]); // radians
 

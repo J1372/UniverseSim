@@ -41,12 +41,12 @@ Body::Body(long mass, const Orbit& orbit) :
 
 }
 
-std::array<float, 2> Body::distv_body(const Body& other) const
+std::array<float, 2> Body::distv(const Body& other) const
 {
 	return { other.x - x , other.y - y };
 }
 
-float Body::dist_body(const Body& other) const
+float Body::dist(const Body& other) const
 {
 	// can remove abs
 	float c_squared = std::pow(std::abs(other.x - x), 2) + std::pow(std::abs(other.y - y), 2);

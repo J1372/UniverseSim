@@ -115,10 +115,10 @@ public:
 	std::array<float, 2> get_momentum() const;
 
 	// Returns the distance in (x,y) vectors to the other body.
-	std::array<float, 2> distv_body(const Body& other) const;
+	std::array<float, 2> distv(const Body& other) const;
 
 	// Returns the scalar distance between this body to the other body.
-	float dist_body(const Body& other) const;
+	float dist(const Body& other) const;
 
 	// Returns true if the point overlaps with this body.
 	bool contains_point(Vector2 point) const;
