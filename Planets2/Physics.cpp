@@ -6,16 +6,14 @@
 
 bool Physics::have_collided(const Body& body1, const Body& body2)
 {
-	// can remove abs
-	float c_squared = std::pow(std::abs(body2.x - body1.x), 2) + std::pow(std::abs(body2.y - body1.y), 2);
+	float c_squared = std::pow(body2.x - body1.x, 2) + std::pow(body2.y - body1.y, 2);
 	return c_squared < std::pow((body2.radius + body1.radius), 2);
 }
 
 bool Physics::point_in_circle(Vector2 point, float circle_x, float circle_y, float radius)
 {
-	// Can remove absolute calls, since they are squared anyway.
-	float dist_x = std::abs(point.x - circle_x);
-	float dist_y = std::abs(point.y - circle_y);
+	float dist_x = point.x - circle_x;
+	float dist_y = point.y - circle_y;
 
 	float dist_squared = std::pow(dist_x, 2) + std::pow(dist_y, 2);
 	float dist = std::sqrt(dist_squared); // can compare to radius^2 instead.
@@ -25,9 +23,8 @@ bool Physics::point_in_circle(Vector2 point, float circle_x, float circle_y, flo
 
 bool Physics::point_in_circle(Vector2 point, Circle circle)
 {
-	// Can remove absolute calls, since they are squared anyway.
-	float dist_x = std::abs(point.x - circle.center.x);
-	float dist_y = std::abs(point.y - circle.center.y);
+	float dist_x = point.x - circle.center.x;
+	float dist_y = point.y - circle.center.y;
 
 	float dist_squared = std::pow(dist_x, 2) + std::pow(dist_y, 2);
 	float dist = std::sqrt(dist_squared); // can compare to radius^2 instead.
@@ -87,8 +84,7 @@ bool Physics::circle_intersects_rect(Circle circle, Rectangle rect)
 
 float Physics::dist(Vector2 point1, Vector2 point2)
 {
-	// can remove abs
-	float c_squared = std::pow(std::abs(point2.x - point1.x), 2) + std::pow(std::abs(point2.y - point1.y), 2);
+	float c_squared = std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2);
 	return std::sqrt(c_squared);
 }
 
