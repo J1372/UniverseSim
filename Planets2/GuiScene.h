@@ -4,20 +4,25 @@
 #include "raylib.h" // for Color
 
 
-// pure gui scene. all it has are ui elements. Can take care of the virtual Scene:: update ourselves.
+// A pure gui scene, all it has to update and render are ui elements. Implements the virtual Scene::update.
 // 
-// A scene with gui elements, but also other items, will need to implement own update method. 
-// But they will find render loop and input loop nice to be able to call
-
+// A scene with gui elements, but also other items, shouldn't inherit from this class
+// since they will need to implement their own update method.
 class GuiScene : public Scene {
 protected:
 
+	// The list of gui elements in the scene.
 	GuiComponentList gui;
+
+	// Scene to return at the end of update.
 	Scene* return_scene = this;
+
+	// Gui background color.
 	Color background_color = RAYWHITE;
 
 public:
 
+	// Does a standard GUI update handling of user clicks and keypresses.
 	Scene* update();
 
 	virtual ~GuiScene() = default;
