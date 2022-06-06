@@ -58,6 +58,31 @@ bool Body::contains_point(Vector2 point) const
 	return Physics::point_in_circle(point, x, y, radius);
 }
 
+float Body::left() const
+{
+	return x - radius;
+}
+
+float Body::right() const
+{
+	return x + radius;
+}
+
+float Body::top() const
+{
+	return y - radius;
+}
+
+float Body::bottom() const
+{
+	return y + radius;
+}
+
+float Body::diameter() const
+{
+	return 2 * radius;
+}
+
 std::pair<Body*, Body*> Body::get_sorted_pair(Body& body1, Body& body2)
 {
 	if (body1.mass >= body2.mass) {
