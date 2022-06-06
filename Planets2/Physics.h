@@ -33,6 +33,10 @@ namespace Physics {
 	// Returns the scalar distance between two points.
 	float dist(Vector2 point1, Vector2 point2);
 
+	// Returns the (scalar distance)^2 between two points.
+	// Can be used to avoid sqrt call in places where you don't need the actual distance.
+	float dist_squared(Vector2 point1, Vector2 point2);
+
 	// Returns the vector distance between two points in terms of (x,y) directions.
 	std::array<float, 2> distv(Vector2 point1, Vector2 point2);
 

@@ -88,6 +88,12 @@ float Physics::dist(Vector2 point1, Vector2 point2)
 	return std::sqrt(c_squared);
 }
 
+float Physics::dist_squared(Vector2 point1, Vector2 point2)
+{
+	float c_squared = std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2);
+	return c_squared;
+}
+
 std::array<float, 2> Physics::distv(Vector2 point1, Vector2 point2)
 {
 	return { point2.x - point1.x , point2.y - point1.y };
