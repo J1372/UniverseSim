@@ -149,6 +149,8 @@ void Universe::handle_gravity()
 		return;
 	}
 
+	// Changing this loop to use iterators had a big performance decrease,
+	// which probably only affects the debug build, but is still annoying.
 	for (int i = 0; i < active_bodies.size() - 1; i++) {
 		Body& body1 = *active_bodies[i];
 
@@ -202,8 +204,8 @@ void Universe::handle_removal(Removal removal)
 
 void Universe::update_pos()
 {
-	for (int i = 0; i < active_bodies.size(); i++) {
-		Body& body = *active_bodies[i];
+	for (auto it = active_bodies.begin(); it != active_bodies.end(); it++) {
+		Body& body = **it;
 
 		body.pos_update();
 
