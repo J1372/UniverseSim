@@ -6,7 +6,7 @@
 #include "TextBox.h"
 #include "Dropdown.h"
 
-#include "SpatialPartitioning.h"
+#include "QuadTree.h"
 #include "Grid.h"
 #include "LineSweep.h"
 

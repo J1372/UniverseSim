@@ -1,29 +1,19 @@
 #include "Universe.h"
-#include <malloc.h>
-#include <numbers>
-#include <iostream>
 #include "my_random.h"
 #include "raylib.h"
 #include "Physics.h"
 #include <algorithm>
 
-#include <vector>
+#include "Collision.h"
 #include "Removal.h"
 
 #include "Orbit.h"
 
-Universe::Universe() : barnes_quad { settings.universe_size_max, .5f }
+Universe::Universe() : barnes_quad { settings.universe_size_max, .5f },
+	dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
 {
-	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
+	partitioning_method = nullptr;
 	//std::cout << std::thread::hardware_concurrency();
-}
-
-Universe::Universe(const UniverseSettings& to_set) : settings(to_set),
-	dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
-	barnes_quad{ settings.universe_size_max, 200000.0f }
-{
-	partitioning_method = std::make_unique<QuadTree>(settings.universe_size_max, 10, 10);
-	create_universe();
 }
 
 Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning) : settings(to_set),
@@ -82,7 +72,7 @@ std::vector<std::unique_ptr<Body>>::iterator Universe::get_iterator(int id)
 		return ptr->id < id;
 	};
 
-	// Find iterator->body by id using binary search.
+	// active_bodies is sorted by id. Find iterator to body by id using binary search.
 	return std::lower_bound(active_bodies.begin(), active_bodies.end(), id, predicate);
 }
 
@@ -150,10 +140,6 @@ void Universe::handle_gravity()
 
 void Universe::handle_gravity_approximation()
 {
-	if (active_bodies.empty()) {
-		return;
-	}
-	
 	for (int i = 0; i < active_bodies.size(); i++) {
 		Body& body1 = *active_bodies[i];
 		barnes_quad.handle_gravity(body1, settings.grav_const);
@@ -279,10 +265,6 @@ void Universe::handle_collision(Collision collision, std::vector<Removal>& to_re
 
 	to_remove.emplace_back(smaller, &bigger);
 
-	// smaller.notify could remove from partitioning if partitioning makes itself an observer of that body.
-	// but that would involve the partitioning systems managing their observer statuses of their bodies when they move.
-	// and it is not costly to just remove from root on collision, since collision is relatively rare.
-
 }
 
 void Universe::handle_collisions(std::vector<Collision>& collisions)
@@ -357,9 +339,10 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 	std::vector<std::unique_ptr<Body>> system;
 
 	int num_planets = Rand::num(settings.system_min_planets, settings.system_max_planets);
-	system.reserve(num_planets + 10);
+	int approximate_num_moons = settings.moon_chance * num_planets;
+	system.reserve(num_planets + approximate_num_moons);
 
-	long system_mass = Rand::num(1, settings.RAND_MASS) * 5000; // rand_mass is max planet mass of random planet
+	long system_mass = Rand::num(1, settings.RAND_MASS) * 5000; // rand_mass is max mass of random planet
 	long star_mass = settings.system_mass_ratio * system_mass;
 	long remaining_mass = system_mass * (1 - settings.system_mass_ratio);
 
@@ -379,6 +362,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 		
 
 		if (Rand::chance(settings.moon_chance)) {
+			// Currently only one moon can be generated per planet.
 			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
 			long moon_mass = Rand::real(0.01f, 0.1f) * planet.mass;
 
@@ -388,7 +372,6 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 			moon.set_orbit(moon_orbit);
 		}
 
-		// rand num moons (distribution based on mass maybe)
 	}
 
 	return system;
@@ -402,9 +385,11 @@ Body* Universe::get_body(Vector2 point) const
 	}
 
 	if (has_partitioning()) {
+		// Try to find the body using our partitioning method.
 		return partitioning_method->find_body(point);
 	}
 	else {
+		// Try to find the body by looping through all bodies.
 		auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [point](const std::unique_ptr<Body>& body) {return body->contains_point(point); });
 		if (it != active_bodies.end()) {
 			return it->get();
@@ -418,6 +403,7 @@ Body* Universe::get_body(Vector2 point) const
 
 Body* Universe::get_body(int id) const
 {
+	// Can use binary search.
 	auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [id](const std::unique_ptr<Body>& body) { return body->id == id; });
 
 	if (it != active_bodies.end()) {
@@ -471,4 +457,44 @@ void Universe::rem_body(Body& body)
 	body.notify_being_removed(nullptr);
 
 	active_bodies.erase(remove_it);
+}
+
+bool Universe::has_partitioning() const
+{
+	return partitioning_method.get() != nullptr;
+}
+
+const SpatialPartitioning* Universe::get_partitioning() const
+{
+	return partitioning_method.get();
+}
+
+UniverseSettings& Universe::get_settings()
+{
+	return settings;
+}
+
+const std::vector<std::unique_ptr<Body>>& Universe::get_bodies() const
+{
+	return active_bodies;
+}
+
+int Universe::get_num_bodies() const
+{
+	return active_bodies.size();
+}
+
+int Universe::get_num_collision_checks() const
+{
+	return num_collision_checks;
+}
+
+int Universe::get_num_collision_checks_tick() const
+{
+	return num_collision_checks_tick;
+}
+
+int Universe::get_tick() const
+{
+	return tick;
 }
