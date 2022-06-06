@@ -260,9 +260,6 @@ Scene* SimulationScene::update()
 				render();
 			EndMode2D();
 
-		// render creation body.
-		// if want creation to be anchored to target vector instead of screen, just add to on_screen_bodies. if on_screen.
-
 		DrawFPS(50, 50);
 
 		std::string num_bodies_str = "Number bodies: " + std::to_string(universe.get_num_bodies());
