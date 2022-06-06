@@ -207,8 +207,11 @@ void Body::absorb(const Body& other)
 
 void Body::upgrade_update()
 {
-	while (mass >= TYPES[type_level + 1].min_mass) {
+	while (mass < TYPES[type_level].min_mass) {
+		type_level--;
+	}
 
+	while (mass >= TYPES[type_level + 1].min_mass) {
 		type_level++;
 	}
 
