@@ -46,9 +46,6 @@ class Body {
 		END_TYPE
 	};
 
-	void do_wraparound(float wraparound_val);
-
-
 	// The current body's type index in TYPES.
 	int type_level = 0;
 
@@ -140,7 +137,7 @@ public:
 	void upgrade_update();
 
 	// Updates the body's position, using its current velocity, and resets its acceleration to 0.
-	void pos_update(float wraparound_val);
+	void pos_update();
 
 	// Using the given forces, adjusts this body's acceleration.
 	void grav_pull(std::array<float, 2> force_vector);

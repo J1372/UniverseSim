@@ -58,6 +58,9 @@ class Universe {
 
 	// Updates all bodies' positions accordint to their velocities and velocities according to their accelerations.
 	void update_pos();
+
+	// Handles body wraparound if body has gone out of bounds.
+	void handle_wraparound(Body& body);
 	
 	// Generates random portions [0, 1] between num_slots objects. Sum of all portions == 1.
 	std::vector<float> gen_rand_portions(int num_slots) const;

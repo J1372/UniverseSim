@@ -115,6 +115,29 @@ void Universe::set_settings(const UniverseSettings& to_set)
 	settings = to_set;
 }
 
+void Universe::handle_wraparound(Body& body)
+{
+	Vector2 pos = body.pos();
+	float wraparound_val = settings.universe_size_max / 2;
+	float reset_val = 2 * wraparound_val;
+
+	if (pos.x > wraparound_val) {
+		pos.x = -reset_val + pos.x;
+	}
+	else if (pos.x < -wraparound_val) {
+		pos.x = reset_val + pos.x;
+	}
+
+	if (pos.y > wraparound_val) {
+		pos.y = -reset_val + pos.y;
+	}
+	else if (pos.y < -wraparound_val) {
+		pos.y = reset_val + pos.y;
+	}
+
+	body.set_pos(pos);
+}
+
 void Universe::set_partitioning(std::unique_ptr<SpatialPartitioning>&& partitioning)
 {
 	partitioning_method = std::move(partitioning);
@@ -182,7 +205,9 @@ void Universe::update_pos()
 	for (int i = 0; i < active_bodies.size(); i++) {
 		Body& body = *active_bodies[i];
 
-		body.pos_update(settings.universe_size_max / 2);
+		body.pos_update();
+
+		handle_wraparound(body);
 	}
 }
 

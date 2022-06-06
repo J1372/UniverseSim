@@ -8,26 +8,6 @@
 
 #include "Orbit.h"
 
-
-void Body::do_wraparound(float wraparound_val)
-{
-	float reset_val = 2 * wraparound_val;
-
-	if (x > wraparound_val) {
-		x = -reset_val + x;
-	}
-	else if (x < -wraparound_val) {
-		x = reset_val + x;
-	}
-
-	if (y > wraparound_val) {
-		y = -reset_val + y;
-	}
-	else if (y < -wraparound_val) {
-		y = reset_val + y;
-	}
-}
-
 Body::Body(float x, float y, long mass) : x(x), y(y), mass(std::max(1l, mass))
 {
 	upgrade_update();
@@ -221,7 +201,7 @@ void Body::upgrade_update()
 	radius = std::max(((float)mass) / type->density, 1.0f);
 }
 
-void Body::pos_update(float wraparound_val)
+void Body::pos_update()
 {
 	vel_x += acc_x;
 	vel_y += acc_y;
@@ -231,8 +211,6 @@ void Body::pos_update(float wraparound_val)
 
 	acc_x = 0; // set accelerations to 0 for next tick
 	acc_y = 0;
-
-	do_wraparound(wraparound_val);
 
 }
 
