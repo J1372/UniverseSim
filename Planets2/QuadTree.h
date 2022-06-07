@@ -1,10 +1,9 @@
 #pragma once
-#include <unordered_map>
 #include <memory>
-#include "Body.h"
 #include "SpatialPartitioning.h"
 #include "raylib.h"
-#include <functional>
+
+class Body;
 
 // A QuadTree to be used for detecting collisions between bodies.
 class QuadTree : public SpatialPartitioning {
@@ -142,6 +141,10 @@ private:
 	*/
 	QuadTree* get_quad(ArgTypes&&... args) const
 	{
+		// Assert provided bool_func returns a bool when called on a QuadTree with args... parameter types.
+		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), QuadTree&&, ArgTypes&&...>,
+			"Given function must return a bool when called on a QuadTree with the given parameters.");
+
 		if (std::invoke(bool_func, UL.get(), args...)) {
 			return UL.get();
 		}
@@ -162,6 +165,10 @@ private:
 	// Returns all child quads (of UL, UR, LL, LR)  where the predicate is true.
 	std::vector<QuadTree*> get_quads(ArgTypes&&... args) const
 	{
+		// Assert provided bool_func returns a bool when called on a QuadTree with args... parameter types.
+		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), QuadTree&&, ArgTypes&&...>,
+			"Given function must return a bool when called on a QuadTree with the given parameters.");
+
 		std::vector<QuadTree*> quads;
 		quads.reserve(4);
 

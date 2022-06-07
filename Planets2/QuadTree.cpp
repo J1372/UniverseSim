@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "Physics.h"
+#include "Body.h"
 
 #include "Collision.h"
 
