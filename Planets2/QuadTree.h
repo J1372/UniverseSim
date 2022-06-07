@@ -22,7 +22,7 @@ public:
 	// Will remove the body from the quad node that it is in. Potentially concatenates that node or its parent.
 	void rem_body(const Body& body);
 
-	// Returns whetherthe current quad is a leaf or not.
+	// Returns whether the current quad is a leaf or not.
 	bool is_leaf() const;
 
 	// Returns a pointer to the body that overlaps with the point. Returns nullptr if no body found.
@@ -134,17 +134,55 @@ private:
 	// If a child node can fully contain the body, calls add_body(body) on that node.
 	void add_to_child(Body& body);
 
+
+	template<auto bool_func, class... ArgTypes>
 	/*
 	Returns the first (and hopefully only) child quad where the predicate is true, or nullptr if predicate false in all four child nodes.
 	Checks in order: UL, UR, LL, LR.
 	*/
-	QuadTree* get_quad(std::function<bool(const QuadTree&)> predicate) const;
+	QuadTree* get_quad(ArgTypes&&... args) const
+	{
+		if (std::invoke(bool_func, UL.get(), args...)) {
+			return UL.get();
+		}
+		else if (std::invoke(bool_func, UR.get(), args...)) {
+			return UR.get();
+		}
+		else if (std::invoke(bool_func, LL.get(), args...)) {
+			return LL.get();
+		}
+		else if (std::invoke(bool_func, LR.get(), args...)) {
+			return LR.get();
+		}
 
+		return nullptr;
+	}
+
+	template<auto bool_func, class... ArgTypes>
 	// Returns all child quads (of UL, UR, LL, LR)  where the predicate is true.
-	std::vector<QuadTree*> get_quads(std::function<bool(const QuadTree&)> predicate) const;
+	std::vector<QuadTree*> get_quads(ArgTypes&&... args) const
+	{
+		std::vector<QuadTree*> quads;
+		quads.reserve(4);
 
-	// Returns all child quads (searches entire depth) where the predicate is true.
-	std::vector<QuadTree*> get_all_quads(std::function<bool(const QuadTree&)> predicate) const;
+		if (std::invoke(bool_func, UL.get(), args...)) {
+			quads.push_back(UL.get());
+		}
+
+		if (std::invoke(bool_func, UR.get(), args...)) {
+			quads.push_back(UR.get());
+		}
+
+		if (std::invoke(bool_func, LL.get(), args...)) {
+			quads.push_back(LL.get());
+		}
+
+		if (std::invoke(bool_func, LR.get(), args...)) {
+			quads.push_back(LR.get());
+		}
+
+		return quads;
+	}
 
 	// Handles possible concatenation in this quad and all relevant parent quads.
 	void concat_check();
