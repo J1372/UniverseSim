@@ -129,7 +129,7 @@ void BarnesHut::add_body(Body& to_add)
 void BarnesHut::add_to_child(Body& to_add)
 {
 	// Get the child quad that fully contains the body.
-	BarnesHut* contained_in = get_quad([&to_add](const BarnesHut& quad) { return quad.contains(to_add); });
+	BarnesHut* contained_in = get_quad<&BarnesHut::contains>(to_add);
 
 	if (contained_in) {
 		contained_in->add_body(to_add);
@@ -153,7 +153,7 @@ void BarnesHut::add_to_child(Body& to_add)
 		*/
 
 		// Try to place in any empty quad, to avoid splitting even further.
-		BarnesHut* empty_quad = get_quad([](const BarnesHut& quad) { return quad.is_empty(); });
+		BarnesHut* empty_quad = get_quad<&BarnesHut::is_empty>();
 		if (empty_quad) { // empty == is a leaf.
 			empty_quad->add_body(to_add);
 		}
@@ -163,25 +163,6 @@ void BarnesHut::add_to_child(Body& to_add)
 
 	}
 
-}
-
-
-BarnesHut* BarnesHut::get_quad(std::function<bool(const BarnesHut&)> predicate) const
-{
-	if (predicate(*UL)) {
-		return UL.get();
-	}
-	else if (predicate(*UR)) {
-		return UR.get();
-	}
-	else if (predicate(*LL)) {
-		return LL.get();
-	}
-	else if (predicate(*LR)) {
-		return LR.get();
-	}
-
-	return nullptr;
 }
 
 bool BarnesHut::contains(Body& body) const

@@ -93,10 +93,32 @@ public:
 	// Frees 4 child nodes.
 	void concatenate();
 
+	template<auto bool_func, class... ArgTypes>
 	/*
 	Returns the first (and hopefully only) child quad where the predicate is true, or nullptr if predicate false in all four child nodes.
 	Checks in order: UL, UR, LL, LR.
 	*/
-	BarnesHut* get_quad(std::function<bool(const BarnesHut&)> predicate) const;
+	BarnesHut* get_quad(ArgTypes&&... args) const
+	{
+		// Assert provided bool_func returns a bool when called on a BarnesHut with args... parameter types.
+		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), BarnesHut&&, ArgTypes&&...>,
+			"Given function must return a bool when called on a BarnesHut with the given parameters.");
+
+		if (std::invoke(bool_func, UL.get(), args...)) {
+			return UL.get();
+		}
+		else if (std::invoke(bool_func, UR.get(), args...)) {
+			return UR.get();
+		}
+		else if (std::invoke(bool_func, LL.get(), args...)) {
+			return LL.get();
+		}
+		else if (std::invoke(bool_func, LR.get(), args...)) {
+			return LR.get();
+		}
+
+		return nullptr;
+	}
+
 };
 
