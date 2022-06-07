@@ -7,6 +7,12 @@
 #include "SystemCreation.h"
 #include "DefaultInteraction.h"
 
+std::unique_ptr<Body> PlanetCreation::create_default_body(Vector2 pos) const
+{
+	long mass = 200;
+	return std::make_unique<Body>(pos.x, pos.y, mass);
+}
+
 void PlanetCreation::init()
 {
 	creating = nullptr;
@@ -14,13 +20,11 @@ void PlanetCreation::init()
 
 void PlanetCreation::enter(Vector2 mouse_pos) // universe point of mouse param
 {
-	long mass = 100;
-	creating = std::make_unique<Body>(mouse_pos.x, mouse_pos.y, mass);
+	creating = create_default_body(mouse_pos);
 }
 
 InteractionState* PlanetCreation::process_input(const CameraState& camera_state, Universe& universe)
 {
-
 	Vector2 screen_point = GetMousePosition();
 	Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
 
@@ -40,8 +44,7 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 
 			universe.add_body(std::move(creating));
 
-			long mass = 100;
-			creating = std::make_unique<Body>(universe_point.x, universe_point.y, mass);
+			creating = create_default_body(universe_point);
 
 		}
 		else {
@@ -114,6 +117,11 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 	}
 
 	return this;
+}
+
+std::string PlanetCreation::get_name() const
+{
+	return "Planet creation mode";
 }
 
 std::string PlanetCreation::get_help_text() const

@@ -38,6 +38,7 @@ InteractionState* DefaultInteraction::process_input(const CameraState& camera_st
 		}
 	}
 	else if (IsKeyPressed(KEY_TWO)) {
+		// Start user body creation.
 		Vector2 screen_point = GetMousePosition();
 		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
 
@@ -46,6 +47,7 @@ InteractionState* DefaultInteraction::process_input(const CameraState& camera_st
 		return &ret_state;
 	}
 	else if (IsKeyPressed(KEY_THREE)) {
+		// Start system generation.
 		Vector2 screen_point = GetMousePosition();
 		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
 
