@@ -51,18 +51,6 @@
     <ClCompile Include="SimulationScene.cpp">
       <Filter>Scenes\SimScene</Filter>
     </ClCompile>
-    <ClCompile Include="AnchoredCamera.cpp">
-      <Filter>Scenes\SimScene</Filter>
-    </ClCompile>
-    <ClCompile Include="FreeCamera.cpp">
-      <Filter>Scenes\SimScene</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraState.cpp">
-      <Filter>Scenes\SimScene</Filter>
-    </ClCompile>
-    <ClCompile Include="AdvCamera.cpp">
-      <Filter>Scenes\SimScene</Filter>
-    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Sim_Model\Events</Filter>
     </ClCompile>
@@ -92,6 +80,18 @@
     </ClCompile>
     <ClCompile Include="BarnesHut.cpp">
       <Filter>Sim_Model\GravityApproximations</Filter>
+    </ClCompile>
+    <ClCompile Include="AdvCamera.cpp">
+      <Filter>Scenes\SimScene\CameraStates</Filter>
+    </ClCompile>
+    <ClCompile Include="AnchoredCamera.cpp">
+      <Filter>Scenes\SimScene\CameraStates</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraState.cpp">
+      <Filter>Scenes\SimScene\CameraStates</Filter>
+    </ClCompile>
+    <ClCompile Include="FreeCamera.cpp">
+      <Filter>Scenes\SimScene\CameraStates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -153,18 +153,6 @@
     <ClInclude Include="SimulationScene.h">
       <Filter>Scenes\SimScene</Filter>
     </ClInclude>
-    <ClInclude Include="CameraState.h">
-      <Filter>Scenes\SimScene</Filter>
-    </ClInclude>
-    <ClInclude Include="FreeCamera.h">
-      <Filter>Scenes\SimScene</Filter>
-    </ClInclude>
-    <ClInclude Include="AnchoredCamera.h">
-      <Filter>Scenes\SimScene</Filter>
-    </ClInclude>
-    <ClInclude Include="AdvCamera.h">
-      <Filter>Scenes\SimScene</Filter>
-    </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Sim_Model\Events</Filter>
     </ClInclude>
@@ -202,6 +190,18 @@
     <ClInclude Include="BarnesHut.h">
       <Filter>Sim_Model\GravityApproximations</Filter>
     </ClInclude>
+    <ClInclude Include="AdvCamera.h">
+      <Filter>Scenes\SimScene\CameraStates</Filter>
+    </ClInclude>
+    <ClInclude Include="AnchoredCamera.h">
+      <Filter>Scenes\SimScene\CameraStates</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraState.h">
+      <Filter>Scenes\SimScene\CameraStates</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeCamera.h">
+      <Filter>Scenes\SimScene\CameraStates</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
@@ -230,6 +230,9 @@
     </Filter>
     <Filter Include="Sim_Model\GravityApproximations">
       <UniqueIdentifier>{6d6eace0-b366-4056-9c16-63d944e5b3f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes\SimScene\CameraStates">
+      <UniqueIdentifier>{99038bc2-c793-46cb-83cf-73fb1d8949f5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

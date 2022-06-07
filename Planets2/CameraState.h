@@ -27,6 +27,7 @@ public:
 	static FreeCamera free_camera;
 	static AnchoredCamera anchored_camera;
 
+	// Initialization of cameras to be called after Raylib's init.
 	static void init_cameras(const AdvCamera& starting_config);
 
 	virtual void goto_body(Body& body) = 0;

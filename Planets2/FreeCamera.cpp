@@ -8,11 +8,16 @@
 
 #include "raylib.h"
 
+void FreeCamera::center_camera()
+{
+	Vector2 center = { GetScreenWidth() / 2, GetScreenHeight() / 2 };
+	camera.set_offset(center);
+}
+
 void FreeCamera::init(const AdvCamera & starting_config)
 {
 	camera = starting_config;
-	Vector2 center = { GetScreenWidth() / 2, GetScreenHeight() / 2 };
-	camera.set_offset(center);
+	center_camera();
 }
 
 void FreeCamera::goto_body(Body& body)
@@ -71,8 +76,6 @@ CameraState* FreeCamera::update(const Universe& universe)
 	else if (wheel_move > 0 or IsKeyPressed(KEY_PERIOD)) {
 		camera.zoom_in();
 	}
-
-	
 
     return this;
 }

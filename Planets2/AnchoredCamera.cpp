@@ -36,12 +36,14 @@ CameraState* AnchoredCamera::goto_free_camera()
 void AnchoredCamera::switch_to(Body* anchor_to)
 {
     if (anchored_to) {
+        // Remove camera as an observer to the anchored body's remove event.
         anchored_to->removal_event().rem_observer(listener_id);
     }
 
     anchored_to = anchor_to;
 
     if (anchor_to) {
+        // Add camera as an observer to the new anchored body's remove event.
         listener_id = anchored_to->removal_event().add_observer(on_body_removal);
     }
 }
@@ -49,10 +51,13 @@ void AnchoredCamera::switch_to(Body* anchor_to)
 void AnchoredCamera::switch_to(Body& anchor_to)
 {
     if (anchored_to) {
+        // Remove camera as an observer to the anchored body's remove event.
         anchored_to->removal_event().rem_observer(listener_id);
     }
 
     anchored_to = &anchor_to;
+
+    // Add camera as an observer to the new anchored body's remove event.
     listener_id = anchored_to->removal_event().add_observer(on_body_removal);
 
 }

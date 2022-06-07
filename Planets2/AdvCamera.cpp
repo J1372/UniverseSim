@@ -54,6 +54,12 @@ void AdvCamera::zoom_out()
 	recalculate_speed_target();
 }
 
+void AdvCamera::set_zoom(float level)
+{
+	camera.zoom = level;
+	recalculate_speed_target();
+}
+
 void AdvCamera::increase_speed_target()
 {
 	target_speed_multiplier++;
@@ -81,10 +87,14 @@ void AdvCamera::decrease_speed_offset()
 	}
 }
 
-void AdvCamera::set_zoom(float level)
+float AdvCamera::get_zoom() const
 {
-	camera.zoom = level;
-	recalculate_speed_target();
+	return camera.zoom;
+}
+
+const Camera2D& AdvCamera::get_raylib_camera() const
+{
+	return camera;
 }
 
 void AdvCamera::move_target(Direction dir)
