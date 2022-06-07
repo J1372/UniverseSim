@@ -2,6 +2,7 @@
 #include "SpatialPartitioning.h"
 #include <span>
 
+// Line sweep algorithm for collision detection.
 class LineSweep : public SpatialPartitioning
 {
 
@@ -14,6 +15,7 @@ class LineSweep : public SpatialPartitioning
 
 	// Sorted in ascending order of body's leftmost x-coordinate.
 	std::vector<Body*> entry_events;
+
 	// Sorted in ascending order of body's rightmost x-coordinate.
 	std::vector<Body*> leave_events;
 
@@ -21,6 +23,7 @@ class LineSweep : public SpatialPartitioning
 	SweepEvent get_next_event(int entries_processed, int leaves_processed) const;
 
 	// Scans for and adds any collision events between the entering body and the currently active bodies to the collisions vector.
+	// Returns number of collision checks performed.
 	int get_collisions(Body& entry, std::vector<Body*>& currently_active, std::vector<Collision>& collisions) const;
 
 	// Sorts entry and leave events in ascending order.
@@ -60,13 +63,10 @@ public:
 	// Returns a visual representation of the algorithm's events.
 	std::vector<Rectangle> get_representation() const override;
 
-	// Attaches text indicating body's entry event index, leave event index, and # bodies that it will be collision checked with to the body's debug text.
-
-	// entry index
-	// exit index
-	// # bodies being compared with
+	// Attaches text indicating body's entry event index, leave event index to the body's debug text.
 	void attach_debug_text(Body& body) const override;
 
+	// Detects and returns a vector of all collision events.
 	std::vector<Collision> get_collisions() override;
 
 };

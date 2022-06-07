@@ -14,6 +14,7 @@ QuadTree::QuadTree(float size, int max_bodies_per_quad, int max_depth) :
 {
 	QuadTree::max_bodies_per_quad = max_bodies_per_quad;
 	QuadTree::max_depth = max_depth;
+	QuadTree::quads_generated = 0;
 }
 
 QuadTree::QuadTree(float x, float y, float size, int depth) :
@@ -179,6 +180,37 @@ void QuadTree::rem_body(const Body& body)
 	// Could be an outside command, so body could be in one of our child nodes.
 	QuadTree& quad = find_quad(body);
 	quad.rem_body_internal(body);
+}
+
+bool QuadTree::is_leaf() const
+{
+	// Non-leaf nodes always have all 4 quads.
+	return UL == nullptr;
+}
+
+bool QuadTree::is_root() const
+{
+	return parent == nullptr;
+}
+
+bool QuadTree::is_empty() const
+{
+	return cur_size == 0;
+}
+
+bool QuadTree::has_room() const
+{
+	return cur_size < max_bodies_per_quad;
+}
+
+bool QuadTree::is_full() const
+{
+	return cur_size >= max_bodies_per_quad;
+}
+
+bool QuadTree::reached_depth_limit() const
+{
+	return depth >= max_depth;
 }
 
 void QuadTree::rem_body_internal(const Body& body)

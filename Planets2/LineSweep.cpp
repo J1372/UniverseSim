@@ -126,7 +126,6 @@ void LineSweep::attach_debug_text(Body& body) const
 {
     // entry index
     // exit index
-    // # bodies being compared with
 
     auto entry_event_it = get_entry_it(body);
     auto leave_event_it = get_leave_it(body);
@@ -134,10 +133,8 @@ void LineSweep::attach_debug_text(Body& body) const
     int entry_index = std::distance(entry_events.begin(), entry_event_it);
     int leave_index = std::distance(leave_events.begin(), leave_event_it);
 
-    int compared_with = 0;
     body.add_debug_text("Entry event index: " + std::to_string(entry_index));
     body.add_debug_text("Leave event index: " + std::to_string(leave_index));
-    body.add_debug_text("# Compared with: " + std::to_string(compared_with));
 }
 
 std::vector<Collision> LineSweep::get_collisions()
@@ -154,21 +151,16 @@ std::vector<Collision> LineSweep::get_collisions()
     currently_active.reserve(entry_events.size());
 
     // can just pop off back (scan right to left) and go until both empty.
-    // but this method is const.
     int entries_processed = 0;
     int leaves_processed = 0;
 
-
-    // if next entry event's left() comes before next leave event, add to curr active and advance entries_processed.
-    // if next leave event's right() comes before next entry event, remove from active and advance leaves_processed.
-
-    // on entry event, coll check with all previous in currently active.
-
     // We can stop on last entry event.
-
 
     SweepEvent next_event = get_next_event(entries_processed, leaves_processed);
     while (next_event != SweepEvent::END) {
+        // if next entry event's left() comes before next leave event, add to curr active and advance entries_processed.
+        // if next leave event's right() comes before next entry event, remove from active and advance leaves_processed.
+
 
         if (next_event == SweepEvent::ENTRY) {
             // Get collisions between the body just entering, and all active bodies.
@@ -209,6 +201,7 @@ int LineSweep::get_collisions(Body& entry, std::vector<Body*>& currently_active,
         }
     }
 
+    // Body is checked with all currently active bodies.
     return currently_active.size();
 }
 

@@ -23,21 +23,6 @@ void GridNode::clear()
     bodies.clear();
 }
 
-bool GridNode::contains_point(Vector2 point) const
-{
-    return Physics::point_in_rect(point, dimensions);
-}
-
-bool GridNode::contains_partially(const Body& body) const
-{
-    return Physics::body_intersects_rect(body, dimensions);
-}
-
-bool GridNode::contains_fully(const Body& body) const
-{
-    return Physics::body_inside_rect(body, dimensions);
-}
-
 Body* GridNode::find_body(Vector2 point) const
 {
     for (Body* body : bodies) {

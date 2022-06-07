@@ -6,6 +6,7 @@
 #include "raylib.h"
 #include <functional>
 
+// A QuadTree to be used for detecting collisions between bodies.
 class QuadTree : public SpatialPartitioning {
 
 public:
@@ -21,7 +22,8 @@ public:
 	// Will remove the body from the quad node that it is in. Potentially concatenates that node or its parent.
 	void rem_body(const Body& body);
 
-	bool is_leaf() const { return UL == nullptr; } // Non-leaf nodes always have all 4 quads.
+	// Returns whetherthe current quad is a leaf or not.
+	bool is_leaf() const;
 
 	// Returns a pointer to the body that overlaps with the point. Returns nullptr if no body found.
 	Body* find_body(Vector2 point) const;
@@ -51,45 +53,62 @@ private:
 
 	// Number of possible subdivisions to be made. Root depth is 0, so 1 == only one subdivision from root.
 	static int max_depth;
+
+	// Total number of quads generated since root quad created.
 	static int quads_generated;
 
+	// The quad's unique id.
 	const int quad_id;
 
 	// The current quad's depth from the root.
 	const int depth;
 
+	// The dimensions of the quad node.
 	const Rectangle dimensions;
 
-	std::vector<Body*> quad_bodies; // List of body pointers to bodies that are fully contained in this quad. They do not overlap with any other quad.
-	int cur_size = 0; // The number of bodies in this quad and all its children (max depth).
+	// List of body pointers to bodies that are fully contained in this quad.
+	// They do not overlap with any other non-child quad.
+	std::vector<Body*> quad_bodies;
+
+	// The number of bodies in this quad and all its children (max depth).
+	int cur_size = 0;
 
 
 	// References to the parent and owning pointers to the node's 4 potential children.
-	QuadTree* parent = nullptr;
-	std::unique_ptr<QuadTree> UL = nullptr;
-	std::unique_ptr<QuadTree> UR = nullptr;
-	std::unique_ptr<QuadTree> LL = nullptr;
-	std::unique_ptr<QuadTree> LR = nullptr;
 
+	QuadTree* parent = nullptr;
+	std::unique_ptr<QuadTree> UL = nullptr; // Upper left quad
+	std::unique_ptr<QuadTree> UR = nullptr; // Upper right quad
+	std::unique_ptr<QuadTree> LL = nullptr; // Lower left quad
+	std::unique_ptr<QuadTree> LR = nullptr; // Lower right quad
 
 	// Will assume body is in the quad that this method was called on.
 	void rem_body_internal(const Body& body);
 
+	// Adds all detected collisions to collisions vector.
 	int get_collisions(std::vector<Collision>& collisions) const;
 
 	// Performs a collision check between the body and all bodies starting at the given iterator until the end iterator.
 	// If a collision is detected, adds a Collision event to the collision vector.
 	int get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const;
 
+	// Get collisions between a body and all bodies in relevant child nodes.
 	int get_collisions_child(Body& checking, std::vector<Collision>& collisions) const;
 
-	bool is_root() const { return parent == nullptr; }
+	// Returns whether the quad is the root.
+	bool is_root() const;
 
-	bool is_empty() const { return cur_size == 0; }
-	bool has_room() const { return cur_size < max_bodies_per_quad; }
-	bool is_full() const { return cur_size >= max_bodies_per_quad; }
+	// Returns whether any bodies are contained in the quad itself.
+	bool is_empty() const;
 
-	bool reached_depth_limit() const { return depth >= max_depth; }
+	// Returns true if the quad can be added to without causing a split.
+	bool has_room() const;
+
+	// Returns true if quad being added to would cause a split.
+	bool is_full() const;
+
+	// Returns true if quad's depth is the maximum depth limit, else false.
+	bool reached_depth_limit() const;
 
 	// Returns true if the point is inside the quad's dimensions.
 	bool contains_point(Vector2 point) const;
@@ -102,12 +121,16 @@ private:
 
 	// If a body is removed from a child node (due to collision), notifies all relevant parent nodes to update their sizes.
 	void notify_child_removed();
+
 	// Moves body referenced by iterator to child without increasing the current node's size.
 	void move_to_child(std::vector<Body*>::iterator& it);
+
 	// Returns true if a body overlaps over more than one child nodes.
 	bool in_more_than_one_child(const Body& body) const;
+
 	// Chooses whether to add body to current quad or a child quad.
 	void selective_add(Body& new_body);
+
 	// If a child node can fully contain the body, calls add_body(body) on that node.
 	void add_to_child(Body& body);
 
@@ -123,11 +146,13 @@ private:
 	// Returns all child quads (searches entire depth) where the predicate is true.
 	std::vector<QuadTree*> get_all_quads(std::function<bool(const QuadTree&)> predicate) const;
 
+	// Handles possible concatenation in this quad and all relevant parent quads.
 	void concat_check();
 
 	// Moves all child nodes' bodies into this node, then resets their pointers to nullptr.
 	void concatenate();
-	// Creates 4 new child nodes. Moves all bodies that can completely fit inside a child node, into that node.
+
+	// Creates 4 new child nodes. Moves all bodies that can completely fit inside a child node, into their respective child nodes.
 	void split();
 
 	// Reinserts a body from one node upwards into the smallest node that fully contains it.
@@ -135,10 +160,11 @@ private:
 
 	// Returns the smallest quad that contains the entire body.
 	QuadTree& find_quad(const Body& body);
+
 	// Returns the smallest quad that contains the entire body.
 	const QuadTree& find_quad(const Body& body) const;
 
-
+	// Internal method used by get_representation.
 	void get_representation_internal(std::vector<Rectangle>& rep) const;
 
 };
