@@ -16,11 +16,16 @@ class SpatialPartitioning;
 #include "Slider.h"
 #include "CheckBox.h"
 
-
+// A settings scene where the user can define the parameters for the simulation universe.
 class SettingsScene : public GuiScene
 {
+
+	// Currently no GUI containers / composites, so some setup code looks redundant.
+
+	// The settings to be used in the simulation.
 	UniverseSettings settings;
 
+	// Start and exit buttons
 	static constexpr int BUTTON_X = 860;
 	static constexpr int BUTTON_Y = 900;
 
@@ -29,11 +34,12 @@ class SettingsScene : public GuiScene
 
 
 	static constexpr int TEXTBOX_WIDTH = 400;
+
+	// Start x of label from the beginning of a textbox.
 	static constexpr int LABEL_OFFSET = TEXTBOX_WIDTH + 25;
 
+	// Begin columns at this y coordinate.
 	static constexpr int COLUMN_Y = 50;
-
-
 
 	// Universe generation settings column
 	static constexpr int UNIVERSE_START_X = 50;
@@ -117,19 +123,24 @@ class SettingsScene : public GuiScene
 
 
 
-
+	// Generates settings from the gui elements.
 	void generate_settings();
 
-	void read_settings_to_gui(); // set gui elements to reflect the current universe settings.
+	// Set gui elements to reflect the current universe settings.
+	void read_settings_to_gui(); 
 
-
+	// Creates and returns the selected partitioning method.
 	std::unique_ptr<SpatialPartitioning> gen_partitioning();
 
 
 
 public:
 
-	void init(); // register event handling and other gui setup.
+	// Initialization after Raylib init.
+	// Register event handling and other gui setup.
+	void init();
+
+	// Enters the settings scene.
 	void enter();
 
 };

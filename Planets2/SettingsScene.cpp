@@ -31,6 +31,7 @@ void SettingsScene::init()
 	num_planets_input.set_prompt_text("Number of random planets to generate");
 	num_systems_input.set_prompt_text("Number of random systems to generate");
 
+	partitioning_dropdown.add_choice("None");
 	partitioning_dropdown.add_choice("Quad tree");
 	partitioning_dropdown.add_choice("Grid");
 	partitioning_dropdown.add_choice("Line sweep");
@@ -70,6 +71,8 @@ void SettingsScene::init()
 		}
 	});
 
+	partitioning_dropdown.set_selected(0);
+
 	gui.hide(approximation_slider);
 	gui.hide(approximation_label);
 	gui.hide(approximation_description);
@@ -90,9 +93,6 @@ void SettingsScene::init()
 		}
 	}
 	);
-
-
-	partitioning_dropdown.deselect();
 
 	background_color = SKYBLUE;
 
