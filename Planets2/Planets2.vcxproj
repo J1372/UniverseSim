@@ -170,7 +170,6 @@
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PlanetCreation.h" />
     <ClInclude Include="SettingsScene.h" />
-    <ClInclude Include="Shape.h" />
     <ClInclude Include="AdvCamera.h" />
     <ClInclude Include="SimulationScene.h" />
     <ClInclude Include="Slider.h" />

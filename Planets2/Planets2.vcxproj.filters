@@ -144,9 +144,6 @@
     <ClInclude Include="UniverseSettings.h">
       <Filter>Sim_Model</Filter>
     </ClInclude>
-    <ClInclude Include="Shape.h">
-      <Filter>Scenes</Filter>
-    </ClInclude>
     <ClInclude Include="SettingsScene.h">
       <Filter>Scenes\SettingsScene</Filter>
     </ClInclude>
