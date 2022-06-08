@@ -41,6 +41,10 @@ void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPa
 	should_render_debug_text = false;
 	should_render_help_text = false;
 
+	if (should_render_help_prompt) {
+		// Only reset the prompt_time if the prompt is still enabled.
+		prompt_time = std::chrono::system_clock::now();
+	}
 
 	return_scene = this;
 }
@@ -282,10 +286,25 @@ Scene* SimulationScene::update()
 		}
 
 		if (should_render_help_text) {
-			// Can just copy help_text + interaction_state->get_help_text() to a concatenated help_text
-			// when we detect state change, instead of every tick.
-			// Can do same for title drawing.
 			DrawText(current_help_text.c_str(), 1400, 100, 20, RAYWHITE);
+		}
+
+		if (should_render_help_prompt) {
+			constexpr auto prompt = "Press [H] to open the help menu";
+			constexpr int font_size = 20;
+			int start_x = GetScreenWidth() / 2 - MeasureText(prompt, font_size) / 2; // centered x
+			int start_y = GetScreenHeight() / 2; // centered y
+			DrawText(prompt, start_x, start_y, font_size, WHITE);
+
+			// Get time elapsed since prompt was first displayed.
+			auto cur_time = std::chrono::system_clock::now();
+			std::chrono::duration<double> elapsed_seconds = cur_time - prompt_time;
+
+			// If more than a certain amount of seconds have passed, disable the prompt.
+			if (elapsed_seconds.count() > 5.0) {
+				should_render_help_prompt = false;
+			}
+
 		}
 
 		std::string interaction_title = interaction_state->get_name();

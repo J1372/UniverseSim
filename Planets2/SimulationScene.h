@@ -4,6 +4,7 @@
 #include "universe.h"
 #include "AdvCamera.h"
 #include <span>
+#include <chrono>
 
 class CameraState;
 class Body;
@@ -48,6 +49,12 @@ class SimulationScene : public Scene
 	// The current help text to be shown if the user has toggled on its display.
 	// This is the default help text, along with any state specific help text.
 	std::string current_help_text = default_help_text;
+
+	// Whether the user should be told how to open the help text.
+	bool should_render_help_prompt = true;
+
+	// Time when help prompt text was first displayed.
+	std::chrono::system_clock::time_point prompt_time = std::chrono::system_clock::now();
 
 	// A vector of pointers to all bodies that are currently on screen.
 	std::vector<Body*> on_screen_bodies;
