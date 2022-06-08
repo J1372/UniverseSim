@@ -122,7 +122,7 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 
 std::string PlanetCreation::get_name() const
 {
-	return "Planet creation mode";
+	return "Planet creation";
 }
 
 std::string PlanetCreation::get_help_text() const

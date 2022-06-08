@@ -91,7 +91,7 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 
 std::string SystemCreation::get_name() const
 {
-	return "System creation mode";
+	return "System creation";
 }
 
 std::string SystemCreation::get_help_text() const
