@@ -15,8 +15,8 @@ class Grid : public SpatialPartitioning
 	// A vector of all bodies in the grid.
 	std::vector<Body*> bodies;
 
-	const int grid_size; // Total size of the grid
-	const int node_size; // Size of each node in the grid.
+	const float grid_size; // Total size of the grid
+	const float node_size; // Size of each node in the grid.
 	const int nodes_per_row; // Number of nodes in a row of the grid.
 
 	// Returns the x or y grid node index of a given coordinate position.
@@ -34,7 +34,7 @@ class Grid : public SpatialPartitioning
 public:
 
 	// Constructs a grid of the given size with (nodes_per_row^2) nodes.
-	Grid(int grid_size, int nodes_per_row);
+	Grid(float grid_size, int nodes_per_row);
 
 	// Updates bodies to be in the correct grid node.
 	void update();

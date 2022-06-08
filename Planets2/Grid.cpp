@@ -3,7 +3,7 @@
 
 #include "Collision.h"
 
-Grid::Grid(int grid_size, int nodes_per_row) : grid_size(grid_size), node_size(grid_size / nodes_per_row), nodes_per_row(nodes_per_row)
+Grid::Grid(float grid_size, int nodes_per_row) : grid_size(grid_size), node_size(grid_size / nodes_per_row), nodes_per_row(nodes_per_row)
 {
     nodes.reserve(nodes_per_row * nodes_per_row);
 
