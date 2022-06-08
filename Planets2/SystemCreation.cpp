@@ -86,16 +86,14 @@ std::string SystemCreation::get_name() const
 
 std::string SystemCreation::get_help_text() const
 {
-	std::string help_text;
+	return
+		"Left click to add to universe and generate another system\n"
+		"Right click to go to default mode\n"
+		"[Enter] to add to universe and return\n"
+		"[1] to go to default mode\n"
+		"[2] to go to planet creator\n"
+		"[3] to generate another system\n";
 
-	help_text += "Left click to add to universe and generate another system\n";
-	help_text += "Right click to go to default mode\n";
-	help_text += "[Enter] to add to universe and return to default mode\n";
-	help_text += "[1] to go to default mode\n";
-	help_text += "[2] to go to planet creator\n";
-	help_text += "[3] to generate another system\n";
-
-	return help_text;
 }
 
 std::span<const std::unique_ptr<Body>> SystemCreation::get_creating_bodies() const

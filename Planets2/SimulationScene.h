@@ -43,18 +43,11 @@ class SimulationScene : public Scene
 	bool should_render_help_text = false;
 
 	// Default help text.
-	const std::string help_text =
-		"[H] to close help text\n"
-		"[V] to show partitioning representation\n"
-		"[B] to show debug text info\n"
-		"[N] to show tick # and collision stats\n"
-		"[SPACE] to toggle pause\n"
-		"[W] [A] [S] [D] to move the camera\n"
-		"[-, +] to control the camera's speed\n"
-		"[COMMA] or scroll down to zoom out\n"
-		"[PERIOD] or scroll up to zoom in\n"
-		"[ESCAPE] to go back to settings\n"
-		"Right click to anchor camera to a planet\n";
+	const std::string default_help_text = "[H] to close help text\n";
+
+	// The current help text to be shown if the user has toggled on its display.
+	// This is the default help text, along with any state specific help text.
+	std::string current_help_text = default_help_text;
 
 	// A vector of pointers to all bodies that are currently on screen.
 	std::vector<Body*> on_screen_bodies;

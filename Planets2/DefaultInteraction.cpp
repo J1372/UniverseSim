@@ -61,13 +61,20 @@ InteractionState* DefaultInteraction::process_input(const CameraState& camera_st
 
 std::string DefaultInteraction::get_help_text() const
 {
-	std::string help_text;
-
-	help_text += "Shift+click to go to create planet\n";
-	help_text += "[2] to go to planet creator\n";
-	help_text += "[3] to go to system generator\n";
-
-	return help_text;
+	return
+		"[V] to show partitioning representation\n"
+		"[B] to show debug text info\n"
+		"[N] to show tick # and collision stats\n"
+		"[SPACE] to toggle pause\n"
+		"[W] [A] [S] [D] to move the camera\n"
+		"[-, +] to control the camera's speed\n"
+		"[COMMA] or scroll down to zoom out\n"
+		"[PERIOD] or scroll up to zoom in\n"
+		"[ESCAPE] to go back to settings\n"
+		"Right click to anchor camera to a planet\n"
+		"Shift+click to go to create planet\n"
+		"[2] to go to planet creator\n"
+		"[3] to go to system generator\n";
 }
 
 std::span<const std::unique_ptr<Body>> DefaultInteraction::get_creating_bodies() const

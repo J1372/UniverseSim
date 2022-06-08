@@ -126,16 +126,14 @@ std::string PlanetCreation::get_name() const
 
 std::string PlanetCreation::get_help_text() const
 {
-	std::string help_text;
+	return
+		"Drag center of planet to change velocity\n"
+		"Drag edge of planet to change mass\n"
+		"Shift+click to add to universe\n"
+		"[Enter] to add to universe and return\n"
+		"[1] to go to default mode\n"
+		"[3] to go to system generator\n";
 
-	help_text += "Drag center of planet to change velocity\n";
-	help_text += "Drag edge of planet to change mass\n";
-	help_text += "Shift+click to add to universe and create another body\n";
-	help_text += "[Enter] to add to universe and return to default mode\n";
-	help_text += "[1] to go to default mode\n";
-	help_text += "[3] to go to system generator\n";
-
-	return help_text;
 }
 
 std::span<const std::unique_ptr<Body>> PlanetCreation::get_creating_bodies() const
