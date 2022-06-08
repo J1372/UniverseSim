@@ -58,6 +58,10 @@ void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPa
 
 void SimulationScene::process_input()
 {
+	// Currently, if an InteractionState acts on a key/mouse input, it doesn't consume it
+	// to prevent SimScene or camera state from acting on it.
+	// So there can be input conflicts
+
 	// Basic user interaction handling (non-camera).
 	InteractionState* next_interaction_state = interaction_state->process_input(*camera_state, universe);
 
