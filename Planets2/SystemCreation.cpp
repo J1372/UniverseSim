@@ -89,7 +89,7 @@ std::string SystemCreation::get_name() const
 std::string SystemCreation::get_help_text() const
 {
 	return
-		"Left click to add to universe and generate another system\n"
+		"Left click to add to universe\n"
 		"Right click to go to default mode\n"
 		"[Enter] to add to universe and return\n"
 		"[1] to go to default mode\n"

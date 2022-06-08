@@ -72,7 +72,8 @@ std::string DefaultInteraction::get_help_text() const
 		"[PERIOD] or scroll up to zoom in\n"
 		"[ESCAPE] to go back to settings\n"
 		"Right click to anchor camera to a planet\n"
-		"Shift+click to go to create planet\n"
+		"Ctrl click to delete planet\n"
+		"Shift click to go to planet creator\n"
 		"[2] to go to planet creator\n"
 		"[3] to go to system generator\n";
 }
