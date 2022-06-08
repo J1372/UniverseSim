@@ -21,12 +21,14 @@ The user can press the H key for help and to see a list of all toggles and comma
   - Multiple different planetary types with varying densities.
   - Generation of bodies with random masses and uniform random positions.
   - Customizable random system generator, which generates a functional planetary system with satellites of varying distances and orbital eccentricities. Paramaterized by user-specified:
+    - Ratio of central body mass to system mass
     - Min and max number of planets
-    - Min and max distance from main body
+    - Min and max distance from central body
     - Moon chance
     - Retrograde chance
  
 - Interaction during simulation.
+  - Attaching camera to follow a planet.
   - Creating a custom planet, setting mass and velocity.
   - Creating planetary systems with the mouse.
 
