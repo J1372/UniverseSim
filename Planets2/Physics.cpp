@@ -56,34 +56,36 @@ bool Physics::circle_inside_rect(Circle circle, Rectangle rect)
 bool Physics::body_intersects_rect(const Body& body, Rectangle rect)
 {
 	Vector2 pos = body.pos();
-	float dist_x = std::abs(pos.x - rect.x - rect.width / 2);
-	float dist_y = std::abs(pos.y - rect.y - rect.height / 2);
+	float radius = body.get_radius();
 
-	if (dist_x > (rect.width / 2 + body.get_radius())) { return false; }
-	if (dist_y > (rect.height / 2 + body.get_radius())) { return false; }
+	float right = rect.x + rect.width;
+	float bottom = rect.y + rect.height;
 
-	if (dist_x <= (rect.width / 2)) { return true; }
-	if (dist_y <= (rect.height / 2)) { return true; }
+	float closest_x = std::clamp(pos.x, rect.x, right);
+	float closest_y = std::clamp(pos.y, rect.y, bottom);
 
-	int corner_dist = std::pow((dist_x - rect.width / 2), 2) + std::pow((dist_y - rect.height / 2), 2);
+	float dist_x = pos.x - closest_x;
+	float dist_y = pos.y - closest_y;
 
-	return corner_dist <= std::pow(body.get_radius(), 2);
+	float dist_squared = (dist_x * dist_x) + (dist_y * dist_y);
+	return dist_squared < (radius * radius);
 }
 
 bool Physics::circle_intersects_rect(Circle circle, Rectangle rect)
 {
-	float dist_x = std::abs(circle.center.x - rect.x - rect.width / 2);
-	float dist_y = std::abs(circle.center.y - rect.y - rect.height / 2);
+	float radius = circle.radius;
 
-	if (dist_x > (rect.width / 2 + circle.radius)) { return false; }
-	if (dist_y > (rect.height / 2 + circle.radius)) { return false; }
+	float right = rect.x + rect.width;
+	float bottom = rect.y + rect.height;
 
-	if (dist_x <= (rect.width / 2)) { return true; }
-	if (dist_y <= (rect.height / 2)) { return true; }
+	float closest_x = std::clamp(circle.center.x, rect.x, right);
+	float closest_y = std::clamp(circle.center.y, rect.y, bottom);
 
-	int corner_dist = std::pow((dist_x - rect.width / 2), 2) + std::pow((dist_y - rect.height / 2), 2);
+	float dist_x = circle.center.x - closest_x;
+	float dist_y = circle.center.y - closest_y;
 
-	return corner_dist <= std::pow(circle.radius, 2);
+	float dist_squared = (dist_x * dist_x) + (dist_y * dist_y);
+	return dist_squared < (radius* radius);
 }
 
 float Physics::dist(Vector2 point1, Vector2 point2)
