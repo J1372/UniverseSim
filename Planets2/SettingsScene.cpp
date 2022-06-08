@@ -110,112 +110,145 @@ void SettingsScene::init()
 
 bool SettingsScene::handle_errors()
 {
+	// Return true if error msg was set to a non-empty string, else false.
+
+	std::string error_text = scan_nan_errors();
+	if (!error_text.empty()) {
+		error_msg.set_text(error_text);
+		error_msg.center_on(BUTTON_X + BUTTON_MIN_WIDTH);
+		return true;
+	}
+
+	error_text = scan_other_errors();
+	if (!error_text.empty()) {
+		error_msg.set_text(error_text);
+		error_msg.center_on(BUTTON_X + BUTTON_MIN_WIDTH);
+		return true;
+	}
+
+	error_text = scan_partitioning_errors();
+
+	error_msg.set_text(error_text);
+	error_msg.center_on(BUTTON_X + BUTTON_MIN_WIDTH);
+
+	return !error_text.empty();
+
+
+}
+
+std::string SettingsScene::scan_nan_errors() const
+{
 	if (!capacity_input.is_number()) {
-		error_msg.set_text("Capacity must be a number.");
+		return "Capacity must be a number.";
 	}
 	else if (!start_size_input.is_number()) {
-		error_msg.set_text("Universe start size must be a number.");
+		return "Universe start size must be a number.";
 	}
 	else if (!max_size_input.is_number()) {
-		error_msg.set_text("Universe max size must be a number.");
+		return "Universe max size must be a number.";
 	}
 	else if (!num_planets_input.is_number()) {
-		error_msg.set_text("Number planets must be a number.");
+		return "Number planets must be a number.";
 	}
 	else if (!num_systems_input.is_number()) {
-		error_msg.set_text("Number systems must be a number.");
+		return "Number systems must be a number.";
+	}
+	else if (!grav_const_input.is_number()) {
+		return "Grav constant must be a number.";
 	}
 	else if (!sys_mass_ratio_input.is_number()) {
-		error_msg.set_text("System mass ratio must be a number.");
-	}
-	else if (!capacity_input.is_number()) {
-		error_msg.set_text("Capacity must be a number.");
+		return "System mass ratio must be a number.";
 	}
 	else if (!sys_min_planets_input.is_number()) {
-		error_msg.set_text("System min planets must be a number.");
+		return "System min planets must be a number.";
 	}
 	else if (!sys_max_planets_input.is_number()) {
-		error_msg.set_text("System max planets must be a number.");
+		return "System max planets must be a number.";
 	}
 	else if (!sys_min_dist_input.is_number()) {
-		error_msg.set_text("Satellite min dist must be a number.");
+		return "Satellite min dist must be a number.";
 	}
 	else if (!sys_max_dist_input.is_number()) {
-		error_msg.set_text("System max planets must be a number.");
+		return "System max planets must be a number.";
 	}
 	else if (!sys_moon_chance_input.is_number()) {
-		error_msg.set_text("System moon chance must be a number.");
+		return "System moon chance must be a number.";
 	}
 	else if (!sys_retrograde_input.is_number()) {
-		error_msg.set_text("System retrograde chance must be a number.");
+		return "System retrograde chance must be a number.";
 	}
-	else if (capacity_input.get_int() <= 0) {
-		error_msg.set_text("Capacity must be greater than 0.");
+
+	return "";
+}
+
+std::string SettingsScene::scan_other_errors() const
+{
+	if (capacity_input.get_int() <= 0) {
+		return "Capacity must be greater than 0.";
 	}
 	else if (start_size_input.get_float() <= 0.0f) {
-		error_msg.set_text("Universe start size must be greater than 0.");
+		return "Universe start size must be greater than 0.";
 	}
 	else if (max_size_input.get_float() <= 0.0f) {
-		error_msg.set_text("Universe max size must be greater than 0.");
+		return "Universe max size must be greater than 0.";
 	}
 	else if (grav_const_input.get_float() <= 0.0f) {
-		error_msg.set_text("Grav const must be greater than 0.");
+		return "Grav constant must be greater than 0.";
 	}
 	else if (sys_mass_ratio_input.get_float() <= 0.0f) {
-		error_msg.set_text("System mass ratio must be greater than 0.");
+		return "System mass ratio must be greater than 0.";
+	}
+	else if (sys_min_planets_input.get_float() <= 0.0f) {
+		return "System min planets must be greater than 0.";
+	}
+	else if (sys_max_planets_input.get_float() <= 0.0f) {
+		return "System max planets must be greater than 0.";
+	}
+	else if (sys_min_dist_input.get_float() <= 0.0f) {
+		return "Satellite min dist must be greater than 0.";
+	}
+	else if (sys_max_dist_input.get_float() <= 0.0f) {
+		return "Satellite max dist must be greater than 0.";
 	}
 	else if (start_size_input.get_float() > max_size_input.get_float()) {
-		error_msg.set_text("Universe start size cannot be greater than its maximum size.");
+		return "Universe start size cannot be greater than its maximum size.";
 	}
 	else if (sys_min_planets_input.get_int() > sys_max_planets_input.get_int()) {
-		error_msg.set_text("System min planets cannot be greater than system max planets.");
+		return "System min planets cannot be greater than system max planets.";
 	}
 	else if (sys_min_dist_input.get_float() > sys_max_dist_input.get_float()) {
-		error_msg.set_text("Satellite min dist cannot be greater than satellite max dist.");
+		return "Satellite min dist cannot be greater than satellite max dist.";
 	}
-	else if (partitioning_dropdown.get_selected() == "Quad tree") {
+
+	return "";
+}
+
+std::string SettingsScene::scan_partitioning_errors() const
+{
+	if (partitioning_dropdown.get_selected() == "Quad tree") {
 		if (!quad_max_bodies_input.is_number()) {
-			error_msg.set_text("Max quad node bodies must be a number.");
+			return "Max quad node bodies must be a number.";
 		}
 		else if (!quadtree_max_depth_input.is_number()) {
-			error_msg.set_text("Max quadtree depth must be a number.");
+			return "Max quadtree depth must be a number.";
 		}
 		else if (quad_max_bodies_input.get_int() <= 0) {
-			error_msg.set_text("Max bodies per quad tree must be greater than 0.");
+			return "Max bodies per quad tree must be greater than 0.";
 		}
 		else if (quadtree_max_depth_input.get_int() < 0) {
-			error_msg.set_text("Quad tree max depth must be non-negative.");
-		}
-		else {
-			error_msg.set_text("");
+			return "Quad tree max depth must be non-negative.";
 		}
 	}
 	else if (partitioning_dropdown.get_selected() == "Grid") {
 		if (!grid_nodes_per_row_input.is_number()) {
-			error_msg.set_text("Nodes per row must be a number.");
+			return "Nodes per row must be a number.";
 		}
 		else if (grid_nodes_per_row_input.get_int() <= 0) {
-			error_msg.set_text("Grid nodes per row must be greater than 0.");
-		}
-		else {
-			error_msg.set_text("");
+			return "Grid nodes per row must be greater than 0.";
 		}
 	}
-	else {
-		error_msg.set_text("");
-	}
 
-	// Return true if error msg was set, else false.
-	std::string error_text = error_msg.get_text();
-	if (!error_text.empty()) {
-		error_msg.center_on(BUTTON_X + BUTTON_MIN_WIDTH);
-		return true;
-	}
-	else {
-		return false;
-	}
-
-
+	return "";
 }
 
 void SettingsScene::generate_settings()
