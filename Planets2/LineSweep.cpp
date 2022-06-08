@@ -73,34 +73,12 @@ void LineSweep::update()
 
 Body* LineSweep::find_body(Vector2 point) const
 {
+    auto it = std::find_if(entry_events.begin(), entry_events.end(), [point](const Body* body) {
+        return body->contains_point(point);
+    });
 
-    // Currently does not work sometimes.
-
-    // Body may contain point if:
-    //      point.x >= body.left
-    //      point.x <= body.right
-
-    // parameter types for lower bound and upper ound must be switched.
-    auto left_less_than_point = [](float entry_x, const Body* body) { return entry_x < body->left(); };
-    auto it = std::upper_bound(entry_events.rbegin(), entry_events.rend(), point.x, left_less_than_point);
-
-    // this is the first body whose left is > of the point.
-    // all previous its, left is <= to the point.x.
-
-    if (it != entry_events.rend()) {
-        it++;
-    }
-
-    // Check all bodies whose left <= point.x
-    while (it != entry_events.rend()) {
-        Body& body = **it;
-
-        // can check if their right >= point.x before contains_point, and only check if so.
-        if (body.contains_point(point)) {
-            return &body;
-        }
-
-        it++;
+    if (it != entry_events.end()) {
+        return *it;
     }
 
     return nullptr;
