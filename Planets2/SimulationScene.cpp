@@ -161,7 +161,7 @@ void SimulationScene::render() const
 		std::vector<Rectangle> rep = partitioning.get_representation();
 
 		for (const Rectangle& rect : rep) {
-			DrawRectangleLinesEx(rect, 50, WHITE);
+			DrawRectangleLinesEx(rect, 15, WHITE);
 		}
 	}
 
