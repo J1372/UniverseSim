@@ -107,13 +107,15 @@ bool TextBox::is_number() const
 	}
 
 	int check_from = 0;
-	if (entered_text[0] == '-') { // negative number
+	if (entered_text[0] == '-') { // negative number, start scan after hyphen.
 		check_from = 1;
 	}
 
 	bool scanned_decimal = false;
 
-	for (char letter : entered_text) {
+	for (int i = check_from; i < entered_text.size(); i++) {
+		char letter = entered_text[i];
+
 		if (letter == '.') {
 			if (scanned_decimal) {
 				return false; // number cannot have more than one decimal.
@@ -124,6 +126,7 @@ bool TextBox::is_number() const
 		} else if (!std::isdigit(letter)) {
 			return false;
 		}
+
 	}
 
 	return true;
