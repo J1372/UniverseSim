@@ -2,11 +2,12 @@
 #include "my_random.h"
 #include <numbers>
 
+static std::default_random_engine engine;
+
 float Rand::real()
 {
-    static std::default_random_engine e;
-    static std::uniform_real_distribution<> dis(0, 1); // rage 0 - 1
-    return dis(e);
+    static std::uniform_real_distribution<> real_dist(0, 1);
+    return real_dist(engine);
 }
 
 float Rand::real(float min, float max)
@@ -32,4 +33,9 @@ int Rand::num(int min, int max)
 bool Rand::chance(float possibility)
 {
     return Rand::real() < possibility;
+}
+
+void Rand::set_seed(int number)
+{
+    engine.seed(number);
 }

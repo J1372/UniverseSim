@@ -1,11 +1,17 @@
 #include <raylib.h>
 #include <iostream>
+#include <chrono>
 
 #include "Scene.h"
 #include "SettingsScene.h"
+#include "my_random.h"
 
 int main() {
+
 	std::ios_base::sync_with_stdio(false);
+
+	// Initialize random number generator seed using the current time.
+	Rand::set_seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
 
 	float start_width = 1700.0;
