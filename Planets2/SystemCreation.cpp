@@ -31,6 +31,14 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 
 		return this;
 	}
+	else if (IsKeyPressed(KEY_ENTER)) {
+		// Add the current planetary system to the universe and goto default interaction.
+		universe.add_bodies(system);
+		system.clear();
+
+		DefaultInteraction& ret_state = InteractionState::default_interaction;
+		return &ret_state;
+	}
 	else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) or IsKeyPressed(KEY_ONE)) { // if anchored and right click, camera will unanchor.
 		// Switch to default interaction.
 		system.clear();
