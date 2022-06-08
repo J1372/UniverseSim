@@ -27,7 +27,8 @@ class SettingsScene : public GuiScene
 
 	// Start and exit buttons
 	static constexpr int BUTTON_X = 860;
-	static constexpr int BUTTON_Y = 900;
+	static constexpr int BUTTON_Y = 920;
+	static constexpr int BUTTON_MIN_WIDTH = 100;
 
 	Button& start_button = gui.add<Button>("Start", BUTTON_X, BUTTON_Y);
 	Button& exit_button = gui.add<Button>("Exit", BUTTON_X + 100, BUTTON_Y);
@@ -121,6 +122,7 @@ class SettingsScene : public GuiScene
 	TextBox& grid_nodes_per_row_input = gui.add<TextBox>("10", PARAM_X, PARTITIONING_Y, TEXTBOX_WIDTH);
 	Label& grid_label = gui.add<Label>("Nodes per row", PARAM_X, PARTITIONING_Y - 50, 12);
 
+	Label& error_msg = gui.add<Label>("", BUTTON_X, BUTTON_Y - 30, 20);
 
 
 	// Generates settings from the gui elements.
@@ -132,7 +134,9 @@ class SettingsScene : public GuiScene
 	// Creates and returns the selected partitioning method.
 	std::unique_ptr<SpatialPartitioning> gen_partitioning();
 
-
+	// Handles any user input errors by setting the error message.
+	// Returns true if there was an error, else false.
+	bool handle_errors();
 
 public:
 

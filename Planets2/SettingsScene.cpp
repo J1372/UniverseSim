@@ -13,6 +13,12 @@
 void SettingsScene::init()
 {
 	start_button.set_on_action([this]() {
+		// Do not start if there are errors with the currently entered settings.
+		if (handle_errors())
+		{
+			return;
+		}
+
 		generate_settings();
 
 		SimulationScene& sim = Scene::simulation_scene;
@@ -25,8 +31,8 @@ void SettingsScene::init()
 
 	start_button.init();
 	exit_button.init();
-	start_button.set_min_width(100);
-	exit_button.set_min_width(100);
+	start_button.set_min_width(BUTTON_MIN_WIDTH);
+	exit_button.set_min_width(BUTTON_MIN_WIDTH);
 
 	num_planets_input.set_prompt_text("Number of random planets to generate");
 	num_systems_input.set_prompt_text("Number of random systems to generate");
@@ -96,7 +102,65 @@ void SettingsScene::init()
 
 	background_color = SKYBLUE;
 
+	error_msg.set_color(RED);
+
 	read_settings_to_gui();
+
+}
+
+bool SettingsScene::handle_errors()
+{
+	if (capacity_input.get_int() <= 0) {
+		error_msg.set_text("Capacity must be greater than 0.");
+	}
+	else if (start_size_input.get_float() <= 0.0f) {
+		error_msg.set_text("Universe start size must be greater than 0.");
+	}
+	else if (max_size_input.get_float() <= 0.0f) {
+		error_msg.set_text("Universe max size must be greater than 0.");
+	}
+	else if (grav_const_input.get_float() <= 0.0f) {
+		error_msg.set_text("Grav const must be greater than 0.");
+	}
+	else if (sys_mass_ratio_input.get_float() <= 0.0f) {
+		error_msg.set_text("System mass ratio must be greater than 0.");
+	}
+	else if (start_size_input.get_float() > max_size_input.get_float()) {
+		error_msg.set_text("Universe start size cannot be greater than its maximum size.");
+	}
+	else if (sys_min_planets_input.get_int() > sys_max_planets_input.get_int()) {
+		error_msg.set_text("System min planets cannot be greater than system max planets.");
+	}
+	else if (sys_min_dist_input.get_float() > sys_max_dist_input.get_float()) {
+		error_msg.set_text("Satellite min dist cannot be greater than satellite max dist.");
+	}
+	else if (partitioning_dropdown.get_selected() == "Quad tree") {
+		if (quad_max_bodies_input.get_int() <= 0) {
+			error_msg.set_text("Max bodies per quad tree must be greater than 0.");
+		}
+		else if (quadtree_max_depth_input.get_int() < 0) {
+			error_msg.set_text("Quad tree max depth must be non-negative.");
+		}
+	}
+	else if (partitioning_dropdown.get_selected() == "Grid") {
+		if (grid_nodes_per_row_input.get_int() <= 0) {
+			error_msg.set_text("Grid nodes per row must be greater than 0.");
+		}
+	}
+	else {
+		error_msg.set_text("");
+	}
+
+	// Return true if error msg was set, else false.
+	std::string error_text = error_msg.get_text();
+	if (!error_text.empty()) {
+		error_msg.center_on(BUTTON_X + BUTTON_MIN_WIDTH);
+		return true;
+	}
+	else {
+		return false;
+	}
+
 
 }
 
