@@ -107,6 +107,26 @@ int QuadTree::get_collisions_child(Body& checking, std::vector<Collision>& colli
 
 }
 
+QuadTree* QuadTree::add_internal(Body& body)
+{
+	cur_size++;
+
+	if (is_leaf()) {
+		quad_bodies.push_back(&body);
+		return this;
+	}
+	else {
+		if (is_root() and !contains_fully(body)) {
+			// Body is slightly out of bounds of the entire quad tree.
+			quad_bodies.push_back(&body);
+			return this;
+		}
+		else {
+			return selective_add(body);
+		}
+	}
+}
+
 int QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const
 {
 	int checks = 0;
@@ -136,7 +156,7 @@ bool QuadTree::in_more_than_one_child(const Body& body) const
 	return contained_in.size() > 1;
 }
 
-void QuadTree::selective_add(Body& new_body)
+QuadTree* QuadTree::selective_add(Body& new_body)
 {
 	// This = parent node.
 	// 
@@ -144,34 +164,20 @@ void QuadTree::selective_add(Body& new_body)
 
 	if (in_more_than_one_child(new_body)) {
 		quad_bodies.push_back(&new_body);
+		return this;
 	}
 	else { // is only in one child node.
-		add_to_child(new_body); // adds to the child that contains the body fully.
+		return add_to_child(new_body); // adds to the child that contains the body fully.
 	}
 }
 
 void QuadTree::add_body(Body& new_body)
 {
-	cur_size++;
+	QuadTree* added_to = add_internal(new_body);
 
-	if (is_leaf()) {
-		if (is_full() and !reached_depth_limit()) {
-			split();
-			selective_add(new_body);
-		}
-		else {
-			quad_bodies.push_back(&new_body);
-		}
-	}
-	else {
-		if (is_root() and !contains_fully(new_body)) {
-			// Body is slightly out of bounds of the entire quad tree.
-			quad_bodies.push_back(&new_body);
-		}
-		else {
-			selective_add(new_body);
-		}
-	}
+	// should never be nullptr.
+	added_to->split_check();
+	
 }
 
 void QuadTree::rem_body(const Body& body)
@@ -205,6 +211,15 @@ bool QuadTree::has_room() const
 bool QuadTree::is_full() const
 {
 	return cur_size >= max_bodies_per_quad;
+}
+bool QuadTree::should_concatenate() const
+{
+	return cur_size <= max_bodies_per_quad;
+}
+
+bool QuadTree::should_split() const
+{
+	return cur_size > max_bodies_per_quad;
 }
 
 bool QuadTree::reached_depth_limit() const
@@ -243,6 +258,12 @@ const std::array<QuadTree*, 4> QuadTree::get_quads() const
 
 void QuadTree::update()
 {
+	update_internal();
+	split_check();
+}
+
+void QuadTree::update_internal()
+{
 	// After body position update tick, update the quad with new positions.
 	if (is_leaf()) {
 		for (auto it = quad_bodies.begin(); it != quad_bodies.end();) {
@@ -263,10 +284,10 @@ void QuadTree::update()
 	else {
 		int to_check = quad_bodies.size();
 
-		UL->update();
-		UR->update();
-		LL->update();
-		LR->update();
+		UL->update_internal();
+		UR->update_internal();
+		LL->update_internal();
+		LR->update_internal();
 
 		// only check bodies which child nodes have not just reinserted upwards to this node.
 		auto it = quad_bodies.begin();
@@ -282,6 +303,7 @@ void QuadTree::update()
 				// If the body is fully contained in a child quad, move it into that quad.
 				if (contained_in) {
 					// all child nodes have already been updated, safe to call add_body (possible split) on them.
+					// may want to add_internal though, since we will do a split check anyway.
 					contained_in->add_body(body); 
 					it = quad_bodies.erase(it);
 				}
@@ -310,7 +332,7 @@ void QuadTree::update()
 		}
 
 		// We may have reinserted upwards from our node or child nodes.
-		if (has_room()) {
+		if (should_concatenate()) {
 			concatenate();
 		}
 	}
@@ -348,25 +370,16 @@ void QuadTree::move_to_child(std::vector<Body*>::iterator& it)
 	it = quad_bodies.erase(it);
 }
 
-void QuadTree::add_to_child(Body& new_body)
+QuadTree* QuadTree::add_to_child(Body& new_body)
 {
 	// Get the child quad that fully contains the body, if any do.
 	QuadTree* contained_in = get_quad<&QuadTree::contains_fully>(new_body);
 	// if any child quad fully contains the body, add it to the quad.
 	if (contained_in) {
-		contained_in->add_body(new_body);
+		return contained_in->add_internal(new_body);
 	}
 	else {
-		Vector2 pos = new_body.pos();
-		std::cout << "add_to_child added nothing to nowhere !!!" << '\n';
-		std::cout << "\tBody ID: " << new_body.get_id() << '\n';
-		std::cout << "\tBody Position: (" << pos.x << ", " << pos.y << ")\n";
-		std::cout << "\tQuad Dimensions:\n";
-		std::cout << "\t\tx:\t" << dimensions.x << '\n';
-		std::cout << "\t\ty:\t" << dimensions.y << '\n';
-		std::cout << "\t\twidth:\t" << dimensions.width << '\n';
-		std::cout << "\t\theight:\t" << dimensions.height << '\n';
-
+		return nullptr;
 	}
 }
 
@@ -454,7 +467,6 @@ void QuadTree::reinsert(Body& body)
 	// We want to keep moving up the chain if the body is not fully contained in this node.
 	// We want to add the body to the current node if it is fully contained in it.
 	//  If the body is fully contained in one of our children, add it to there instead.
-
 	if (contains_fully(body)) { // add to self. or add to child if fully fits in a child node.
 		// No need to increment cur_size, since the body is already counted (was in child node).
 		selective_add(body);
@@ -482,7 +494,7 @@ void QuadTree::concat_check()
 	// or do this notify, then move concat chain checking afterwards.
 
 	if (is_root()) {
-		if (!is_leaf() and has_room()) {
+		if (!is_leaf() and should_concatenate()) {
 			concatenate();
 		}
 		return;
@@ -493,7 +505,7 @@ void QuadTree::concat_check()
 	if (is_leaf()) { // leaves cannot concatenate, but check parent.
 		parent->concat_check();
 	}
-	else if (has_room()) { // parent, and not at max capacity.
+	else if (should_concatenate()) { // parent, and not at max capacity.
 		// if we are a parent and we concatenate, we still need to tell our parent to check for concatenation.
 		concatenate();
 		parent->concat_check();
@@ -515,6 +527,26 @@ void QuadTree::get_representation_internal(std::vector<Rectangle>& rep) const {
 		LR->get_representation_internal(rep);
 	}
 
+}
+
+void QuadTree::split_check()
+{
+	if (is_leaf()) {
+		if (should_split() and !reached_depth_limit()) {
+			split();
+
+			UL->split_check();
+			UR->split_check();
+			LL->split_check();
+			LR->split_check();
+		}
+	}
+	else {
+		UL->split_check();
+		UR->split_check();
+		LL->split_check();
+		LR->split_check();
+	}
 }
 
 

@@ -31,6 +31,7 @@ public:
 	const std::array<QuadTree*, 4> get_quads() const;
 
 	// Checks all bodies and reinserts bodies into the most fitting node.
+	// Handles node splitting due to movement.
 	void update();
 
 	// Returns a representation of the boundaries of the quad tree and all of its child nodes.
@@ -72,7 +73,6 @@ private:
 	// The number of bodies in this quad and all its children (max depth).
 	int cur_size = 0;
 
-
 	// References to the parent and owning pointers to the node's 4 potential children.
 
 	QuadTree* parent = nullptr;
@@ -80,6 +80,13 @@ private:
 	std::unique_ptr<QuadTree> UR = nullptr; // Upper right quad
 	std::unique_ptr<QuadTree> LL = nullptr; // Lower left quad
 	std::unique_ptr<QuadTree> LR = nullptr; // Lower right quad
+
+	// Adds the body to the appropriate quad, updating node sizes along the way.
+	// Returns a pointer to the node the body was added to.
+	QuadTree* add_internal(Body& body);
+	
+	// Checks all bodies and reinserts bodies into the most fitting node.
+	void update_internal();
 
 	// Will assume body is in the quad that this method was called on.
 	void rem_body_internal(const Body& body);
@@ -106,6 +113,12 @@ private:
 	// Returns true if quad being added to would cause a split.
 	bool is_full() const;
 
+	// Returns true if the quad is not over capacity.
+	bool should_concatenate() const;
+
+	// Returns true if the quad is over capacity.
+	bool should_split() const;
+
 	// Returns true if quad's depth is the maximum depth limit, else false.
 	bool reached_depth_limit() const;
 
@@ -128,10 +141,12 @@ private:
 	bool in_more_than_one_child(const Body& body) const;
 
 	// Chooses whether to add body to current quad or a child quad.
-	void selective_add(Body& new_body);
+	// Returns a pointer to the actual node the body was added to.
+	QuadTree* selective_add(Body& new_body);
 
-	// If a child node can fully contain the body, calls add_body(body) on that node.
-	void add_to_child(Body& body);
+	// Finds a child node that can contain the body, and adds the body somewhere in that node.
+	// Returns a pointer to the actual node the body was added to.
+	QuadTree* add_to_child(Body& body);
 
 
 	template<auto bool_func, class... ArgTypes>
@@ -211,5 +226,8 @@ private:
 
 	// Internal method used by get_representation.
 	void get_representation_internal(std::vector<Rectangle>& rep) const;
+
+	// Checks for quads that need to be split, and splits them.
+	void split_check();
 
 };
