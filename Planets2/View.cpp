@@ -29,7 +29,7 @@ int main() {
 	while (!WindowShouldClose()) {
 
 		if (IsWindowResized()) {
-			//active_scene->resize(GetScreenWidth(), GetScreenHeight());
+			active_scene->notify_resize(GetScreenWidth(), GetScreenHeight());
 		}
 
 		active_scene = active_scene->update();

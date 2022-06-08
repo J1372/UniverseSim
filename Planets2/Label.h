@@ -10,9 +10,7 @@ class Label : public UIElement
 	std::string text;
 
 	// Starting position of the text.
-
-	int x;
-	int y;
+	Vector2 pos;
 
 	// Font size of text
 	int font_size;
@@ -22,7 +20,10 @@ class Label : public UIElement
 
 public:
 
-	Label(const std::string& text, int x, int y, int font_size);
+	Label(const std::string& text, float x, float y, int font_size);
+
+	// Sets the label's position.
+	void set_pos(Vector2 pos);
 
 	// Sets the label's text.
 	void set_text(const std::string& to_set);

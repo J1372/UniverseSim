@@ -50,5 +50,8 @@ public:
 	// and anchors camera to the given body.
 	void enter(const AdvCamera& prev_camera, Body& anchor_to);
 
+	// Notifies the camera that the screen has been resized
+	void notify_resize(int width, int height);
+
 };
 

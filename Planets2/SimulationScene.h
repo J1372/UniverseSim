@@ -5,6 +5,7 @@
 #include "AdvCamera.h"
 #include <span>
 #include <chrono>
+#include "Label.h"
 
 class CameraState;
 class Body;
@@ -59,6 +60,13 @@ class SimulationScene : public Scene
 	// A vector of pointers to all bodies that are currently on screen.
 	std::vector<Body*> on_screen_bodies;
 
+	// Labels to draw on the screen.
+	// These rely on screen size and are repositioned when window resized and on scene enter.
+	// If add other interactive gui elements to sim, should use a GuiComponentList to handle its update and render.
+	Label help_prompt { "Press [H] to open the help menu", 0.0f, 0.0f, 20 };
+	Label interaction_title { "_", 0.0f,0.0f, 20 };
+	Label help_message { current_help_text, 0.0f,0.0f, 20 };
+
 	// Handles all user input.
 	void process_input();
 
@@ -89,6 +97,9 @@ class SimulationScene : public Scene
 	// Handles rendering of the universe.
 	void render() const;
 
+	// Moves text elements that adjust to screen size to new positions.
+	void reposition_elements(int screen_width, int screen_height);
+
 	// Scene to return at the end of update.
 	Scene* return_scene = this;
 
@@ -102,5 +113,8 @@ public:
 
 	// Handles all user input, updates and renders the universe, and then renders any additional scene items.
 	Scene* update();
+	
+	// Adjusts any elements that rely on screensize.
+	void notify_resize(int width, int height) override;
 
 };

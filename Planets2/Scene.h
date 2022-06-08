@@ -23,7 +23,7 @@ public:
 	virtual Scene* update() = 0;
 
 	// Notifies the scene that the window has been resized.
-	virtual void resize(int width, int height)
+	virtual void notify_resize(int width, int height)
 	{}
 
 	virtual ~Scene() = default;

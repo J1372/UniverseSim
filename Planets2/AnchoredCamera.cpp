@@ -138,4 +138,12 @@ void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to)
     camera.set_target(anchored_to->pos());
     camera.set_zoom(ray_cam.zoom);
 
+    // update offset bounds in case screen was resized while another camera was active.
+    camera.set_offset_bounds(0, 0, GetScreenWidth(), GetScreenHeight());
+
+}
+
+void AnchoredCamera::notify_resize(int width, int height)
+{
+    camera.set_offset_bounds(0, 0, width, height);
 }

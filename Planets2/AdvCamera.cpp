@@ -1,5 +1,6 @@
 #include "AdvCamera.h"
 #include <utility>
+#include <algorithm>
 
 
 void AdvCamera::recalculate_speed_target()
@@ -141,8 +142,8 @@ void AdvCamera::move_target(Vector2 vec)
 
 void AdvCamera::move_offset(Vector2 vec)
 {
-	camera.offset.x += vec.x;
-	camera.offset.y += vec.y;
+	Vector2 new_pos{ camera.offset.x + vec.x , camera.offset.y + vec.y };
+	set_offset(new_pos);
 }
 
 void AdvCamera::set_target(Vector2 vec)
@@ -152,7 +153,8 @@ void AdvCamera::set_target(Vector2 vec)
 
 void AdvCamera::set_offset(Vector2 vec)
 {
-	camera.offset = vec;
+	camera.offset.x = std::clamp(vec.x, offset_bounds.x, offset_bounds.width);
+	camera.offset.y = std::clamp(vec.y, offset_bounds.y, offset_bounds.height);
 }
 
 void AdvCamera::set_offset_bounds(float min_x, float min_y, float width, float height)
@@ -161,4 +163,7 @@ void AdvCamera::set_offset_bounds(float min_x, float min_y, float width, float h
 	offset_bounds.y = min_y;
 	offset_bounds.width = width;
 	offset_bounds.height = height;
+
+	// If the current offset is now out of bounds, will move it back.
+	set_offset(camera.offset);
 }

@@ -17,6 +17,7 @@ void FreeCamera::center_camera()
 void FreeCamera::init(const AdvCamera & starting_config)
 {
 	camera = starting_config;
+	camera.set_offset_bounds(0, 0, GetScreenWidth(), GetScreenHeight());
 	center_camera();
 }
 
@@ -91,4 +92,10 @@ void FreeCamera::enter(const AdvCamera& prev_camera)
 	camera.set_target(my_target);
 	camera.set_zoom(prev_camera.get_zoom());
 
+}
+
+void FreeCamera::notify_resize(int width, int height)
+{
+	camera.set_offset_bounds(0, 0, GetScreenWidth(), GetScreenHeight());
+	center_camera();
 }

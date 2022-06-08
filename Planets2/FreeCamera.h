@@ -24,4 +24,8 @@ public:
 
 	// Enters a free camera state using the previous camera information to initialize.
 	void enter(const AdvCamera& prev_camera);
+
+	// Notifies the camera that the screen has been resized
+	void notify_resize(int width, int height);
+
 };

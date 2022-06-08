@@ -1,7 +1,12 @@
 #include "Label.h"
 
-Label::Label(const std::string& text, int x, int y, int font_size) : text(text), x(x), y(y), font_size(font_size)
+Label::Label(const std::string& text, float x, float y, int font_size) : text(text), pos{ x, y }, font_size(font_size)
 {}
+
+void Label::set_pos(Vector2 to_set)
+{
+	pos = to_set;
+}
 
 void Label::set_text(const std::string& to_set)
 {
@@ -22,10 +27,10 @@ void Label::center_on(int center_x)
 {
 	int text_length = MeasureText(text.c_str(), font_size);
 
-	x = center_x - text_length / 2;
+	pos.x = center_x - text_length / 2;
 }
 
 void Label::render() const
 {
-	DrawText(text.c_str(), x, y, font_size, color);
+	DrawText(text.c_str(), pos.x, pos.y, font_size, color);
 }

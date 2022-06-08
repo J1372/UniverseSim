@@ -17,6 +17,9 @@
 void SimulationScene::init()
 {
 	CameraState::init_cameras(starting_config);
+	help_prompt.set_color(WHITE);
+	help_message.set_color(RAYWHITE);
+	interaction_title.set_color(RAYWHITE);
 }
 
 void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
@@ -46,6 +49,10 @@ void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPa
 		prompt_time = std::chrono::system_clock::now();
 	}
 
+	help_message.set_text(current_help_text);
+	interaction_title.set_text(interaction_state->get_name());
+	reposition_elements(GetScreenWidth(), GetScreenHeight());
+
 	return_scene = this;
 }
 
@@ -56,10 +63,14 @@ void SimulationScene::process_input()
 
 	// State change.
 	if (next_interaction_state != interaction_state) {
-		// Update the help text to show interaction state specific help.
-		current_help_text = default_help_text + next_interaction_state->get_help_text();
-
 		interaction_state = next_interaction_state;
+
+		// Update ui elements to show interaction state specific text.
+		current_help_text = default_help_text + interaction_state->get_help_text();
+		help_message.set_text(current_help_text);
+
+
+		interaction_title.set_text(interaction_state->get_name());
 	}
 
 	// Toggles
@@ -286,15 +297,11 @@ Scene* SimulationScene::update()
 		}
 
 		if (should_render_help_text) {
-			DrawText(current_help_text.c_str(), 1400, 100, 20, RAYWHITE);
+			help_message.render();
 		}
 
 		if (should_render_help_prompt) {
-			constexpr auto prompt = "Press [H] to open the help menu";
-			constexpr int font_size = 20;
-			int start_x = GetScreenWidth() / 2 - MeasureText(prompt, font_size) / 2; // centered x
-			int start_y = GetScreenHeight() / 2; // centered y
-			DrawText(prompt, start_x, start_y, font_size, WHITE);
+			help_prompt.render();
 
 			// Get time elapsed since prompt was first displayed.
 			auto cur_time = std::chrono::system_clock::now();
@@ -307,12 +314,31 @@ Scene* SimulationScene::update()
 
 		}
 
-		std::string interaction_title = interaction_state->get_name();
-		DrawText(interaction_title.c_str(), 50, 900, 20, RAYWHITE);
+		interaction_title.render();
 
 	EndDrawing();
 
 	clear_debug_text();
 
 	return return_scene;
+}
+
+void SimulationScene::notify_resize(int width, int height)
+{
+	reposition_elements(width, height);
+	camera_state->notify_resize(width, height);
+}
+
+void SimulationScene::reposition_elements(int screen_width, int screen_height)
+{
+	// Center prompt on center of the screen
+	Vector2 prompt_pos = { 0.0f, GetScreenHeight() / 2 };
+	help_prompt.set_pos(prompt_pos);
+	help_prompt.center_on(GetScreenWidth() / 2);
+
+	Vector2 help_pos = { 0.73 * GetScreenWidth(), 100 };
+	help_message.set_pos(help_pos);
+
+	Vector2 title_pos = { 50, 0.89 * GetScreenHeight() };
+	interaction_title.set_pos(title_pos);
 }
