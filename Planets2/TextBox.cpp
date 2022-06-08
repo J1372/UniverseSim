@@ -5,7 +5,8 @@ int TextBox::get_start_x_text() const
 	return rect.x + rect.width * (width_padding / 2);
 }
 
-TextBox::TextBox(float x, float y, float width) : rect{ x, y, width, 50 }{}
+TextBox::TextBox(float x, float y, float width) : rect{ x, y, width, 50 }
+{}
 
 TextBox::TextBox(const std::string& start_text, float x, float y, float width) : entered_text(start_text), rect{ x, y, width, 50 }
 {}
@@ -89,6 +90,21 @@ void TextBox::set_text(std::string&& to_set)
 const std::string& TextBox::get_text() const
 {
 	return entered_text;
+}
+
+int TextBox::get_int() const
+{
+	return std::stoi(entered_text);
+}
+
+float TextBox::get_float() const
+{
+	return std::stof(entered_text);
+}
+
+double TextBox::get_double() const
+{
+	return std::stod(entered_text);
 }
 
 void TextBox::set_prompt_text(const std::string& text)
