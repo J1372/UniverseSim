@@ -1,4 +1,5 @@
 #include "TextBox.h"
+#include <algorithm>
 
 int TextBox::get_start_x_text() const
 {
@@ -18,7 +19,7 @@ void TextBox::click() {
 	double mouse_pct = mouse_x_in_box / MeasureText(entered_text.c_str(), font_size);
 
 	int len_text = entered_text.size();
-	cursor_pos = std::min(len_text, static_cast<int>(mouse_pct * len_text));
+	cursor_pos = std::clamp(static_cast<int>(mouse_pct * len_text), 0, len_text);
 
 }
 
