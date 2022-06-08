@@ -166,24 +166,24 @@ bool SettingsScene::handle_errors()
 
 void SettingsScene::generate_settings()
 {
-	settings.universe_capacity = std::stoi(capacity_input.get_text());
-	settings.universe_size_start = std::stof(start_size_input.get_text());
-	settings.universe_size_max = std::stof(max_size_input.get_text());
-	settings.num_rand_planets = std::stoi(num_planets_input.get_text());
-	settings.num_rand_systems = std::stoi(num_systems_input.get_text());
+	settings.universe_capacity = capacity_input.get_int();
+	settings.universe_size_start = start_size_input.get_float();
+	settings.universe_size_max = max_size_input.get_float();
+	settings.num_rand_planets = num_planets_input.get_int();
+	settings.num_rand_systems = num_systems_input.get_int();
 
-	settings.grav_const = std::stod(grav_const_input.get_text());
+	settings.grav_const = grav_const_input.get_double();
 	settings.use_gravity_approximation = approximate_gravity_checkbox.is_checked();
 	settings.grav_approximation_value = approximation_slider.get_val();
 
-	settings.system_mass_ratio = std::stof(sys_mass_ratio_input.get_text());
+	settings.system_mass_ratio = sys_mass_ratio_input.get_float();
 
-	settings.system_min_planets = std::stoi(sys_min_planets_input.get_text());
-	settings.system_max_planets = std::stoi(sys_max_planets_input.get_text());
-	settings.satellite_min_dist = std::stof(sys_min_dist_input.get_text());
-	settings.satellite_max_dist = std::stof(sys_max_dist_input.get_text());
-	settings.moon_chance = std::stod(sys_moon_chance_input.get_text());
-	settings.retrograde_chance = std::stod(sys_retrograde_input.get_text());
+	settings.system_min_planets = sys_min_planets_input.get_int();
+	settings.system_max_planets = sys_max_planets_input.get_int();
+	settings.satellite_min_dist = sys_min_dist_input.get_float();
+	settings.satellite_max_dist = sys_max_dist_input.get_float();
+	settings.moon_chance = sys_moon_chance_input.get_double();
+	settings.retrograde_chance = sys_retrograde_input.get_double();
 }
 
 void SettingsScene::read_settings_to_gui()
