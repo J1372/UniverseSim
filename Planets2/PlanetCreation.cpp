@@ -50,7 +50,8 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 		else {
 			Vector2 creating_pos = creating->pos();
 			// select modifying mode based on where user clicked.
-			if (Physics::point_in_circle(universe_point, creating_pos.x, creating_pos.y, creating->get_radius() * .7)) {
+			float inner_radius = .6 * creating->get_radius();
+			if (Physics::point_in_circle(universe_point, creating_pos.x, creating_pos.y, inner_radius)) {
 				// Clicked on the inside section of the body.
 				modify_mode = Modifying::VELOCITY;
 
