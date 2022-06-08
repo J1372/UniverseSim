@@ -83,14 +83,11 @@ void Dropdown::click()
 	if (active) {
 		int index = translate_click();
 		set_selected(index);
-		deactivate();
 	}
 }
 
 void Dropdown::render() const
 {
-
-
 	Rectangle render_rect = rect;
 
 	// set render rectangle height to accomodate all the choices, if active.
