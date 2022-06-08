@@ -64,6 +64,9 @@ public:
 	// Returns the currently entered text.
 	const std::string& get_text() const;
 
+	//Returns true if the text in this textbox is just a number, else false.
+	bool is_number() const;
+
 	// Returns the currently entered text as an integer.
 	int get_int() const;
 

@@ -110,7 +110,46 @@ void SettingsScene::init()
 
 bool SettingsScene::handle_errors()
 {
-	if (capacity_input.get_int() <= 0) {
+	if (!capacity_input.is_number()) {
+		error_msg.set_text("Capacity must be a number.");
+	}
+	else if (!start_size_input.is_number()) {
+		error_msg.set_text("Universe start size must be a number.");
+	}
+	else if (!max_size_input.is_number()) {
+		error_msg.set_text("Universe max size must be a number.");
+	}
+	else if (!num_planets_input.is_number()) {
+		error_msg.set_text("Number planets must be a number.");
+	}
+	else if (!num_systems_input.is_number()) {
+		error_msg.set_text("Number systems must be a number.");
+	}
+	else if (!sys_mass_ratio_input.is_number()) {
+		error_msg.set_text("System mass ratio must be a number.");
+	}
+	else if (!capacity_input.is_number()) {
+		error_msg.set_text("Capacity must be a number.");
+	}
+	else if (!sys_min_planets_input.is_number()) {
+		error_msg.set_text("System min planets must be a number.");
+	}
+	else if (!sys_max_planets_input.is_number()) {
+		error_msg.set_text("System max planets must be a number.");
+	}
+	else if (!sys_min_dist_input.is_number()) {
+		error_msg.set_text("Satellite min dist must be a number.");
+	}
+	else if (!sys_max_dist_input.is_number()) {
+		error_msg.set_text("System max planets must be a number.");
+	}
+	else if (!sys_moon_chance_input.is_number()) {
+		error_msg.set_text("System moon chance must be a number.");
+	}
+	else if (!sys_retrograde_input.is_number()) {
+		error_msg.set_text("System retrograde chance must be a number.");
+	}
+	else if (capacity_input.get_int() <= 0) {
 		error_msg.set_text("Capacity must be greater than 0.");
 	}
 	else if (start_size_input.get_float() <= 0.0f) {
@@ -135,16 +174,31 @@ bool SettingsScene::handle_errors()
 		error_msg.set_text("Satellite min dist cannot be greater than satellite max dist.");
 	}
 	else if (partitioning_dropdown.get_selected() == "Quad tree") {
-		if (quad_max_bodies_input.get_int() <= 0) {
+		if (!quad_max_bodies_input.is_number()) {
+			error_msg.set_text("Max quad node bodies must be a number.");
+		}
+		else if (!quadtree_max_depth_input.is_number()) {
+			error_msg.set_text("Max quadtree depth must be a number.");
+		}
+		else if (quad_max_bodies_input.get_int() <= 0) {
 			error_msg.set_text("Max bodies per quad tree must be greater than 0.");
 		}
 		else if (quadtree_max_depth_input.get_int() < 0) {
 			error_msg.set_text("Quad tree max depth must be non-negative.");
 		}
+		else {
+			error_msg.set_text("");
+		}
 	}
 	else if (partitioning_dropdown.get_selected() == "Grid") {
-		if (grid_nodes_per_row_input.get_int() <= 0) {
+		if (!grid_nodes_per_row_input.is_number()) {
+			error_msg.set_text("Nodes per row must be a number.");
+		}
+		else if (grid_nodes_per_row_input.get_int() <= 0) {
 			error_msg.set_text("Grid nodes per row must be greater than 0.");
+		}
+		else {
+			error_msg.set_text("");
 		}
 	}
 	else {

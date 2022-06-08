@@ -99,6 +99,35 @@ const std::string& TextBox::get_text() const
 	return entered_text;
 }
 
+bool TextBox::is_number() const
+{
+	if (entered_text.empty()) {
+		return false;
+	}
+
+	int check_from = 0;
+	if (entered_text[0] == '-') { // negative number
+		check_from = 1;
+	}
+
+	bool scanned_decimal = false;
+
+	for (char letter : entered_text) {
+		if (letter == '.') {
+			if (scanned_decimal) {
+				return false; // number cannot have more than one decimal.
+			}
+			else {
+				scanned_decimal = true;
+			}
+		} else if (!std::isdigit(letter)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 int TextBox::get_int() const
 {
 	return std::stoi(entered_text);
