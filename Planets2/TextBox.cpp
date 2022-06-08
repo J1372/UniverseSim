@@ -71,8 +71,15 @@ bool TextBox::send_keypress(int key_code)
 		return false;
 	}
 
-	entered_text.insert(cursor_pos, 1, static_cast<char>(key_code));
-	cursor_pos++;
+	char letter = static_cast<char>(key_code);
+	int combined_length = MeasureText(entered_text.c_str(), font_size) 
+		+ MeasureText(std::to_string(letter).c_str(), font_size);
+
+	// Don't allow entered text to go outside the textbox.
+	if (combined_length + (get_start_x_text() - rect.x) < rect.width - edge_width) {
+		entered_text.insert(cursor_pos, 1, letter);
+		cursor_pos++;
+	}
 
 	return true;
 }
