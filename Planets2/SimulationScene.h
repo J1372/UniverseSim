@@ -77,19 +77,25 @@ class SimulationScene : public Scene
 	void clear_debug_text();
 
 	// Draws debug text alongside every body.
-	void draw_debug_text(int font_size, int spacing) const;
+	void render_debug_text(int font_size, int spacing) const;
 
 	// Returns true if a body is at least partially on screen, else false.
 	bool on_screen(const Body& body) const;
-
-	// Renders all on screen bodies.
-	void render_bodies() const;
 
 	// Renders all bodies that the user is creating.
 	void render_creating_bodies(std::span<const std::unique_ptr<Body>> bodies) const;
 
 	// Handles rendering of the universe.
-	void render() const;
+	void render_universe() const;
+
+	// Handles rendering of universe's collision detection partitioning method.
+	void render_partitioning() const;
+
+	// Handles rendering of debug information.
+	void render_debug() const;
+
+	// Handles rendering of any information that has a simple screen position, as opposed to a place in the universe.
+	void render_screen_info();
 
 	// Moves text elements that adjust to screen size to new positions.
 	void reposition_elements(int screen_width, int screen_height);

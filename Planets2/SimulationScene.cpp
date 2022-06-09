@@ -87,7 +87,6 @@ void SimulationScene::process_input()
 			should_render_partitioning = !should_render_partitioning;
 		}
 	}
-
 	
 	if (IsKeyPressed(KEY_N)) {
 		should_render_tick_info = !should_render_tick_info;
@@ -113,7 +112,6 @@ void SimulationScene::process_input()
 
 		return_scene = &settings;
 	}
-
 	
 }
 
@@ -168,7 +166,7 @@ void SimulationScene::clear_debug_text()
 }
 
 
-void SimulationScene::draw_debug_text(int font_size, int spacing) const {
+void SimulationScene::render_debug_text(int font_size, int spacing) const {
 	for (const Body* body_ptr : on_screen_bodies) {
 		const Body& body = *body_ptr;
 		Vector2 pos = body.pos();
@@ -184,45 +182,78 @@ void SimulationScene::draw_debug_text(int font_size, int spacing) const {
 	
 }
 
-
-void SimulationScene::render() const
+void SimulationScene::render_screen_info()
 {
-	if (should_render_partitioning) {
-		// Safe to dereference this since if should_render_partitioning == true then universe has partitioning.
-		const SpatialPartitioning& partitioning = *universe.get_partitioning();
-		std::vector<Rectangle> rep = partitioning.get_representation();
+	// Draw fps approximation in the upper left corner.
+	DrawFPS(50, 50);
 
-		for (const Rectangle& rect : rep) {
-			DrawRectangleLinesEx(rect, 15, WHITE);
+	// Draw number of bodies in the universe below fps display.
+	std::string num_bodies_str = "Number bodies: " + std::to_string(universe.get_num_bodies());
+	DrawText(num_bodies_str.c_str(), 50, 70, 20, RAYWHITE);
+
+	// Render the tick and collision statistics below the number bodies display.
+	if (should_render_tick_info) {
+		std::string tick_info = "Tick " + std::to_string(universe.get_tick()) + "\n";
+		tick_info += "Collision checks (tick) : " + std::to_string(universe.get_num_collision_checks_tick()) + "\n";
+		tick_info += "Collision checks (total): " + std::to_string(universe.get_num_collision_checks());
+		DrawText(tick_info.c_str(), 50, 95, 20, RAYWHITE);
+	}
+
+	// Render a relevant help message.
+	if (help_message.is_visible()) {
+		help_message.render();
+	}
+
+	// Render the help prompt if it has not been disabled.
+	// Disable the help prompt if it has been rendered to the user long enough.
+	if (help_prompt.is_visible()) {
+		help_prompt.render();
+
+		// Get time elapsed since prompt was first displayed.
+		auto cur_time = std::chrono::system_clock::now();
+		std::chrono::duration<double> elapsed_seconds = cur_time - prompt_time;
+
+		// If more than a certain amount of seconds have passed, disable the prompt.
+		if (elapsed_seconds.count() > 5.0) {
+			help_prompt.hide();
 		}
+
 	}
 
-	// Need to render creation bodies differently (always print their specs)
-	std::span<const std::unique_ptr<Body>> creating = interaction_state->get_creating_bodies();
+	// Render the title of the current interaction state.
+	interaction_title.render();
 
-	if (!creating.empty()) {
-		render_creating_bodies(creating);
+}
+
+void SimulationScene::render_partitioning() const
+{
+	// Safe to dereference this since if should_render_partitioning == true then universe has partitioning.
+	const SpatialPartitioning& partitioning = *universe.get_partitioning();
+	std::vector<Rectangle> rep = partitioning.get_representation();
+
+	// When zoomed out, there is often a visual glitch, especially when line thickness is lowered.
+	// I'm not sure how to fix it.
+	for (const Rectangle& rect : rep) {
+		DrawRectangleLinesEx(rect, 15, WHITE);
 	}
+}
 
-	render_bodies();
+void SimulationScene::render_universe() const
+{
+	// Render all bodies in the universe that are on screen.
+	for (const Body* body_ptr : on_screen_bodies) {
+		const Body& body = *body_ptr;
+		Vector2 pos = body.pos();
+		Color planet_color = body.color();
 
-	if (should_render_debug_text) {
-		attach_debug_info();
-
-		if (should_render_partitioning) {
-			attach_partitioning_debug_info();
-		}
-
-		constexpr int font_size = 25;
-		constexpr int spacing = 20;
-		draw_debug_text(font_size, spacing);
+		DrawCircle(pos.x, pos.y, body.get_radius(), planet_color);
 	}
-
-	
 }
 
 bool SimulationScene::on_screen(const Body& body) const
 {
+	// Return true if a body is at least partially on screen.
+	
 	const Camera2D& camera = camera_state->get_raylib_camera();
 	Vector2 pos = body.pos();
 
@@ -235,17 +266,6 @@ bool SimulationScene::on_screen(const Body& body) const
 	// can optimize : screen_pos.x >= -body.radius && screen_pos.y >= -body.radius
 
 	return rightmost.x >= 0 and lowest.y >= 0 and leftmost.x < GetScreenWidth() and highest.y < GetScreenHeight();
-}
-
-void SimulationScene::render_bodies() const
-{
-	for (const Body* body_ptr : on_screen_bodies) {
-		const Body& body = *body_ptr;
-		Vector2 pos = body.pos();
-		Color planet_color = body.color();
-
-		DrawCircle(pos.x, pos.y, body.get_radius(), planet_color);
-	}
 }
 
 void SimulationScene::render_creating_bodies(std::span<const std::unique_ptr<Body>> bodies) const
@@ -281,48 +301,56 @@ Scene* SimulationScene::update()
 		universe.update();
 	}
 
+	// Handle input related to the camera.
 	camera_state = camera_state->update(universe);
 
+	// Camera may have moved, or universe updated.
+	// Need to get a new list of bodies that are on screen.
 	update_on_screen_bodies();
 
 	BeginDrawing();
 		ClearBackground(BLACK);
 
 			BeginMode2D(camera_state->get_raylib_camera());
-				render();
+				// Begin rendering anything that should take the camera, universe position, into account.
+
+				if (should_render_partitioning) {
+					render_partitioning();
+				}
+				
+				// Need to render user creation bodies differently (always print their specs)
+				// Not relevant to every interaction state, and not every state wants their planets to have info rendered as well.
+				// In the future, can allow states to queue render commands to sim scene in their update maybe,
+				// instead of explicitly asking the state.
+				std::span<const std::unique_ptr<Body>> creating = interaction_state->get_creating_bodies();
+
+				// Render bodies that the user is creating.
+				if (!creating.empty()) {
+					render_creating_bodies(creating);
+				}
+
+				// Render the actual bodies in the universe.
+				render_universe();
+
+				// Render all relevant debug text.
+				if (should_render_debug_text) {
+					attach_debug_info();
+
+					if (should_render_partitioning) {
+						attach_partitioning_debug_info();
+					}
+
+
+					constexpr int font_size = 25;
+					constexpr int spacing = 20;
+					render_debug_text(font_size, spacing);
+				}
+
+
 			EndMode2D();
 
-		DrawFPS(50, 50);
-
-		std::string num_bodies_str = "Number bodies: " + std::to_string(universe.get_num_bodies());
-		DrawText(num_bodies_str.c_str(), 50, 70, 20, RAYWHITE);
-
-		if (should_render_tick_info) {
-			std::string tick_info = "Tick " + std::to_string(universe.get_tick()) + "\n";
-			tick_info += "Collision checks (tick) : " + std::to_string(universe.get_num_collision_checks_tick()) + "\n";
-			tick_info += "Collision checks (total): " + std::to_string(universe.get_num_collision_checks());
-			DrawText(tick_info.c_str(), 50, 95, 20, RAYWHITE);
-		}
-
-		if (help_message.is_visible()) {
-			help_message.render();
-		}
-
-		if (help_prompt.is_visible()) {
-			help_prompt.render();
-
-			// Get time elapsed since prompt was first displayed.
-			auto cur_time = std::chrono::system_clock::now();
-			std::chrono::duration<double> elapsed_seconds = cur_time - prompt_time;
-
-			// If more than a certain amount of seconds have passed, disable the prompt.
-			if (elapsed_seconds.count() > 5.0) {
-				help_prompt.hide();
-			}
-
-		}
-
-		interaction_title.render();
+		// Render any other information that should be overlaid onto the screen.
+		render_screen_info();
 
 	EndDrawing();
 
@@ -344,9 +372,11 @@ void SimulationScene::reposition_elements(int screen_width, int screen_height)
 	help_prompt.set_pos(prompt_pos);
 	help_prompt.center_on(GetScreenWidth() / 2);
 
+	// Keep help message display on the upper right side of the screen.
 	Vector2 help_pos = { 0.73 * GetScreenWidth(), 100 };
 	help_message.set_pos(help_pos);
 
+	// Keep interaction title display on the lower left side of the screen.
 	Vector2 title_pos = { 50, 0.89 * GetScreenHeight() };
 	interaction_title.set_pos(title_pos);
 }
