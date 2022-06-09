@@ -148,10 +148,10 @@ std::string SettingsScene::scan_nan_errors() const
 		return "Universe max size must be a number.";
 	}
 	else if (!num_planets_input.is_number()) {
-		return "Number planets must be a number.";
+		return "Number of planets must be a number.";
 	}
 	else if (!num_systems_input.is_number()) {
-		return "Number systems must be a number.";
+		return "Number of systems must be a number.";
 	}
 	else if (!grav_const_input.is_number()) {
 		return "Grav constant must be a number.";
