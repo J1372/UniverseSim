@@ -20,6 +20,8 @@ void SimulationScene::init()
 	help_prompt.set_color(WHITE);
 	help_message.set_color(RAYWHITE);
 	interaction_title.set_color(RAYWHITE);
+
+	help_message.hide();
 }
 
 void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
@@ -42,9 +44,11 @@ void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPa
 	should_render_tick_info = false;
 	should_render_partitioning = false;
 	should_render_debug_text = false;
-	should_render_help_text = false;
 
-	if (should_render_help_prompt) {
+	help_message.hide();
+
+	if (help_prompt.is_visible()) {
+		// Is only visible if it has not been displayed long enough.
 		// Only reset the prompt_time if the prompt is still enabled.
 		prompt_time = std::chrono::system_clock::now();
 	}
@@ -90,7 +94,7 @@ void SimulationScene::process_input()
 	}
 
 	if (IsKeyPressed(KEY_H)) {
-		should_render_help_text = !should_render_help_text;
+		help_message.toggle_hide();
 	}
 
 	if (IsKeyPressed(KEY_B)) {
@@ -300,11 +304,11 @@ Scene* SimulationScene::update()
 			DrawText(tick_info.c_str(), 50, 95, 20, RAYWHITE);
 		}
 
-		if (should_render_help_text) {
+		if (help_message.is_visible()) {
 			help_message.render();
 		}
 
-		if (should_render_help_prompt) {
+		if (help_prompt.is_visible()) {
 			help_prompt.render();
 
 			// Get time elapsed since prompt was first displayed.
@@ -313,7 +317,7 @@ Scene* SimulationScene::update()
 
 			// If more than a certain amount of seconds have passed, disable the prompt.
 			if (elapsed_seconds.count() > 5.0) {
-				should_render_help_prompt = false;
+				help_prompt.hide();
 			}
 
 		}

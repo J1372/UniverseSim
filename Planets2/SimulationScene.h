@@ -41,18 +41,12 @@ class SimulationScene : public Scene
 	// Whether to render and update the debug text of bodies that are on screen.
 	bool should_render_debug_text = false;
 
-	// Whether to render help text for the user.
-	bool should_render_help_text = false;
-
 	// Default help text.
 	const std::string default_help_text = "[H] to close help text\n";
 
 	// The current help text to be shown if the user has toggled on its display.
 	// This is the default help text, along with any state specific help text.
 	std::string current_help_text = default_help_text;
-
-	// Whether the user should be told how to open the help text.
-	bool should_render_help_prompt = true;
 
 	// Time when help prompt text was first displayed.
 	std::chrono::system_clock::time_point prompt_time = std::chrono::system_clock::now();
