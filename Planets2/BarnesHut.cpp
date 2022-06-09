@@ -98,7 +98,7 @@ void BarnesHut::update_mass_add(const Body& to_add)
 	// find current moment sum for x and y.
 	Vector2 current_moment_sum { center_of_mass.x * mass_sum , center_of_mass.y * mass_sum };
 
-	float combined_mass = mass_sum + to_add.get_mass();
+	long combined_mass = mass_sum + to_add.get_mass();
 
 	center_of_mass.x = (current_moment_sum.x + body_moment.x) / combined_mass;
 	center_of_mass.y = (current_moment_sum.y + body_moment.y) / combined_mass;
