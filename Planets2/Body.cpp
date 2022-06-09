@@ -86,8 +86,7 @@ std::array<float, 2> Body::distv(const Body& other) const
 
 float Body::dist(const Body& other) const
 {
-	// can remove abs
-	float c_squared = std::pow(std::abs(other.x - x), 2) + std::pow(std::abs(other.y - y), 2);
+	float c_squared = std::pow(other.x - x, 2) + std::pow(other.y - y, 2);
 	return std::sqrt(c_squared);
 }
 
@@ -155,33 +154,22 @@ void Body::absorb(const Body& other)
 {
 	std::array<float, 2> mom = get_momentum();
 	std::array<float, 2> other_mom = other.get_momentum();
-	std::array<float, 2> combined_mom;
-
-	combined_mom[0] = mom[0] + other_mom[0];
-	combined_mom[1] = mom[1] + other_mom[1];
-
+	std::array<float, 2> combined_mom { mom[0] + other_mom[0],
+		mom[1] + other_mom[1] };
 
 	long combined_mass = mass + other.mass;
-	float d_vel_x = combined_mom[0] / ((double)combined_mass); // vf , not delta
-	float d_vel_y = combined_mom[1] / ((double)combined_mass);
 
-	vel_x = d_vel_x;
-	vel_y = d_vel_y;
+	// Calculate the final velocity of the combined mass.
+	float vel_fx = combined_mom[0] / ((double)combined_mass);
+	float vel_fy = combined_mom[1] / ((double)combined_mass);
+
+	vel_x = vel_fx;
+	vel_y = vel_fy;
 
 
 	// upgrade its type if it meets mass requirements.
 	set_mass(combined_mass);
 
-	/*float force_x = other.mass / -other.vel_x;
-	float force_y = other.mass / -other.vel_y;
-
-	float acc_x = force_x / mass; // == (prev_mass + other.mass), we have its mass now
-	float acc_y = force_y / mass;
-
-	vel_x += acc_x;
-	vel_y += acc_y;*/
-	//vel_x += .3*other.vel_x; // this should be a portion of the force that other smacks u with.
-	//vel_y += .3*other.vel_y;
 }
 
 
