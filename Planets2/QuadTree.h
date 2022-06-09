@@ -134,8 +134,13 @@ private:
 	// If a body is removed from a child node (due to collision), notifies all relevant parent nodes to update their sizes.
 	void notify_child_removed();
 
-	// Moves body referenced by iterator to child without increasing the current node's size.
-	void move_to_child(std::vector<Body*>::iterator& it);
+	// Moves body referenced by iterator to child node without increasing the current node's size.
+	// Returns the next iterator.
+	std::vector<Body*>::iterator move_to_child(std::vector<Body*>::iterator it);
+
+	// Moves body referenced by iterator upwards.
+	// Returns the next iterator.
+	std::vector<Body*>::iterator move_up(std::vector<Body*>::iterator it);
 
 	// Returns true if a body overlaps over more than one child nodes.
 	bool in_more_than_one_child(const Body& body) const;

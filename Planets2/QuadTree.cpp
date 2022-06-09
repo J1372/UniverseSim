@@ -139,7 +139,6 @@ int QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const_
 		if (Physics::have_collided(checking, body2)) {
 			collisions.emplace_back(Body::get_sorted_pair(checking, body2));
 		}
-		//Physics::handle_collision(checking, body2);
 
 		it++;
 	}
@@ -266,16 +265,15 @@ void QuadTree::update_internal()
 {
 	// After body position update tick, update the quad with new positions.
 	if (is_leaf()) {
-		for (auto it = quad_bodies.begin(); it != quad_bodies.end();) {
+		auto it = quad_bodies.begin();
+		while (it != quad_bodies.end()) {
 			Body& body = **it;
 
 			if (contains_fully(body) or is_root()) { // still fully contains this body, no changes needed.
 				it++;
 			}
 			else { // body no longer completely inside this leaf node.
-				it = quad_bodies.erase(it);
-				cur_size--;
-				parent->reinsert(body);
+				it = move_up(it);
 			}
 
 		}
@@ -316,9 +314,7 @@ void QuadTree::update_internal()
 			else { // body no longer completely inside this node.
 
 				if (!is_root()) {
-					it = quad_bodies.erase(it);
-					cur_size--;
-					parent->reinsert(body);
+					it = move_up(it);
 				}
 				else {
 					// wraparound or deletion is about to happen.
@@ -362,12 +358,22 @@ void QuadTree::notify_child_removed()
 	}
 }
 
-void QuadTree::move_to_child(std::vector<Body*>::iterator& it)
+std::vector<Body*>::iterator QuadTree::move_to_child(std::vector<Body*>::iterator it)
 {
 	add_to_child(**it);
-
 	// Body moved to child node, so no need to decrease our size.
-	it = quad_bodies.erase(it);
+
+	return quad_bodies.erase(it);
+}
+
+std::vector<Body*>::iterator QuadTree::move_up(std::vector<Body*>::iterator it)
+{
+	// Body is leaving this quad entirely, so decrease size.
+	cur_size--;
+	parent->reinsert(**it);
+
+	return quad_bodies.erase(it);
+
 }
 
 QuadTree* QuadTree::add_to_child(Body& new_body)
@@ -383,24 +389,18 @@ QuadTree* QuadTree::add_to_child(Body& new_body)
 	}
 }
 
-/*
-void QuadTree::rem_from_child(const Body& body) // no longer used in our update, but may be useful later if allow user to delete a planet.
-{
-	// Get the child quad that fully contains the body, if any do.
-	QuadTree* contained_in = get_quad([&body](const QuadTree& quad) { return quad.contains_fully(body); });
-
-	if (contained_in)) {
-		contained_in->rem_body(body);
-	}
-}*/
-
 void QuadTree::concatenate()
 {
+	// If we are concatenating, then all of our child nodes are leaves.
+	// So we only have to move their quad bodies here, no need to recurse.
+	
+	// Calculating and reserving capacity shouldn't be necessary,
+	// since we only split because we reached max capacity.
+	// And we are only concatenating because we are below max capacity.
+
 	// copy all body pointers from a quad, without erasing them in that quad.
 	auto copy_bodies = [](const QuadTree& quad, std::vector<Body*>& copy_to) {
-		for (Body* body : quad.quad_bodies) {
-			copy_to.push_back(body);
-		}
+		copy_to.insert(copy_to.end(), quad.quad_bodies.begin(), quad.quad_bodies.end());
 	};
 
 	copy_bodies(*UL, quad_bodies);
@@ -421,8 +421,10 @@ void QuadTree::split()
 	float mid_x = dimensions.x + dimensions.width / 2.0f;
 	float mid_y = dimensions.y + dimensions.height / 2.0f;
 
+	// Size of the child nodes.
 	float size = dimensions.width / 2.0f;
 
+	// Depth level of the child nodes.
 	int next_depth = depth + 1;
 
 	UL = std::make_unique<QuadTree>(x, y, size, next_depth);
@@ -442,17 +444,17 @@ void QuadTree::split()
 		Body& body = **it;
 
 		if (in_more_than_one_child(body)) {
-			// stays in parent, since it is not unique to any child node.
+			// stays in parent (here), since it is not unique to any child node.
 			it++;
 		}
 		else {
-			// Body is slightly out of bounds of the entire quad tree.
 			if (is_root() and !contains_fully(body)) {
+				// Body is slightly out of bounds of the entire quad tree.
 				it++;
 			}
 			else {
-				// move body to child.
-				move_to_child(it);
+				// move body to the child node that contains it.
+				it = move_to_child(it);
 			}
 		}
 	}
@@ -485,13 +487,12 @@ void QuadTree::reinsert(Body& body)
 
 void QuadTree::concat_check()
 {
-	// We do this check up the parent chain, but really, a removal in a child node can only ever result in concatenation of its first order parent.
-	// actually a concatenation chain could happen. nevertheless, if parent does not concatenate, its parent wont concatenate either.
-	// so this could be optimized into two different methods, one with the concat check, and one without:
-	//	 "dont check for concat in next call if i am a parent and i did not concatenate."
-	//    still have to check if i am a leaf, though.
 
-	// or do this notify, then move concat chain checking afterwards.
+	// After a body has been removed from the quad tree entirely,
+	// we do this check on the node it was removed from and up the parent chain.
+	// 
+	// A removal in a child node can result in a sequence of concatenations of its parents.
+	// If a node does not concatenate as a result of the removal, its parent wont concatenate either.
 
 	if (is_root()) {
 		if (!is_leaf() and should_concatenate()) {
@@ -510,7 +511,8 @@ void QuadTree::concat_check()
 		concatenate();
 		parent->concat_check();
 	}
-	else { // parent and doesn't have room
+	else {
+		// parent and doesn't need to concatenate.
 		// do nothing and stop checking.
 		// if we are a parent that didn't concatenate, then none of our parents concatenated either.
 	}
