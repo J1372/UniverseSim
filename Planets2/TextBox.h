@@ -20,7 +20,7 @@ class TextBox : public UIElement
 	int font_size = 12;
 
 	// Padding between text and the border.
-	float width_padding = 0.1;
+	float width_padding = 0.1f;
 
 	// The textbox's area.
 	Rectangle rect;

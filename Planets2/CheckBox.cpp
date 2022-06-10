@@ -43,6 +43,7 @@ void CheckBox::render() const
 	float height = (1 - padding) * rect.height;
 
 	DrawRectangle(start_x, start_y, width, height, check_color);
+
 }
 
 void CheckBox::set_desc_font_size(int to_set) {

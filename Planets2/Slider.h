@@ -34,7 +34,7 @@ class Slider : public UIElement
 
 public:
 
-	Slider(float x, float y, float width, int min_val, int max_val);
+	Slider(float x, float y, float width, float min_val, float max_val);
 
 	float get_val() const;
 	void set_val(float val);

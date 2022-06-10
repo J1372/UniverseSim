@@ -383,7 +383,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 	for (int i = 0; i < num_planets; ++i) {
 		long planet_mass = mass_ratios[i] * remaining_mass;
 
-		Body& planet = *system.emplace_back(std::make_unique<Body>(0, 0, planet_mass));
+		Body& planet = *system.emplace_back(std::make_unique<Body>(0.0f, 0.0f, planet_mass));
 		Orbit planet_orbit = gen_rand_orbit(star, planet, settings.retrograde_chance);
 		planet.set_orbit(planet_orbit);
 		
@@ -393,7 +393,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
 			long moon_mass = Rand::real(0.01f, 0.1f) * planet.get_mass();
 
-			Body& moon = *system.emplace_back(std::make_unique<Body>(0, 0, moon_mass));
+			Body& moon = *system.emplace_back(std::make_unique<Body>(0.0f, 0.0f, moon_mass));
 			Orbit moon_orbit = gen_rand_orbit(planet, moon, settings.retrograde_chance);
 			moon_orbit.set_periapsis(planet, Rand::real(settings.satellite_min_dist, moon_max_dist));
 			moon.set_orbit(moon_orbit);

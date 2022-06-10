@@ -90,11 +90,11 @@ std::vector<Rectangle> LineSweep::get_representation() const
     std::vector<Rectangle> rep;
 
     for (Body* body : entry_events) {
-        rep.emplace_back(body->left(), body->top(), 2, body->diameter());
+        rep.emplace_back(body->left(), body->top(), 2.0f, body->diameter());
     }
 
     for (Body* body : leave_events) {
-        rep.emplace_back(body->right(), body->top(), 2, body->diameter());
+        rep.emplace_back(body->right(), body->top(), 2.0f, body->diameter());
     }
 
     return rep;

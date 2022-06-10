@@ -25,7 +25,7 @@ void Slider::move_slider()
 	slider_node.center.x = rail.x + percent_point * rail.width;
 }
 
-Slider::Slider(float x, float y, float width, int min_val, int max_val) :
+Slider::Slider(float x, float y, float width, float min_val, float max_val) :
 	rail { x, y, width, RAIL_HEIGHT }, slider_node{ x, y + RAIL_HEIGHT / 2, NODE_RADIUS },
 	min_val(min_val), max_val(max_val)
 {

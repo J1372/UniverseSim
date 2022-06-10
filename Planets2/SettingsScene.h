@@ -26,24 +26,24 @@ class SettingsScene : public GuiScene
 	UniverseSettings settings;
 
 	// Start and exit buttons
-	static constexpr int BUTTON_X = 860;
-	static constexpr int BUTTON_Y = 920;
-	static constexpr int BUTTON_MIN_WIDTH = 100;
+	static constexpr float BUTTON_X = 860.0f;
+	static constexpr float BUTTON_Y = 920.0f;
+	static constexpr float BUTTON_MIN_WIDTH = 100.0f;
 
 	Button& start_button = gui.add<Button>("Start", BUTTON_X, BUTTON_Y);
 	Button& exit_button = gui.add<Button>("Exit", BUTTON_X + 100, BUTTON_Y);
 
 
-	static constexpr int TEXTBOX_WIDTH = 400;
+	static constexpr float TEXTBOX_WIDTH = 400.0f;
 
 	// Start x of label from the beginning of a textbox.
-	static constexpr int LABEL_OFFSET = TEXTBOX_WIDTH + 25;
+	static constexpr float LABEL_OFFSET = TEXTBOX_WIDTH + 25;
 
 	// Begin columns at this y coordinate.
-	static constexpr int COLUMN_Y = 50;
+	static constexpr float COLUMN_Y = 50.0f;
 
 	// Universe generation settings column
-	static constexpr int UNIVERSE_START_X = 50;
+	static constexpr float UNIVERSE_START_X = 50.0f;
 
 	Label& universe_header = gui.add<Label>("Universe Generation", UNIVERSE_START_X + TEXTBOX_WIDTH / 3, COLUMN_Y, 12);
 
@@ -62,7 +62,7 @@ class SettingsScene : public GuiScene
 	Label& num_systems_label = gui.add<Label>("Num systems", UNIVERSE_START_X + LABEL_OFFSET, COLUMN_Y + 520, 12);
 
 	// Physics settings column
-	static constexpr int PHYSICS_START_X = UNIVERSE_START_X + LABEL_OFFSET + 200;
+	static constexpr float PHYSICS_START_X = UNIVERSE_START_X + LABEL_OFFSET + 200;
 	Label& physics_header = gui.add<Label>("Physics", PHYSICS_START_X + TEXTBOX_WIDTH / 3, COLUMN_Y, 12);
 
 	TextBox& grav_const_input = gui.add<TextBox>(PHYSICS_START_X, COLUMN_Y + 100, TEXTBOX_WIDTH);
@@ -71,15 +71,15 @@ class SettingsScene : public GuiScene
 
 
 	// Barnes hut gravity settings
-	static constexpr int SLIDER_WIDTH = TEXTBOX_WIDTH;
-	CheckBox& approximate_gravity_checkbox = gui.add<CheckBox>("Use an approximation for gravity calculations to increase performance", PHYSICS_START_X, COLUMN_Y + 200, 20);
+	static constexpr float SLIDER_WIDTH = TEXTBOX_WIDTH;
+	CheckBox& approximate_gravity_checkbox = gui.add<CheckBox>("Use an approximation for gravity calculations to increase performance", PHYSICS_START_X, COLUMN_Y + 200, 20.0f);
 	Slider& approximation_slider = gui.add<Slider>(PHYSICS_START_X, COLUMN_Y + 300, SLIDER_WIDTH, 0.0f, 1.0f);
 	Label& approximation_label = gui.add<Label>("Approximation value", PHYSICS_START_X + LABEL_OFFSET, COLUMN_Y + 300, 12);
 	Label& approximation_description = gui.add<Label>("Increasing this value improves performance\nbut decreases accuracy",
 		PHYSICS_START_X, COLUMN_Y + 350, 20);
 
 	// System generation settings column
-	static constexpr int SYSTEMS_START_X = PHYSICS_START_X + LABEL_OFFSET + 200;
+	static constexpr float SYSTEMS_START_X = PHYSICS_START_X + LABEL_OFFSET + 200;
 	Label& systems_header = gui.add<Label>("System Generation", SYSTEMS_START_X + TEXTBOX_WIDTH / 3, COLUMN_Y, 12);
 
 
@@ -105,10 +105,10 @@ class SettingsScene : public GuiScene
 
 
 	// Partitioning selection and specific settings.
-	static constexpr int PARTITIONING_X = UNIVERSE_START_X;
-	static constexpr int PARAM_X = PARTITIONING_X + 200;
+	static constexpr float PARTITIONING_X = UNIVERSE_START_X;
+	static constexpr float PARAM_X = PARTITIONING_X + 200;
 
-	static constexpr int PARTITIONING_Y = 750;
+	static constexpr float PARTITIONING_Y = 750.0f;
 	Dropdown& partitioning_dropdown = gui.add<Dropdown>(PARTITIONING_X, PARTITIONING_Y, 12);
 	Label& partitioning_label = gui.add<Label>("Collision spatial partitioning", PARTITIONING_X, PARTITIONING_Y - 50, 12);
 

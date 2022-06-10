@@ -6,7 +6,7 @@ Dropdown::Dropdown(float x, float y, int font_size) :
 	rect{ x, y, 100, 50 }
 {}
 
-int Dropdown::get_render_height() const
+float Dropdown::get_render_height() const
 {
 	if (active) {
 		return (choices.size() + 1) * rect.height;
@@ -18,7 +18,7 @@ int Dropdown::get_render_height() const
 
 void Dropdown::add_choice(const std::string& choice) {
 	choices.push_back(choice);
-	int length_choice = MeasureText(choice.c_str(), font_size) * (1 + width_padding) + 2 * edge_width;
+	float length_choice = MeasureText(choice.c_str(), font_size) * (1 + width_padding) + 2 * edge_width;
 
 	if (length_choice > rect.width) {
 		rect.width = length_choice;
@@ -52,7 +52,7 @@ bool Dropdown::contains_point(Vector2 point) const {
 
 int Dropdown::translate_click() const
 {
-	int diff_y = GetMouseY() - rect.y;
+	float diff_y = GetMouseY() - rect.y;
 
 	int click_selection = diff_y / rect.height;
 

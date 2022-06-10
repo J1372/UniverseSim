@@ -14,7 +14,7 @@ class Dropdown : public UIElement
 
 
 	int font_size;
-	float width_padding = 0.1;
+	float width_padding = 0.1f;
 
 	Rectangle rect;
 
@@ -29,7 +29,7 @@ class Dropdown : public UIElement
 	int translate_click() const;
 
 	// Returns the height of the dropdown box.
-	int get_render_height() const;
+	float get_render_height() const;
 
 public:
 
