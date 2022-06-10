@@ -32,9 +32,9 @@ class Body {
 	*
 	*/
 	static constexpr TypeExt ASTEROID_TYPE = { 10, 0, RAYWHITE };
-	static constexpr TypeExt PLANET_TYPE = { 14, 1000, SKYBLUE };
-	static constexpr TypeExt SUN_TYPE = { 50, 6000, GOLD };
-	static constexpr TypeExt BLACK_HOLE_TYPE = { 1000, 90000, DARKGRAY };
+	static constexpr TypeExt PLANET_TYPE = { 15, 1000, SKYBLUE };
+	static constexpr TypeExt SUN_TYPE = { 100, 6000, GOLD };
+	static constexpr TypeExt BLACK_HOLE_TYPE = { 1200, 120000, DARKGRAY };
 	static constexpr TypeExt END_TYPE = { -1, LONG_MAX, SKYBLUE }; // A null type.
 
 	static constexpr TypeExt TYPES[] =
