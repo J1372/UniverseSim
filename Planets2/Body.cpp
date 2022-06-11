@@ -13,11 +13,11 @@ Body::Body(float x, float y, long mass) : x(x), y(y), mass(std::max(1l, mass))
 	upgrade_update();
 }
 
-Body::Body(long mass, const Orbit& orbit) :
+Body::Body(long mass, const Orbit& orbit, float point) :
 	mass(std::max(1l, mass))
 {
 	upgrade_update();
-	set_orbit(orbit);
+	set_orbit(orbit, point);
 
 }
 
@@ -130,19 +130,20 @@ std::pair<Body*, Body*> Body::get_sorted_pair(Body& body1, Body& body2)
 	}
 }
 
-void Body::set_orbit(const Orbit& orbit)
+void Body::set_orbit(const Orbit& orbit, float point)
 {
 	// Currently all satellites start at periapsis.
-	Vector2 relative_pos = orbit.periapsis_point();
+	Vector2 relative_pos = orbit.pos_at(point);
 	x = orbit.orbited.x + relative_pos.x;
 	y = orbit.orbited.y + relative_pos.y;
 
 	// Relative velocity of this satellite around the body it is orbiting.
-	Vector2 relative_velocity = orbit.velocity_periapsis_vector(*this); // might not need to send *this if use orbital period.
+	Vector2 relative_velocity = orbit.vel_vec_at(point);
 
 	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
 	vel_x = orbit.orbited.vel_x + relative_velocity.x;
 	vel_y = orbit.orbited.vel_y + relative_velocity.y;
+
 }
 
 bool Body::can_eat(const Body& other) const

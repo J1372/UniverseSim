@@ -9,11 +9,6 @@ void Orbit::set_periapsis(const Body& orbiter, float sat_dist)
     periapsis = sat_dist * (orbited.get_radius() + orbiter.get_radius());
 }
 
-Vector2 Orbit::periapsis_point() const
-{
-    return { periapsis * std::cos(periapsis_angle), periapsis * std::sin(periapsis_angle) };
-}
-
 float Orbit::apoapsis() const
 {
     // I think there is another formula which handles eccentricity == 1 without an if check.
@@ -31,29 +26,83 @@ float Orbit::semi_major_axis() const
     return (periapsis + apoapsis()) / 2;
 }
 
-float Orbit::velocity_periapsis(const Body& orbiter) const
+float Orbit::translate_point(float point) const
 {
-    // all velocity at periapsis and apoapsis is tangental to body. 90 degrees = pi/2
-    float num = (1 + eccentricity) * grav_const * (orbited.get_mass() + orbiter.get_mass());
-    float den = (1 - eccentricity) * semi_major_axis();
-    float velocity_periapsis = std::sqrt(num / den);
+    if (!prograde) {
+        // Since retrograde orbit velocities are inverted, we should also invert this point.
+        // Otherwise, the in between points (0, 0.5) (0.5, 1.0) will have different meanings depending on whether retrograde or prograde.
+
+        point = 1 - point;
+    }
+
+    // Map point [0,1] in orbit to actual radian degree [0, 2pi].
+    float radians = 2 * std::numbers::pi * point;
+
+    return radians;
+}
+
+float Orbit::dist_at(float point) const
+{
+    // Get the radian degree from periapsis of this point in the orbit.
+    float true_anomaly = translate_point(point);
+
+    // Get the distance at the calculated true anomaly.
+    float dist = semi_major_axis() * (1 - std::pow(eccentricity, 2)) / (1 + eccentricity * std::cos(true_anomaly));
+
+    return dist;
+}
+
+Vector2 Orbit::pos_at(float point) const
+{
+    float dist = dist_at(point);
+
+    // Get the radian degree from periapsis of this point in the orbit.
+    float true_anomaly = translate_point(point);
+
+    // Get angle of point in the orbit from central body.
+    float from_central = periapsis_angle + true_anomaly;
+
+    return { dist * std::cos(from_central), dist * std::sin(from_central) };
+
+}
+
+float Orbit::vel_at(float point) const
+{
+    float dist = dist_at(point);
+
+    // Get the squared velocity at a point in its orbit using equation:
+    // v2 = GM(2/r - 1/a), r == dist and a == semi major axis.
+    float vel_sq = grav_const * orbited.get_mass() * (2 / dist - (1 / semi_major_axis()));
+
+    float velocity = std::sqrt(vel_sq);
 
     if (prograde) {
-        return velocity_periapsis;
+        return velocity;
     }
     else {
-        return -velocity_periapsis;
+        return -velocity;
     }
 }
 
-Vector2 Orbit::velocity_periapsis_vector(const Body& orbiter) const
+Vector2 Orbit::vel_vec_at(float point) const
 {
-    float velocity = velocity_periapsis(orbiter);
-    float angle = velocity_periapsis_angle();
-    return { velocity * std::sin(angle), velocity * std::cos(angle) };
+    float velocity = vel_at(point);
+
+    // Get the radian degree from periapsis of this point in the orbit.
+    float true_anomaly = translate_point(point);
+
+    // Get angle of point in the orbit from central body.
+    float from_central = periapsis_angle + true_anomaly;
+
+    // Flip on y-axis.
+    float flipped = 2 * std::numbers::pi - from_central;
+
+    return { velocity * std::sin(flipped), velocity * std::cos(flipped) };
 }
 
-float Orbit::velocity_periapsis_angle() const
+float Orbit::orbital_period() const
 {
-    return  2 * std::numbers::pi - periapsis_angle; // flip on y-axis
+    float numerator = 4 * std::pow(std::numbers::pi, 2) * std::pow(semi_major_axis(), 3);
+    float denominator = grav_const * orbited.get_mass();
+    return std::sqrt(numerator / denominator);
 }

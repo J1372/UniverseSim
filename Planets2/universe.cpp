@@ -385,7 +385,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 
 		Body& planet = *system.emplace_back(std::make_unique<Body>(0.0f, 0.0f, planet_mass));
 		Orbit planet_orbit = gen_rand_orbit(star, planet, settings.retrograde_chance);
-		planet.set_orbit(planet_orbit);
+		planet.set_orbit(planet_orbit, Rand::real());
 		
 
 		if (Rand::chance(settings.moon_chance)) {
@@ -396,7 +396,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 			Body& moon = *system.emplace_back(std::make_unique<Body>(0.0f, 0.0f, moon_mass));
 			Orbit moon_orbit = gen_rand_orbit(planet, moon, settings.retrograde_chance);
 			moon_orbit.set_periapsis(planet, Rand::real(settings.satellite_min_dist, moon_max_dist));
-			moon.set_orbit(moon_orbit);
+			moon.set_orbit(moon_orbit, Rand::real());
 		}
 
 	}

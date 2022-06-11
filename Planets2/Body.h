@@ -81,7 +81,7 @@ public:
 	Body(float x, float y, long mass);
 
 	// satellite constructor
-	Body(long mass, const Orbit& orbit);
+	Body(long mass, const Orbit& orbit, float point);
 
 	// Sets this body's id.
 	void set_id(int to_set);
@@ -119,8 +119,7 @@ public:
 
 	// Adjusts body's position and velocity such that its path is that of the given orbit.
 	// Body starts at the orbit's periapsis.
-	// later: float can give [0,1) of point on orbit.
-	void set_orbit(const Orbit& orbit);
+	void set_orbit(const Orbit& orbit, float point);
 
 	// Returns true if this body's mass is greater than or equal to the mass of the other body.
 	bool can_eat(const Body& other) const;

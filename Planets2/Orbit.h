@@ -40,32 +40,36 @@ struct Orbit
 	// sat_dist > 1, no collision
 	void set_periapsis(const Body& orbiter, float sat_dist);
 
-	// Returns the periapsis point of the satellite relative to the orbited body.
-	Vector2 periapsis_point() const;
-
 	// The farthest distance of the satellite from the orbited body in the orbit.
 	float apoapsis() const;
 	
 	// Returns the orbit's semi major axis (periapsis + apoapsis) / 2
 	float semi_major_axis() const;
 
-
-	// Relative velocity of orbiter around orbited at orbiter's periapsis.
-	float velocity_periapsis(const Body& orbiter) const;
-
-	// Relative velocity vector of orbiter around orbiting at orbiter's periapsis.
-	Vector2 velocity_periapsis_vector(const Body& orbiter) const;
-
-	// Relative velocity vector of orbiter around orbiting at orbiter's periapsis.
-	float velocity_periapsis_angle() const;
-
-	// Relative velocity of orbiter around orbiting at a point in its orbit.
+	// Methods for getting various parameters at 'points' in the orbit, from [0, 1].
 	// point = 0.0, periapsis.
+	// point > 0 < 0.5, moving towards apoapsis
 	// point = 0.5, apoapsis.
+	// point > 0.5 < 1.0, returning to periapsis
 	// point = 1.0, periapsis.
-	//float vel_at(float point);
 
-	//float orbital_period() const;
+	// Translates a point [0,1] of an orbit to a radian degree [0, 2pi]
+	float translate_point(float point) const;
+
+	// Relative distance of orbiter from orbited at a point in its orbit.
+	float dist_at(float point) const;
+
+	// Relative position of orbiter around orbited at a point in its orbit.
+	Vector2 pos_at(float point) const;
+
+	// Relative velocity of orbiter around orbited at a point in its orbit.
+	float vel_at(float point) const;
+
+	// Relative velocity of orbiter around orbited at a point in its orbit.
+	Vector2 vel_vec_at(float point) const;
+
+	// Returns the time needed to complete one orbit.
+	float orbital_period() const;
 
 	Orbit(const Body& orbited) : orbited(orbited)
 	{}
