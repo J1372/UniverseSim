@@ -234,7 +234,7 @@ void SimulationScene::render_partitioning() const
 	// When zoomed out, there is often a visual glitch, especially when line thickness is lowered.
 	// I'm not sure how to fix it.
 	for (const Rectangle& rect : rep) {
-		DrawRectangleLinesEx(rect, 15, WHITE);
+		DrawRectangleLinesEx(rect, 30, WHITE);
 	}
 }
 
