@@ -100,6 +100,30 @@ const std::string& TextBox::get_text() const
 	return entered_text;
 }
 
+bool TextBox::is_int() const
+{
+	if (entered_text.empty()) {
+		return false;
+	}
+
+	int check_from = 0;
+	if (entered_text[0] == '-') { // negative number, start scan after hyphen.
+		check_from = 1;
+	}
+
+	for (int i = check_from; i < entered_text.size(); i++) {
+		char letter = entered_text[i];
+
+		if (!std::isdigit(letter)) {
+			return false;
+		}
+
+	}
+
+	return true;
+
+}
+
 bool TextBox::is_number() const
 {
 	if (entered_text.empty()) {

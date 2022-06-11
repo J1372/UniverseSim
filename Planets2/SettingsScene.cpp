@@ -138,8 +138,8 @@ bool SettingsScene::handle_errors()
 
 std::string SettingsScene::scan_nan_errors() const
 {
-	if (!capacity_input.is_number()) {
-		return "Capacity must be a number.";
+	if (!capacity_input.is_int()) {
+		return "Capacity must be an integer.";
 	}
 	else if (!start_size_input.is_number()) {
 		return "Universe start size must be a number.";
@@ -147,11 +147,11 @@ std::string SettingsScene::scan_nan_errors() const
 	else if (!max_size_input.is_number()) {
 		return "Universe max size must be a number.";
 	}
-	else if (!num_planets_input.is_number()) {
-		return "Number of planets must be a number.";
+	else if (!num_planets_input.is_int()) {
+		return "Number of planets must be an integer.";
 	}
-	else if (!num_systems_input.is_number()) {
-		return "Number of systems must be a number.";
+	else if (!num_systems_input.is_int()) {
+		return "Number of systems must be an integer.";
 	}
 	else if (!grav_const_input.is_number()) {
 		return "Grav constant must be a number.";
@@ -159,11 +159,11 @@ std::string SettingsScene::scan_nan_errors() const
 	else if (!sys_mass_ratio_input.is_number()) {
 		return "System mass ratio must be a number.";
 	}
-	else if (!sys_min_planets_input.is_number()) {
-		return "System min planets must be a number.";
+	else if (!sys_min_planets_input.is_int()) {
+		return "System min planets must be an integer.";
 	}
-	else if (!sys_max_planets_input.is_number()) {
-		return "System max planets must be a number.";
+	else if (!sys_max_planets_input.is_int()) {
+		return "System max planets must be an integer.";
 	}
 	else if (!sys_min_dist_input.is_number()) {
 		return "Satellite min dist must be a number.";

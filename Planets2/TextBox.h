@@ -64,6 +64,11 @@ public:
 	// Returns the currently entered text.
 	const std::string& get_text() const;
 
+	// is_int and is_number could/should be in a Text namespace.
+	
+	//Returns true if the text in this textbox is just an integer, else false.
+	bool is_int() const;
+
 	//Returns true if the text in this textbox is just a number, else false.
 	bool is_number() const;
 
