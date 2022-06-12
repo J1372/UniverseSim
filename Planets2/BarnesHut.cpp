@@ -84,12 +84,9 @@ void BarnesHut::update_mass_add(const Body& to_add)
 		// This is only a problem in leaf nodes, parent nodes' center of masses should not have this problem, even with rounding error.
 
 		// This body is the only one affecting this node's center mass, so
-		Vector2 pos = to_add.pos();
-
-		center_of_mass.x = pos.x;
-		center_of_mass.y = pos.y;
-
+		center_of_mass = to_add.pos();
 		mass_sum += to_add.get_mass();
+
 		return;
 	}
 
