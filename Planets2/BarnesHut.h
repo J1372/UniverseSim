@@ -93,11 +93,11 @@ public:
 	// Frees 4 child nodes.
 	void concatenate();
 
-	template<auto bool_func, class... ArgTypes>
 	/*
 	Returns the first (and hopefully only) child quad where the predicate is true, or nullptr if predicate false in all four child nodes.
 	Checks in order: UL, UR, LL, LR.
 	*/
+	template<auto bool_func, class... ArgTypes>
 	BarnesHut* get_quad(ArgTypes&&... args) const
 	{
 		// Assert provided bool_func returns a bool when called on a BarnesHut with args... parameter types.
