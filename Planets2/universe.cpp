@@ -384,7 +384,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 		long planet_mass = mass_ratios[i] * remaining_mass;
 
 		Body& planet = *system.emplace_back(std::make_unique<Body>(0.0f, 0.0f, planet_mass));
-		Orbit planet_orbit = gen_rand_orbit(star, planet, settings.retrograde_chance);
+		Orbit planet_orbit = gen_rand_orbit(star, planet);
 		planet.set_orbit(planet_orbit, Rand::real());
 		
 
@@ -394,7 +394,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 			long moon_mass = Rand::real(0.01f, 0.1f) * planet.get_mass();
 
 			Body& moon = *system.emplace_back(std::make_unique<Body>(0.0f, 0.0f, moon_mass));
-			Orbit moon_orbit = gen_rand_orbit(planet, moon, settings.retrograde_chance);
+			Orbit moon_orbit = gen_rand_orbit(planet, moon);
 			moon_orbit.set_periapsis(planet, Rand::real(settings.satellite_min_dist, moon_max_dist));
 			moon.set_orbit(moon_orbit, Rand::real());
 		}
@@ -457,7 +457,7 @@ void Universe::rem_body(int id)
 	active_bodies.erase(remove_it);
 }
 
-Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter, float retrograde_chance) const
+Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter) const
 {
 	Orbit orbit { orbited };
 
@@ -465,7 +465,7 @@ Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter, float r
 	orbit.grav_const = settings.grav_const;
 	orbit.periapsis_angle = Rand::radian();
 	orbit.eccentricity = Rand::real();
-	orbit.prograde = Rand::chance(retrograde_chance) ? false : true;
+	orbit.prograde = Rand::chance(settings.retrograde_chance) ? false : true;
 
 	return orbit;
 }
@@ -473,17 +473,8 @@ Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter, float r
 
 void Universe::rem_body(Body& body)
 {
-
-	// Find iterator->body to remove.
-	auto remove_it = get_iterator(body.get_id());
-
-	if (has_partitioning()) {
-		partitioning_method->rem_body(**remove_it);
-	}
-
-	body.notify_being_removed(nullptr);
-
-	active_bodies.erase(remove_it);
+	// Active bodies is sorted by id, so call more efficient rem_body by id method.
+	rem_body(body.get_id());
 }
 
 bool Universe::has_partitioning() const

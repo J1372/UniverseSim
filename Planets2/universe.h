@@ -115,8 +115,7 @@ public:
 	void create_universe();
 
 	// Returns a random orbit
-	Orbit gen_rand_orbit(const Body& orbited, const Body& orbiter, float retrograde_chance) const;
-
+	Orbit gen_rand_orbit(const Body& orbited, const Body& orbiter) const;
 
 	// Creates a random body and returns a reference to it.
 	Body& create_rand_body();
@@ -133,14 +132,15 @@ public:
 	// Returns the universe's current settings.
 	UniverseSettings& get_settings();
 
-	// Removes a body by its id.
+	// Removes a body from the universe by its id.
 	void rem_body(int id);
 
-	// Removes a body
+	// Removes a body from the universe.
 	void rem_body(Body& body);
 
 	// Returns the body at the coordinate, or nullptr if not found.
 	Body* get_body(Vector2 point) const;
+
 	// Returns the body associated with the id, or nullptr if not found.
 	Body* get_body(int id) const;
 
