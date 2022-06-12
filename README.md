@@ -20,7 +20,7 @@ The user can press the H key for help and to see a list of all toggles and comma
 - Generation of dynamic universes.
   - Multiple different planetary types with varying densities.
   - Generation of bodies with random masses and uniform random positions.
-  - Customizable random system generator, which generates a functional planetary system with satellites of varying distances and orbital eccentricities. Paramaterized by user-specified:
+  - Customizable random system generator, which generates a functional planetary system with satellites of varying distances and orbital eccentricities. Parameterized by user-specified:
     - Ratio of central body mass to system mass
     - Min and max number of planets
     - Min and max distance from central body
@@ -51,6 +51,7 @@ The default Raylib library does not come with standard gui elements, so I made m
 - Dropdown - A list of choices that can be selected from. Expands on click.
 - Label - A text label.
 - TextBox - A box that can be clicked on and text entered into.
+- Slider - A slider to set a value between a min and max value.
 
 ## Scenes
 - Scene - The base interface for every scene.
@@ -66,12 +67,20 @@ The simulation scene delegates some camera policy to a camera state machine.
 - FreeCamera - A camera with unrestricted movement that is fully controlled by the user.
 - AnchoredCamera - A camera whose target is kept focused on a planetary body. The user can still pan the camera around, but this camera state prevents the focused body from going off screen.
 
+### Interaction states
+The simulation scene uses a state machine for general user interaction with the universe.
+- InteractionState - The base interface for interaction states.
+- SystemCreation - User generates and previews planetary systems, potentially adding them to the universe.
+- PlanetCreation - User customizes the velocity and mass of a body to be added to the universe.
+- DefaultInteraction - The default user interaction with the universe. Can delete planets.
+
 ## Simulation model
 - Universe - Holds settings and a collection of planetary bodies. Updates the model, optionally delegating collision checking to a partitioning method, and handles Collision events.
 - UniverseSettings - Struct for settings that are used to parameterize universe generation and physics simulation.
 - Body - A planetary body in the universe.
 - Physics - Namespace for common physics related methods.
 - BarnesHut - An implementation of the Barnes-Hut gravity approximation algorithm.
+- Orbit - A description of an orbit around a planetary body.
 
 ### Partitionings
 Based on user selected settings, the universe update tick may delegate collision checking and finding a body based on a point to a partitioning method.
@@ -88,5 +97,6 @@ The simulation model has some event structs in order to represent events and hol
 
 
 ## Other
+- Circle - a representation of a circle with radius around a point.
 - my_random - Namespace for random number generation.
 - View - Entrypoint to the program. Initializes Raylib and updates the active scene.
