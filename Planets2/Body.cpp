@@ -90,6 +90,12 @@ float Body::dist(const Body& other) const
 	return std::sqrt(c_squared);
 }
 
+float Body::dist_squared(const Body& other) const
+{
+	float c_squared = std::pow(other.x - x, 2) + std::pow(other.y - y, 2);
+	return c_squared;
+}
+
 bool Body::contains_point(Vector2 point) const
 {
 	return Physics::point_in_circle(point, x, y, radius);

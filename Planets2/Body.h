@@ -147,8 +147,11 @@ public:
 	// Returns the distance in (x,y) vectors to the other body.
 	std::array<float, 2> distv(const Body& other) const;
 
-	// Returns the scalar distance between this body to the other body.
+	// Returns the scalar distance between this body and the other body.
 	float dist(const Body& other) const;
+
+	// Returns the scalar distance squared between this body and the other body.
+	float dist_squared(const Body & other) const;
 
 	// Returns true if the point overlaps with this body.
 	bool contains_point(Vector2 point) const;

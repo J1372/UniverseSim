@@ -9,30 +9,21 @@ bool Physics::have_collided(const Body& body1, const Body& body2)
 	Vector2 pos1 = body1.pos();
 	Vector2 pos2 = body2.pos();
 
-	float c_squared = std::pow(pos2.x - pos1.x, 2) + std::pow(pos2.y - pos1.y, 2);
-	return c_squared < std::pow((body2.get_radius() + body1.get_radius()), 2);
+	float dist_squared = Physics::dist_squared(pos1, pos2);
+	float combined_radius = body1.get_radius() + body2.get_radius();
+	return dist_squared < std::pow(combined_radius, 2);
 }
 
 bool Physics::point_in_circle(Vector2 point, float circle_x, float circle_y, float radius)
 {
-	float dist_x = point.x - circle_x;
-	float dist_y = point.y - circle_y;
-
-	float dist_squared = std::pow(dist_x, 2) + std::pow(dist_y, 2);
-	float dist = std::sqrt(dist_squared); // can compare to radius^2 instead.
-
-	return dist <= radius;
+	float dist_squared = Physics::dist_squared(point, { circle_x, circle_y });
+	return dist_squared <= radius * radius;
 }
 
 bool Physics::point_in_circle(Vector2 point, Circle circle)
 {
-	float dist_x = point.x - circle.center.x;
-	float dist_y = point.y - circle.center.y;
-
-	float dist_squared = std::pow(dist_x, 2) + std::pow(dist_y, 2);
-	float dist = std::sqrt(dist_squared); // can compare to radius^2 instead.
-
-	return dist <= circle.radius;
+	float dist_squared = Physics::dist_squared(point, circle.center);
+	return dist_squared <= circle.radius * circle.radius;
 }
 
 bool Physics::point_in_rect(Vector2 point, Rectangle rect)
@@ -64,10 +55,7 @@ bool Physics::body_intersects_rect(const Body& body, Rectangle rect)
 	float closest_x = std::clamp(pos.x, rect.x, right);
 	float closest_y = std::clamp(pos.y, rect.y, bottom);
 
-	float dist_x = pos.x - closest_x;
-	float dist_y = pos.y - closest_y;
-
-	float dist_squared = (dist_x * dist_x) + (dist_y * dist_y);
+	float dist_squared = Physics::dist_squared(pos, { closest_x, closest_y });
 	return dist_squared < (radius * radius);
 }
 
@@ -81,10 +69,7 @@ bool Physics::circle_intersects_rect(Circle circle, Rectangle rect)
 	float closest_x = std::clamp(circle.center.x, rect.x, right);
 	float closest_y = std::clamp(circle.center.y, rect.y, bottom);
 
-	float dist_x = circle.center.x - closest_x;
-	float dist_y = circle.center.y - closest_y;
-
-	float dist_squared = (dist_x * dist_x) + (dist_y * dist_y);
+	float dist_squared = Physics::dist_squared(circle.center, { closest_x, closest_y });
 	return dist_squared < (radius* radius);
 }
 
@@ -107,22 +92,28 @@ std::array<float, 2> Physics::distv(Vector2 point1, Vector2 point2)
 
 float Physics::net_force(const Body& body1, const Body& body2, float grav_const)
 {
-	float dist = body1.dist(body2);
+	float dist = body1.dist_squared(body2);
+	
+	// Dist >= 0. Could add a very small number to dist to prevent division by 0. and avoid if check.
 	if (dist == 0) {
+		// Avoid division by 0.
 		return 0.0f;
 	}
 
-	return (grav_const * body1.get_mass() * body2.get_mass()) / std::pow(dist, 2);
+	return (grav_const * body1.get_mass() * body2.get_mass()) / dist;
 }
 
 float Physics::net_force(const Body& body, Vector2 center_mass, long point_mass, float grav_const)
 {
-	float dist = Physics::dist(body.pos(), center_mass);
+	float dist = Physics::dist_squared(body.pos(), center_mass);
+	
+	// Dist >= 0. Could add a very small number to dist to prevent division by 0. and avoid if check.
 	if (dist == 0) {
+		// Avoid division by 0.
 		return 0.0f;
 	}
 
-	return (grav_const * body.get_mass() * point_mass) / std::pow(dist, 2);
+	return (grav_const * body.get_mass() * point_mass) / dist;
 }
 
 void Physics::grav_pull(Body& body1, Body& body2, float grav_const)
