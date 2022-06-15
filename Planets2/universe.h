@@ -42,7 +42,7 @@ class Universe {
 	int generated_bodies = 0;
 
 	// Handles all collision events.
-	void handle_collisions(std::vector<Collision>& collisions);
+	void handle_collisions(std::span<const Collision> collisions);
 
 	// Handles a collision event. Adds any bodies to be removed to to_remove.
 	void handle_collision(Collision collision, std::vector<Removal>& to_remove);
@@ -145,7 +145,7 @@ public:
 	Body* get_body(int id) const;
 
 	// Returns a reference to all bodies in the universe
-	const std::vector<std::unique_ptr<Body>>& get_bodies() const;
+	std::span<const std::unique_ptr<Body>> get_bodies() const;
 
 	// Returns number of bodies currently in the universe.
 	int get_num_bodies() const;

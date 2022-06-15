@@ -294,7 +294,7 @@ void Universe::handle_collision(Collision collision, std::vector<Removal>& to_re
 
 }
 
-void Universe::handle_collisions(std::vector<Collision>& collisions)
+void Universe::handle_collisions(std::span<const Collision> collisions)
 {
 	std::vector<Removal> to_remove;
 	to_remove.reserve(active_bodies.size());
@@ -492,7 +492,7 @@ UniverseSettings& Universe::get_settings()
 	return settings;
 }
 
-const std::vector<std::unique_ptr<Body>>& Universe::get_bodies() const
+std::span<const std::unique_ptr<Body>> Universe::get_bodies() const
 {
 	return active_bodies;
 }
