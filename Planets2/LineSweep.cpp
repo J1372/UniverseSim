@@ -171,7 +171,7 @@ std::vector<Collision> LineSweep::get_collisions()
     return collisions;
 }
 
-int LineSweep::get_collisions(Body& entry, std::vector<Body*>& currently_active, std::vector<Collision>& collisions) const
+int LineSweep::get_collisions(Body& entry, std::span<Body*> currently_active, std::vector<Collision>& collisions) const
 {
     for (Body* body : currently_active) {
         if (Physics::have_collided(entry, *body)) {

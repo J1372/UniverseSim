@@ -24,7 +24,7 @@ class LineSweep : public SpatialPartitioning
 
 	// Scans for and adds any collision events between the entering body and the currently active bodies to the collisions vector.
 	// Returns number of collision checks performed.
-	int get_collisions(Body& entry, std::vector<Body*>& currently_active, std::vector<Collision>& collisions) const;
+	int get_collisions(Body& entry, std::span<Body*> currently_active, std::vector<Collision>& collisions) const;
 
 	// Sorts entry and leave events in ascending order.
 	void sort_events();
