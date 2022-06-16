@@ -140,13 +140,13 @@ public:
 	void pos_update();
 
 	// Using the given forces, adjusts this body's acceleration.
-	void grav_pull(std::array<float, 2> force_vector);
+	void grav_pull(Vector2 pull);
 
 	// Returns this body's momentum vector.
-	std::array<float, 2> get_momentum() const;
+	Vector2 get_momentum() const;
 
 	// Returns the vector distance to the other body.
-	std::array<float, 2> distv(const Body& other) const;
+	Vector2 distv(const Body& other) const;
 
 	// Returns the scalar distance between this body and the other body.
 	float dist(const Body& other) const;

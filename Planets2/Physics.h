@@ -37,8 +37,8 @@ namespace Physics {
 	// Can be used to avoid sqrt call in places where you don't need the actual distance.
 	float dist_squared(Vector2 point1, Vector2 point2);
 
-	// Returns the vector distance between two points in terms of (x,y) directions.
-	std::array<float, 2> distv(Vector2 point1, Vector2 point2);
+	// Returns the distance vector between two points in terms of (x,y) directions.
+	Vector2 distv(Vector2 point1, Vector2 point2);
 
 	// Returns the scalar net force applied by each body to each other.
 	float net_force(const Body& body1, const Body& body2, float grav_const);

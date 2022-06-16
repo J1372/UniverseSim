@@ -73,9 +73,9 @@ Color Body::color() const
 	return type->color;
 }
 
-std::array<float, 2> Body::distv(const Body& other) const
+Vector2 Body::distv(const Body& other) const
 {
-	std::array<float, 2> vector = { other.position.x - position.x,
+	Vector2 vector = { other.position.x - position.x,
 		other.position.y - position.y };
 	return vector;
 }
@@ -87,8 +87,8 @@ float Body::dist(const Body& other) const
 
 float Body::dist_squared(const Body& other) const
 {
-	std::array<float, 2> vector = distv(other);
-	float c_squared = std::pow(vector[0], 2) + std::pow(vector[1], 2);
+	Vector2 vector = distv(other);
+	float c_squared = std::pow(vector.x, 2) + std::pow(vector.y, 2);
 	return c_squared;
 }
 
@@ -156,16 +156,16 @@ bool Body::can_eat(const Body& other) const
 
 void Body::absorb(const Body& other)
 {
-	std::array<float, 2> mom = get_momentum();
-	std::array<float, 2> other_mom = other.get_momentum();
-	std::array<float, 2> combined_mom { mom[0] + other_mom[0],
-		mom[1] + other_mom[1] };
+	Vector2 mom = get_momentum();
+	Vector2 other_mom = other.get_momentum();
+	Vector2 combined_mom { mom.x + other_mom.x,
+		mom.y + other_mom.y };
 
 	long combined_mass = mass + other.mass;
 
 	// Calculate the final velocity of the combined mass.
-	float vel_fx = combined_mom[0] / ((double)combined_mass);
-	float vel_fy = combined_mom[1] / ((double)combined_mass);
+	float vel_fx = combined_mom.x / ((double)combined_mass);
+	float vel_fy = combined_mom.y / ((double)combined_mass);
 
 	velocity.x = vel_fx;
 	velocity.y = vel_fy;
@@ -211,13 +211,13 @@ void Body::pos_update()
 
 }
 
-void Body::grav_pull(std::array<float, 2> force_vector)
+void Body::grav_pull(Vector2 pull)
 {
-	force.x += force_vector[0];
-	force.y += force_vector[1];
+	force.x += pull.x;
+	force.y += pull.y;
 }
 
-std::array<float, 2> Body::get_momentum() const
+Vector2 Body::get_momentum() const
 {
 	return { mass * velocity.x , mass * velocity.y };
 }
