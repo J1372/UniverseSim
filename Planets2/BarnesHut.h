@@ -28,9 +28,6 @@ class BarnesHut
 	std::unique_ptr<BarnesHut> LL = nullptr;
 	std::unique_ptr<BarnesHut> LR = nullptr;
 
-	// In Barnes-Hut, a quad can only have 0 or 1 bodies.
-	Body* node_body = nullptr;
-
 	// The center of mass of all bodies in and below this node.
 	Vector2 center_of_mass {0,0};
 
@@ -46,8 +43,8 @@ class BarnesHut
 
 	Vector2 calc_force(const Body& body) const;
 
-	// Handles calculations for updating this node's mass sum and center of mass when a new body is added.
-	void update_mass_add(const Body& to_add);
+	// Handles calculations for updating this node's mass sum and center of mass when a new point mass is added.
+	void update_mass_add(Vector2 center, long mass);
 
 
 public:
@@ -66,8 +63,11 @@ public:
 	// Will add a body to the most appropriate quad node. Potentially splits that node if it reached its capacity.
 	void add_body(Body& to_add);
 
-	// Adds the body to the correct child quad.
-	void add_to_child(Body& body);
+	// Will add a point mass to the most appropriate quad node. Potentially splits that node if it reached its capacity.
+	void add_body(Vector2 center, long mass);
+
+	// Adds the point mass to the correct child quad.
+	void add_to_child(Vector2 center, long mass);
 
 	// Returns true if this is a leaf node.
 	bool is_leaf() const;
@@ -78,8 +78,8 @@ public:
 	// Rebuilds the quadtree used for Barnes-Hut approximation.
 	void update(std::span<const std::unique_ptr<Body>> bodies);
 
-	// Returns true if the body's center is inside the quad's dimensions.
-	bool contains(Body& body) const;
+	// Returns true if a point is inside the quad's dimensions.
+	bool contains(Vector2 point) const;
 
 	// Returns true if the node has no body in it.
 	bool is_empty() const;

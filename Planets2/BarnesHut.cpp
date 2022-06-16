@@ -1,6 +1,7 @@
 #include "BarnesHut.h"
 #include "Body.h"
 #include "Physics.h"
+#include <raymath.h>
 
 float BarnesHut::approximation_value;
 
@@ -34,7 +35,7 @@ bool BarnesHut::sufficiently_far(const Body& body) const
 {
 	return dist_ratio(body) < approximation_value;
 }
-void BarnesHut::update_mass_add(const Body& to_add)
+void BarnesHut::update_mass_add(Vector2 center, long mass)
 {
 	/*
 	* Need to calculate center of mass change for both x and y coordinates.
@@ -84,18 +85,18 @@ void BarnesHut::update_mass_add(const Body& to_add)
 		// This is only a problem in leaf nodes, parent nodes' center of masses should not have this problem, even with rounding error.
 
 		// This body is the only one affecting this node's center mass, so
-		center_of_mass = to_add.pos();
-		mass_sum += to_add.get_mass();
+		center_of_mass = center;
+		mass_sum = mass;
 
 		return;
 	}
 
-	Vector2 body_moment = to_add.get_mass_moment();
+	Vector2 body_moment = {center.x * mass, center.y * mass};
 
 	// find current moment sum for x and y.
 	Vector2 current_moment_sum { center_of_mass.x * mass_sum , center_of_mass.y * mass_sum };
 
-	long combined_mass = mass_sum + to_add.get_mass();
+	long combined_mass = mass_sum + mass;
 
 	center_of_mass.x = (current_moment_sum.x + body_moment.x) / combined_mass;
 	center_of_mass.y = (current_moment_sum.y + body_moment.y) / combined_mass;
@@ -106,30 +107,34 @@ void BarnesHut::update_mass_add(const Body& to_add)
 
 void BarnesHut::add_body(Body& to_add)
 {
+	Vector2 center = to_add.pos();
+	long mass = to_add.get_mass();
+	add_body(to_add.pos(), to_add.get_mass());
+}
+
+void BarnesHut::add_body(Vector2 center, long mass)
+{
 	if (is_leaf()) {
-		if (is_empty()) {
-			node_body = &to_add;
-		}
-		else {
+		if (!is_empty()) {
 			split();
-			add_to_child(to_add);
+			add_to_child(center, mass);
 		}
 	}
 	else {
 		// add to one of our children
-		add_to_child(to_add);
+		add_to_child(center, mass);
 	}
 
-	update_mass_add(to_add);
+	update_mass_add(center, mass);
 }
 
-void BarnesHut::add_to_child(Body& to_add)
+void BarnesHut::add_to_child(Vector2 center, long mass)
 {
 	// Get the child quad that fully contains the body.
-	BarnesHut* contained_in = get_quad<&BarnesHut::contains>(to_add);
+	BarnesHut* contained_in = get_quad<&BarnesHut::contains>(center);
 
 	if (contained_in) {
-		contained_in->add_body(to_add);
+		contained_in->add_body(center, mass);
 	}
 	else {
 		/*
@@ -152,19 +157,19 @@ void BarnesHut::add_to_child(Body& to_add)
 		// Try to place in any empty quad, to avoid splitting even further.
 		BarnesHut* empty_quad = get_quad<&BarnesHut::is_empty>();
 		if (empty_quad) { // empty == is a leaf.
-			empty_quad->add_body(to_add);
+			empty_quad->add_body(center, mass);
 		}
 		else { // if none are empty, which should be even rarer, just add to the upper left quad.
-			UL->add_body(to_add);
+			UL->add_body(center, mass);
 		}
 
 	}
 
 }
 
-bool BarnesHut::contains(Body& body) const
+bool BarnesHut::contains(Vector2 point) const
 {
-	return Physics::point_in_rect(body.pos(), dimensions);
+	return Physics::point_in_rect(point, dimensions);
 }
 
 bool BarnesHut::is_leaf() const
@@ -175,20 +180,19 @@ bool BarnesHut::is_leaf() const
 
 bool BarnesHut::is_empty() const
 {
-	return !node_body;
+	return mass_sum == 0l;
 }
 
 bool BarnesHut::is_full() const
 {
-	return node_body != nullptr;
+	return mass_sum != 0l;
 }
 
 void BarnesHut::update(std::span<const std::unique_ptr<Body>> bodies)
 {
 	concatenate();
-	node_body = nullptr;
 	center_of_mass = { 0,0 };
-	mass_sum = 0;
+	mass_sum = 0l;
 
 	for (const std::unique_ptr<Body>& body : bodies) {
 		add_body(*body);
@@ -211,8 +215,10 @@ void BarnesHut::split()
 	LR = std::make_unique<BarnesHut>(mid_x, mid_y, size);
 
 	// add current body to correct quad
-	add_to_child(*node_body);
-	node_body = nullptr;
+	// We are a leaf, leaves can only have 1 body.
+	// Therefore, our com and mass sum are the com and mass of the 1 body.
+	add_to_child(center_of_mass, mass_sum);
+
 }
 
 void BarnesHut::concatenate()
