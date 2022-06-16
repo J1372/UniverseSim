@@ -8,7 +8,7 @@
 
 #include "Orbit.h"
 
-Body::Body(float x, float y, long mass) : x(x), y(y), mass(std::max(1l, mass))
+Body::Body(float x, float y, long mass) : position{ x, y }, mass(std::max(1l, mass))
 {
 	upgrade_update();
 }
@@ -28,20 +28,19 @@ void Body::set_id(int to_set)
 
 void Body::set_pos(Vector2 to_set)
 {
-	x = to_set.x;
-	y = to_set.y;
+	position = to_set;
 }
 
 void Body::change_pos(Vector2 movement)
 {
-	x += movement.x;
-	y += movement.y;
+	position.x += movement.x;
+	position.y += movement.y;
 }
 
 void Body::change_vel(Vector2 acceleration)
 {
-	vel_x += acceleration.x;
-	vel_y += acceleration.y;
+	velocity.x += acceleration.x;
+	velocity.y += acceleration.y;
 }
 
 int Body::get_id() const
@@ -51,17 +50,17 @@ int Body::get_id() const
 
 Vector2 Body::pos() const
 {
-	return {x, y};
+	return position;
 }
 
 Vector2 Body::vel() const
 {
-	return { vel_x, vel_y };
+	return velocity;
 }
 
 Vector2 Body::acc() const
 {
-	return { acc_x, acc_y };
+	return acceleration;
 }
 
 float Body::get_radius() const
@@ -81,44 +80,46 @@ Color Body::color() const
 
 std::array<float, 2> Body::distv(const Body& other) const
 {
-	return { other.x - x , other.y - y };
+	std::array<float, 2> vector = { other.position.x - position.x,
+		other.position.y - position.y };
+	return vector;
 }
 
 float Body::dist(const Body& other) const
 {
-	float c_squared = std::pow(other.x - x, 2) + std::pow(other.y - y, 2);
-	return std::sqrt(c_squared);
+	return std::sqrt(dist_squared(other));
 }
 
 float Body::dist_squared(const Body& other) const
 {
-	float c_squared = std::pow(other.x - x, 2) + std::pow(other.y - y, 2);
+	std::array<float, 2> vector = distv(other);
+	float c_squared = std::pow(vector[0], 2) + std::pow(vector[1], 2);
 	return c_squared;
 }
 
 bool Body::contains_point(Vector2 point) const
 {
-	return Physics::point_in_circle(point, x, y, radius);
+	return Physics::point_in_circle(point, position.x, position.y, radius);
 }
 
 float Body::left() const
 {
-	return x - radius;
+	return position.x - radius;
 }
 
 float Body::right() const
 {
-	return x + radius;
+	return position.x + radius;
 }
 
 float Body::top() const
 {
-	return y - radius;
+	return position.y - radius;
 }
 
 float Body::bottom() const
 {
-	return y + radius;
+	return position.y + radius;
 }
 
 float Body::diameter() const
@@ -138,17 +139,18 @@ std::pair<Body*, Body*> Body::get_sorted_pair(Body& body1, Body& body2)
 
 void Body::set_orbit(const Orbit& orbit, float point)
 {
-	// Currently all satellites start at periapsis.
+	// Relative position of this satellite around the body it is orbiting.
 	Vector2 relative_pos = orbit.pos_at(point);
-	x = orbit.orbited.x + relative_pos.x;
-	y = orbit.orbited.y + relative_pos.y;
+	Vector2 central_pos = orbit.orbited.pos();
+	position.x = central_pos.x + relative_pos.x;
+	position.y = central_pos.y + relative_pos.y;
 
 	// Relative velocity of this satellite around the body it is orbiting.
 	Vector2 relative_velocity = orbit.vel_vec_at(point);
 
 	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
-	vel_x = orbit.orbited.vel_x + relative_velocity.x;
-	vel_y = orbit.orbited.vel_y + relative_velocity.y;
+	velocity.x = orbit.orbited.velocity.x + relative_velocity.x;
+	velocity.y = orbit.orbited.velocity.y + relative_velocity.y;
 
 }
 
@@ -170,8 +172,8 @@ void Body::absorb(const Body& other)
 	float vel_fx = combined_mom[0] / ((double)combined_mass);
 	float vel_fy = combined_mom[1] / ((double)combined_mass);
 
-	vel_x = vel_fx;
-	vel_y = vel_fy;
+	velocity.x = vel_fx;
+	velocity.y = vel_fy;
 
 
 	// upgrade its type if it meets mass requirements.
@@ -198,14 +200,14 @@ void Body::upgrade_update()
 
 void Body::pos_update()
 {
-	vel_x += acc_x;
-	vel_y += acc_y;
+	velocity.x += acceleration.x;
+	velocity.y += acceleration.y;
 
-	x += vel_x;
-	y += vel_y;
+	position.x += velocity.x;
+	position.y += velocity.y;
 
-	acc_x = 0; // set accelerations to 0 for next tick
-	acc_y = 0;
+	acceleration.x = 0; // set accelerations to 0 for next tick
+	acceleration.y = 0;
 
 }
 
@@ -216,14 +218,14 @@ void Body::grav_pull(std::array<float, 2> force_vector)
 	float d_acc_x = force_vector[0] / mass;
 	float d_acc_y = force_vector[1] / mass;
 
-	acc_x += d_acc_x;
-	acc_y += d_acc_y;
+	acceleration.x += d_acc_x;
+	acceleration.y += d_acc_y;
 
 }
 
 std::array<float, 2> Body::get_momentum() const
 {
-	return { mass * vel_x , mass * vel_y };
+	return { mass * velocity.x , mass * velocity.y };
 }
 
 void Body::add_debug_text(const std::string&& text)
@@ -276,7 +278,7 @@ Rectangle Body::get_bounding_box() const
 
 Vector2 Body::get_mass_moment() const
 {
-	return { mass * x, mass * y };
+	return { mass * position.x, mass * position.y };
 }
 
 bool Body::operator==(const Body& other) const

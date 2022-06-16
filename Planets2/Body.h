@@ -55,15 +55,17 @@ class Body {
 	// Observers to notify when this body is being removed.
 	Event<Removal> on_removal_observers;
 
-
+	// Body's unique id.
 	int id = -1;
 
-	float x = 0.0;
-	float y = 0.0;
-	float vel_x = 0;
-	float vel_y = 0;
-	float acc_x = 0;
-	float acc_y = 0;
+	// Body's physics vectors.
+
+	Vector2 position;
+	Vector2 velocity;
+	Vector2 acceleration;
+
+	// Net force vector acting on this body this tick.
+	//Vector2 force;
 
 	float radius = 0.0f; // in units. same as distance.
 	long mass = 0l; // in kg
@@ -80,7 +82,7 @@ public:
 
 	Body(float x, float y, long mass);
 
-	// satellite constructor
+	// Satellite constructor.
 	Body(long mass, const Orbit& orbit, float point);
 
 	// Sets this body's id.
@@ -89,25 +91,25 @@ public:
 	// Sets this body's position.
 	void set_pos(Vector2 to_set);
 
-	// Changes this body's position by the given vectors.
+	// Changes this body's position by the given vector.
 	void change_pos(Vector2 movement);
 
-	// Changes this body's velocity by the given vectors.
+	// Changes this body's velocity by the given vector.
 	void change_vel(Vector2 acceleration);
 
 	// Returns this body's id.
 	int get_id() const;
 
-	// Returns this body's position vectors.
+	// Returns this body's position vector.
 	Vector2 pos() const;
 
-	// Returns this body's velocity vectors.
+	// Returns this body's velocity vector.
 	Vector2 vel() const;
 
-	// Returns this body's acceleration vectors.
+	// Returns this body's acceleration vector.
 	Vector2 acc() const;
 
-	// Returns this body's radius vectors.
+	// Returns this body's radius.
 	float get_radius() const;
 
 	// Returns this body's mass.
@@ -141,10 +143,10 @@ public:
 	// Using the given forces, adjusts this body's acceleration.
 	void grav_pull(std::array<float, 2> force_vector);
 
-	// Returns this body's momentum in x and y vectors.
+	// Returns this body's momentum vector.
 	std::array<float, 2> get_momentum() const;
 
-	// Returns the distance in (x,y) vectors to the other body.
+	// Returns the vector distance to the other body.
 	std::array<float, 2> distv(const Body& other) const;
 
 	// Returns the scalar distance between this body and the other body.
@@ -198,7 +200,7 @@ public:
 	// Returns a bounding box for the body.
 	Rectangle get_bounding_box() const;
 
-	// Returns the body's mass moment vectors (x * mass, y * mass).
+	// Returns the body's mass moment vector (x * mass, y * mass).
 	Vector2 get_mass_moment() const;
 
 	// Returns true if this body's id is equal to the other body's id, else false.
