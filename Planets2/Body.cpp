@@ -58,11 +58,6 @@ Vector2 Body::vel() const
 	return velocity;
 }
 
-Vector2 Body::acc() const
-{
-	return acceleration;
-}
-
 float Body::get_radius() const
 {
 	return radius;
@@ -200,27 +195,26 @@ void Body::upgrade_update()
 
 void Body::pos_update()
 {
+	Vector2 acceleration{
+		force.x / mass,
+		force.y / mass,
+	};
+
 	velocity.x += acceleration.x;
 	velocity.y += acceleration.y;
 
 	position.x += velocity.x;
 	position.y += velocity.y;
 
-	acceleration.x = 0; // set accelerations to 0 for next tick
-	acceleration.y = 0;
+	force.x = 0; // set forces on this body to 0 for next tick.
+	force.y = 0;
 
 }
 
 void Body::grav_pull(std::array<float, 2> force_vector)
 {
-
-	// calc net acceleration for both vectors.
-	float d_acc_x = force_vector[0] / mass;
-	float d_acc_y = force_vector[1] / mass;
-
-	acceleration.x += d_acc_x;
-	acceleration.y += d_acc_y;
-
+	force.x += force_vector[0];
+	force.y += force_vector[1];
 }
 
 std::array<float, 2> Body::get_momentum() const

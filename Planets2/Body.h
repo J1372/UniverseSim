@@ -62,10 +62,9 @@ class Body {
 
 	Vector2 position;
 	Vector2 velocity;
-	Vector2 acceleration;
 
 	// Net force vector acting on this body this tick.
-	//Vector2 force;
+	Vector2 force;
 
 	float radius = 0.0f; // in units. same as distance.
 	long mass = 0l; // in kg
