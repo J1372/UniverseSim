@@ -1,5 +1,4 @@
 #include "QuadTree.h"
-#include <iostream>
 #include <string>
 #include "Physics.h"
 #include "Body.h"
