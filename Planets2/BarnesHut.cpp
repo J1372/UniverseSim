@@ -91,15 +91,15 @@ void BarnesHut::update_mass_add(Vector2 center, long mass)
 		return;
 	}
 
-	Vector2 body_moment = {center.x * mass, center.y * mass};
+	Vector2 new_moment = Physics::moment(center, mass);
 
 	// find current moment sum for x and y.
-	Vector2 current_moment_sum { center_of_mass.x * mass_sum , center_of_mass.y * mass_sum };
+	Vector2 current_moment_sum = Physics::moment(center_of_mass, mass_sum);
 
 	long combined_mass = mass_sum + mass;
 
-	center_of_mass.x = (current_moment_sum.x + body_moment.x) / combined_mass;
-	center_of_mass.y = (current_moment_sum.y + body_moment.y) / combined_mass;
+	center_of_mass.x = (current_moment_sum.x + new_moment.x) / combined_mass;
+	center_of_mass.y = (current_moment_sum.y + new_moment.y) / combined_mass;
 
 	mass_sum = combined_mass;
 
@@ -107,8 +107,6 @@ void BarnesHut::update_mass_add(Vector2 center, long mass)
 
 void BarnesHut::add_body(Body& to_add)
 {
-	Vector2 center = to_add.pos();
-	long mass = to_add.get_mass();
 	add_body(to_add.pos(), to_add.get_mass());
 }
 

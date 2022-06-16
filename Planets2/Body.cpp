@@ -255,7 +255,7 @@ Rectangle Body::get_bounding_box() const
 
 Vector2 Body::get_mass_moment() const
 {
-	return { mass * position.x, mass * position.y };
+	return Physics::moment(position, mass);
 }
 
 bool Body::operator==(const Body& other) const
