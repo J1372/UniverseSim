@@ -158,7 +158,7 @@ void BarnesHut::add_to_child(Vector2 center, long mass)
 			empty_quad->add_body(center, mass);
 		}
 		else { // if none are empty, which should be even rarer, just add to the upper left quad.
-			UL->add_body(center, mass);
+			UL().add_body(center, mass);
 		}
 
 	}
@@ -172,8 +172,7 @@ bool BarnesHut::contains(Vector2 point) const
 
 bool BarnesHut::is_leaf() const
 {
-	// Non-leaf nodes always have all 4 quads.
-	return UL == nullptr;
+	return children == nullptr;
 }
 
 bool BarnesHut::is_empty() const
@@ -207,10 +206,11 @@ void BarnesHut::split()
 
 	float size = dimensions.width / 2.0f;
 
-	UL = std::make_unique<BarnesHut>(x, y, size);
-	UR = std::make_unique<BarnesHut>(mid_x, y, size);
-	LL = std::make_unique<BarnesHut>(x, mid_y, size);
-	LR = std::make_unique<BarnesHut>(mid_x, mid_y, size);
+	children = std::make_unique<std::array<BarnesHut, 4>>();
+	UL() = { x, y, size };
+	UR() = { mid_x, y, size };
+	LL() = { x, mid_y, size };
+	LR() = { mid_x, mid_y, size };
 
 	// add current body to correct quad
 	// We are a leaf, leaves can only have 1 body.
@@ -221,10 +221,7 @@ void BarnesHut::split()
 
 void BarnesHut::concatenate()
 {
-	UL.reset();
-	UR.reset();
-	LL.reset();
-	LR.reset();
+	children.reset();
 }
 
 void BarnesHut::handle_gravity(Body& body, float grav_const) const
@@ -238,10 +235,9 @@ void BarnesHut::handle_gravity(Body& body, float grav_const) const
 	}
 	else {
 		// Not a leaf, and not sufficiently far away from this body.
-		UL->handle_gravity(body, grav_const);
-		UR->handle_gravity(body, grav_const);
-		LL->handle_gravity(body, grav_const);
-		LR->handle_gravity(body, grav_const);
+		for (BarnesHut& child : *children) {
+			child.handle_gravity(body, grav_const);
+		}
 	}
 
 }

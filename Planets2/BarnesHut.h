@@ -4,6 +4,7 @@
 #include <memory>
 #include <functional>
 #include <span>
+#include <array>
 
 class Body;
 
@@ -18,15 +19,13 @@ class BarnesHut
 	// If a quad has a body, it cannot be a parent.
 	// Each non-empty quad is a leaf.
 
-	Rectangle dimensions;
+	Rectangle dimensions{};
 
-	// Owning pointers to the node's 4 potential children.
+	// The node's 4 potential children.
+	std::unique_ptr<std::array<BarnesHut, 4>> children = nullptr;
 	// For this quad tree implementation in particular (Maximum 1 body per node, AND rebuilt on tick), 
 	// should look into object pooling.
-	std::unique_ptr<BarnesHut> UL = nullptr;
-	std::unique_ptr<BarnesHut> UR = nullptr;
-	std::unique_ptr<BarnesHut> LL = nullptr;
-	std::unique_ptr<BarnesHut> LR = nullptr;
+
 
 	// The center of mass of all bodies in and below this node.
 	Vector2 center_of_mass {0,0};
@@ -51,6 +50,8 @@ public:
 
 	// Sets the approximation value to use in the Barnes Hut algorithm. Increasing approximation will improve performance and decrease accuracy.
 	static void set_approximation(float to_set);
+
+	BarnesHut() = default;
 
 	BarnesHut(float size, float approximation_value); // can have max depth just in case
 
@@ -93,6 +94,15 @@ public:
 	// Frees 4 child nodes.
 	void concatenate();
 
+	// Returns the upper left child quad node.
+	BarnesHut& UL() const { return (*children)[0]; }
+	// Returns the upper right child quad node.
+	BarnesHut& UR() const { return (*children)[1]; }
+	// Returns the lower left child quad node.
+	BarnesHut& LL() const { return (*children)[2]; }
+	// Returns the lower right child quad node.
+	BarnesHut& LR() const { return (*children)[3]; }
+
 	/*
 	Returns the first (and hopefully only) child quad where the predicate is true, or nullptr if predicate false in all four child nodes.
 	Checks in order: UL, UR, LL, LR.
@@ -103,22 +113,14 @@ public:
 		// Assert provided bool_func returns a bool when called on a BarnesHut with args... parameter types.
 		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), BarnesHut&&, ArgTypes&&...>,
 			"Given function must return a bool when called on a BarnesHut with the given parameters.");
-
-		if (std::invoke(bool_func, UL.get(), args...)) {
-			return UL.get();
-		}
-		else if (std::invoke(bool_func, UR.get(), args...)) {
-			return UR.get();
-		}
-		else if (std::invoke(bool_func, LL.get(), args...)) {
-			return LL.get();
-		}
-		else if (std::invoke(bool_func, LR.get(), args...)) {
-			return LR.get();
+		
+		for (BarnesHut& child : *children) {
+			if (std::invoke(bool_func, child, args...)) {
+				return &child;
+			}
 		}
 
 		return nullptr;
 	}
 
 };
-
