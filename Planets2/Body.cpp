@@ -5,6 +5,7 @@
 #include <numbers>
 #include "Removal.h"
 #include "Physics.h"
+#include <raymath.h>
 
 #include "Orbit.h"
 
@@ -33,14 +34,12 @@ void Body::set_pos(Vector2 to_set)
 
 void Body::change_pos(Vector2 movement)
 {
-	position.x += movement.x;
-	position.y += movement.y;
+	position = Vector2Add(position, movement);
 }
 
 void Body::change_vel(Vector2 acceleration)
 {
-	velocity.x += acceleration.x;
-	velocity.y += acceleration.y;
+	velocity = Vector2Add(position, acceleration);
 }
 
 int Body::get_id() const
@@ -75,9 +74,7 @@ Color Body::color() const
 
 Vector2 Body::distv(const Body& other) const
 {
-	Vector2 vector = { other.position.x - position.x,
-		other.position.y - position.y };
-	return vector;
+	return Vector2Subtract(other.position, position);
 }
 
 float Body::dist(const Body& other) const
@@ -136,16 +133,13 @@ void Body::set_orbit(const Orbit& orbit, float point)
 {
 	// Relative position of this satellite around the body it is orbiting.
 	Vector2 relative_pos = orbit.pos_at(point);
-	Vector2 central_pos = orbit.orbited.pos();
-	position.x = central_pos.x + relative_pos.x;
-	position.y = central_pos.y + relative_pos.y;
+	position = Vector2Add(orbit.orbited.position, relative_pos);
 
 	// Relative velocity of this satellite around the body it is orbiting.
 	Vector2 relative_velocity = orbit.vel_vec_at(point);
 
 	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
-	velocity.x = orbit.orbited.velocity.x + relative_velocity.x;
-	velocity.y = orbit.orbited.velocity.y + relative_velocity.y;
+	velocity = Vector2Add(orbit.orbited.velocity, relative_velocity);
 
 }
 
@@ -156,22 +150,15 @@ bool Body::can_eat(const Body& other) const
 
 void Body::absorb(const Body& other)
 {
-	Vector2 mom = get_momentum();
-	Vector2 other_mom = other.get_momentum();
-	Vector2 combined_mom { mom.x + other_mom.x,
-		mom.y + other_mom.y };
-
+	// Completely inelastic collision.
+	Vector2 final_momentum = Vector2Add(get_momentum(), other.get_momentum());
 	long combined_mass = mass + other.mass;
 
 	// Calculate the final velocity of the combined mass.
-	float vel_fx = combined_mom.x / ((double)combined_mass);
-	float vel_fy = combined_mom.y / ((double)combined_mass);
+	Vector2 final_velocity = { final_momentum.x / combined_mass,
+		final_momentum.y / combined_mass };
 
-	velocity.x = vel_fx;
-	velocity.y = vel_fy;
-
-
-	// upgrade its type if it meets mass requirements.
+	velocity = final_velocity;
 	set_mass(combined_mass);
 
 }
@@ -200,21 +187,17 @@ void Body::pos_update()
 		force.y / mass,
 	};
 
-	velocity.x += acceleration.x;
-	velocity.y += acceleration.y;
+	velocity = Vector2Add(velocity, acceleration);
+	position = Vector2Add(position, velocity);
 
-	position.x += velocity.x;
-	position.y += velocity.y;
-
-	force.x = 0; // set forces on this body to 0 for next tick.
-	force.y = 0;
+	// set forces on this body to 0 for next tick.
+	force = { 0,0 };
 
 }
 
 void Body::grav_pull(Vector2 pull)
 {
-	force.x += pull.x;
-	force.y += pull.y;
+	force = Vector2Add(force, pull);
 }
 
 Vector2 Body::get_momentum() const

@@ -4,6 +4,8 @@
 #include "Body.h"
 #include "Circle.h"
 
+#include <raymath.h>
+
 bool Physics::have_collided(const Body& body1, const Body& body2)
 {
 	Vector2 pos1 = body1.pos();
@@ -70,24 +72,24 @@ bool Physics::circle_intersects_rect(Circle circle, Rectangle rect)
 	float closest_y = std::clamp(circle.center.y, rect.y, bottom);
 
 	float dist_squared = Physics::dist_squared(circle.center, { closest_x, closest_y });
-	return dist_squared < (radius* radius);
+	return dist_squared < (radius * radius);
 }
 
 float Physics::dist(Vector2 point1, Vector2 point2)
 {
-	float c_squared = std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2);
-	return std::sqrt(c_squared);
+	return std::sqrt(Physics::dist_squared(point1, point2));
 }
 
 float Physics::dist_squared(Vector2 point1, Vector2 point2)
 {
-	float c_squared = std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2);
+	Vector2 vector = Physics::distv(point1, point2);
+	float c_squared = std::pow(vector.x, 2) + std::pow(vector.y, 2);
 	return c_squared;
 }
 
 Vector2 Physics::distv(Vector2 point1, Vector2 point2)
 {
-	return { point2.x - point1.x , point2.y - point1.y };
+	return Vector2Subtract(point2, point1);
 }
 
 float Physics::net_force(const Body& body1, const Body& body2, float grav_const)
@@ -124,17 +126,11 @@ void Physics::grav_pull(Body& body1, Body& body2, float grav_const)
 	// may be able to optimize by computing force vectors directly.
 
 	Vector2 dist_vector = body1.distv(body2);
-
 	float theta = atan2(dist_vector.x, dist_vector.y); // radians
 
-	Vector2 force_vectors{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
-
-	body1.grav_pull(force_vectors);
-
-	force_vectors.x = -force_vectors.x;
-	force_vectors.y = -force_vectors.y;
-
-	body2.grav_pull(force_vectors);
+	Vector2 force_vector{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
+	body1.grav_pull(force_vector);
+	body2.grav_pull(Vector2Negate(force_vector));
 
 }
 
@@ -145,11 +141,9 @@ void Physics::grav_pull(Body& body, Vector2 center_mass, long point_mass, float 
 	// may be able to optimize by computing force vectors directly.
 
 	Vector2 dist_vector = Physics::distv(body.pos(), center_mass);
-
 	float theta = atan2(dist_vector.x, dist_vector.y); // radians
 
-	Vector2 force_vectors{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
-
-	body.grav_pull(force_vectors);
+	Vector2 force_vector{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
+	body.grav_pull(force_vector);
 
 }
