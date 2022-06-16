@@ -1,10 +1,10 @@
 #pragma once
 #include "Event.h"
+#include <raylib.h>
 
 class Body;
 struct Collision;
 struct Rectangle;
-struct Vector2;
 struct Circle;
 
 namespace Physics {
@@ -51,5 +51,12 @@ namespace Physics {
 
 	// Applies a gravitational force from the point mass to the body.
 	void grav_pull(Body& body, Vector2 center_mass, long point_mass, float grav_const);
+
+	// Returns the moment of a vector and a given quantity.
+	template <typename T>
+	Vector2 moment(Vector2 vector, T quantity)
+	{
+		return { vector.x * quantity, vector.y * quantity };
+	}
 
 }
