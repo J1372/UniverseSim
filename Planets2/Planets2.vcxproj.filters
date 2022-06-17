@@ -199,6 +199,7 @@
     <ClInclude Include="FreeCamera.h">
       <Filter>Scenes\SimScene\CameraStates</Filter>
     </ClInclude>
+    <ClInclude Include="QuadChildren.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

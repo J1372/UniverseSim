@@ -129,7 +129,7 @@ void BarnesHut::add_body(Vector2 center, long mass)
 void BarnesHut::add_to_child(Vector2 center, long mass)
 {
 	// Get the child quad that fully contains the body.
-	BarnesHut* contained_in = get_quad<&BarnesHut::contains>(center);
+	BarnesHut* contained_in = children->get_quad<&BarnesHut::contains>(center);
 
 	if (contained_in) {
 		contained_in->add_body(center, mass);
@@ -153,12 +153,12 @@ void BarnesHut::add_to_child(Vector2 center, long mass)
 		*/
 
 		// Try to place in any empty quad, to avoid splitting even further.
-		BarnesHut* empty_quad = get_quad<&BarnesHut::is_empty>();
+		BarnesHut* empty_quad = children->get_quad<&BarnesHut::is_empty>();
 		if (empty_quad) { // empty == is a leaf.
 			empty_quad->add_body(center, mass);
 		}
 		else { // if none are empty, which should be even rarer, just add to the upper left quad.
-			UL().add_body(center, mass);
+			children->UL().add_body(center, mass);
 		}
 
 	}
@@ -201,19 +201,11 @@ void BarnesHut::split()
 {
 	float x = dimensions.x;
 	float y = dimensions.y;
-	float mid_x = dimensions.x + dimensions.width / 2.0f;
-	float mid_y = dimensions.y + dimensions.height / 2.0f;
 
-	float size = dimensions.width / 2.0f;
-
-	children = std::make_unique<std::array<BarnesHut, 4>>();
-	UL() = { x, y, size };
-	UR() = { mid_x, y, size };
-	LL() = { x, mid_y, size };
-	LR() = { mid_x, mid_y, size };
+	children = std::make_unique<QuadChildren<BarnesHut>>(x, y, dimensions.width);
 
 	// add current body to correct quad
-	// We are a leaf, leaves can only have 1 body.
+	// We are a leaf, and leaves can only have 1 body.
 	// Therefore, our com and mass sum are the com and mass of the 1 body.
 	add_to_child(center_of_mass, mass_sum);
 

@@ -2,9 +2,8 @@
 
 #include "raylib.h"
 #include <memory>
-#include <functional>
 #include <span>
-#include <array>
+#include "QuadChildren.h"
 
 class Body;
 
@@ -22,7 +21,7 @@ class BarnesHut
 	Rectangle dimensions{};
 
 	// The node's 4 potential children.
-	std::unique_ptr<std::array<BarnesHut, 4>> children = nullptr;
+	std::unique_ptr<QuadChildren<BarnesHut>> children = nullptr;
 	// For this quad tree implementation in particular (Maximum 1 body per node, AND rebuilt on tick), 
 	// should look into object pooling.
 
@@ -50,8 +49,6 @@ public:
 
 	// Sets the approximation value to use in the Barnes Hut algorithm. Increasing approximation will improve performance and decrease accuracy.
 	static void set_approximation(float to_set);
-
-	BarnesHut() = default;
 
 	BarnesHut(float size, float approximation_value); // can have max depth just in case
 
@@ -93,34 +90,5 @@ public:
 
 	// Frees 4 child nodes.
 	void concatenate();
-
-	// Returns the upper left child quad node.
-	BarnesHut& UL() const { return (*children)[0]; }
-	// Returns the upper right child quad node.
-	BarnesHut& UR() const { return (*children)[1]; }
-	// Returns the lower left child quad node.
-	BarnesHut& LL() const { return (*children)[2]; }
-	// Returns the lower right child quad node.
-	BarnesHut& LR() const { return (*children)[3]; }
-
-	/*
-	Returns the first (and hopefully only) child quad where the predicate is true, or nullptr if predicate false in all four child nodes.
-	Checks in order: UL, UR, LL, LR.
-	*/
-	template<auto bool_func, class... ArgTypes>
-	BarnesHut* get_quad(ArgTypes&&... args) const
-	{
-		// Assert provided bool_func returns a bool when called on a BarnesHut with args... parameter types.
-		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), BarnesHut&&, ArgTypes&&...>,
-			"Given function must return a bool when called on a BarnesHut with the given parameters.");
-		
-		for (BarnesHut& child : *children) {
-			if (std::invoke(bool_func, child, args...)) {
-				return &child;
-			}
-		}
-
-		return nullptr;
-	}
 
 };

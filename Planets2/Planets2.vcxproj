@@ -177,6 +177,7 @@
     <ClInclude Include="Orbit.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PlanetCreation.h" />
+    <ClInclude Include="QuadChildren.h" />
     <ClInclude Include="SettingsScene.h" />
     <ClInclude Include="AdvCamera.h" />
     <ClInclude Include="SimulationScene.h" />

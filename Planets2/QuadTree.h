@@ -2,6 +2,7 @@
 #include <memory>
 #include "SpatialPartitioning.h"
 #include "raylib.h"
+#include "QuadChildren.h"
 
 class Body;
 
@@ -28,7 +29,7 @@ public:
 	Body* find_body(Vector2 point) const;
 
 	// Returns an array of all 4 child node pointers (UL, UR, LL, LR).
-	const std::array<QuadTree*, 4> get_quads() const;
+	std::span<const QuadTree, 4> get_quads() const;
 
 	// Checks all bodies and reinserts bodies into the most fitting node.
 	// Handles node splitting due to movement.
@@ -43,7 +44,6 @@ public:
 	// Performs a collision check, and returns all collision events.
 	std::vector<Collision> get_collisions();
 
-	~QuadTree() = default;
 
 private:
 
@@ -73,13 +73,11 @@ private:
 	// The number of bodies in this quad and all its children (max depth).
 	int cur_size = 0;
 
-	// References to the parent and owning pointers to the node's 4 potential children.
-
+	// The node's parent node.
 	QuadTree* parent = nullptr;
-	std::unique_ptr<QuadTree> UL = nullptr; // Upper left quad
-	std::unique_ptr<QuadTree> UR = nullptr; // Upper right quad
-	std::unique_ptr<QuadTree> LL = nullptr; // Lower left quad
-	std::unique_ptr<QuadTree> LR = nullptr; // Lower right quad
+
+	// The node's 4 potential children.
+	std::unique_ptr<QuadChildren<QuadTree>> children = nullptr;
 
 	// Adds the body to the appropriate quad, updating node sizes along the way.
 	// Returns a pointer to the node the body was added to.
@@ -152,64 +150,6 @@ private:
 	// Finds a child node that can contain the body, and adds the body somewhere in that node.
 	// Returns a pointer to the actual node the body was added to.
 	QuadTree* add_to_child(Body& body);
-
-
-	/*
-	Returns the first (and hopefully only) child quad where the predicate is true, or nullptr if predicate false in all four child nodes.
-	Checks in order: UL, UR, LL, LR.
-	*/
-	template<auto bool_func, class... ArgTypes>
-	QuadTree* get_quad(ArgTypes&&... args) const
-	{
-		// Assert provided bool_func returns a bool when called on a QuadTree with args... parameter types.
-		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), QuadTree&&, ArgTypes&&...>,
-			"Given function must return a bool when called on a QuadTree with the given parameters.");
-
-		if (std::invoke(bool_func, UL.get(), args...)) {
-			return UL.get();
-		}
-		else if (std::invoke(bool_func, UR.get(), args...)) {
-			return UR.get();
-		}
-		else if (std::invoke(bool_func, LL.get(), args...)) {
-			return LL.get();
-		}
-		else if (std::invoke(bool_func, LR.get(), args...)) {
-			return LR.get();
-		}
-
-		return nullptr;
-	}
-
-	// Returns all child quads (of UL, UR, LL, LR)  where the predicate is true.
-	template<auto bool_func, class... ArgTypes>
-	std::vector<QuadTree*> get_quads(ArgTypes&&... args) const
-	{
-		// Assert provided bool_func returns a bool when called on a QuadTree with args... parameter types.
-		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), QuadTree&&, ArgTypes&&...>,
-			"Given function must return a bool when called on a QuadTree with the given parameters.");
-
-		std::vector<QuadTree*> quads;
-		quads.reserve(4);
-
-		if (std::invoke(bool_func, UL.get(), args...)) {
-			quads.push_back(UL.get());
-		}
-
-		if (std::invoke(bool_func, UR.get(), args...)) {
-			quads.push_back(UR.get());
-		}
-
-		if (std::invoke(bool_func, LL.get(), args...)) {
-			quads.push_back(LL.get());
-		}
-
-		if (std::invoke(bool_func, LR.get(), args...)) {
-			quads.push_back(LR.get());
-		}
-
-		return quads;
-	}
 
 	// Handles possible concatenation in this quad and all relevant parent quads.
 	void concat_check();
