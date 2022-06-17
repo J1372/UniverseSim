@@ -40,10 +40,15 @@ The user can press the H key for help and to see a list of all toggles and comma
   - Toggleable visual representation of partitioning methods during simulation.
     - If planetary body information display also enabled, will also display alongside the body extra information related to the partitioning method.
 
-### Releases
+## Video
+Here is a video of various clips showing the simulator and some of its features (with timestamps in the description):
+
+[Video](https://youtu.be/eocuC2M2wu4)
+
+## Releases
 Runnable binaries of the project for Windows 32 bit and 64 bit can be found under [releases](https://github.com/Xxthedarkmatterturtlepasta003xX/UniverseSim/releases/tag/v1.0.0).
 
-### Building project
+## Building the project
 The project uses C++20 features.
 
 In order to build the project from source code, you must download [Raylib v4.0](https://github.com/raysan5/raylib/releases/tag/4.0.0), then include and link it with your project.
