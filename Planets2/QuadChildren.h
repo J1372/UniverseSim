@@ -6,12 +6,14 @@
 #include <type_traits>
 #include <span>
 
+// Represents the 4 child nodes of a node in a quadtree.
 template <typename T>
 class QuadChildren
 {
 
 	std::array<T, 4> children;
 
+	// Constructs and returns the parent's 4 child nodes.
 	template <class... ArgTypes>
 	std::array<T, 4> construct_array(float x, float y, float parent_size, ArgTypes&&... additional_args)
 	{
@@ -68,13 +70,13 @@ public:
 	}
 
 	/*
-	Returns the first (and hopefully only) child quad where the predicate is true, or nullptr if predicate false in all four child nodes.
+	Returns the first child node where the predicate is true, or nullptr if predicate false in all four child nodes.
 	Checks in order: UL, UR, LL, LR.
 	*/
 	template<auto bool_func, class... ArgTypes>
 	T* get_quad(ArgTypes&&... args)
 	{
-		// Assert provided bool_func returns a bool when called on a BarnesHut with args... parameter types.
+		// Assert provided bool_func returns a bool when called on a quad node with args... parameter types.
 		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), T&&, ArgTypes&&...>,
 			"Given function must return a bool when called on a quad node with the given parameters.");
 
@@ -91,7 +93,7 @@ public:
 	template<auto bool_func, class... ArgTypes>
 	std::vector<T*> get_quads(ArgTypes&&... args)
 	{
-		// Assert provided bool_func returns a bool when called on a QuadTree with args... parameter types.
+		// Assert provided bool_func returns a bool when called on a quad node with args... parameter types.
 		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), T&&, ArgTypes&&...>,
 			"Given function must return a bool when called on a quad node with the given parameters.");
 

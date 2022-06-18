@@ -186,7 +186,6 @@ void QuadTree::rem_body(const Body& body)
 
 bool QuadTree::is_leaf() const
 {
-	// Non-leaf nodes always have all 4 quads.
 	return children == nullptr;
 }
 
