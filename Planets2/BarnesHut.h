@@ -18,19 +18,19 @@ class BarnesHut
 	// If a quad has a body, it cannot be a parent.
 	// Each non-empty quad is a leaf.
 
+	// The center of mass of all bodies in and below this node.
+	Vector2 center_of_mass {0,0};
+
+	// The mass of all bodies in and below this node.
+	long mass_sum = 0l;
+
+	// Area of this quad node.
 	Rectangle dimensions{};
 
 	// The node's 4 potential children.
 	std::unique_ptr<QuadChildren<BarnesHut>> children = nullptr;
 	// For this quad tree implementation in particular (Maximum 1 body per node, AND rebuilt on tick), 
 	// should look into object pooling.
-
-
-	// The center of mass of all bodies in and below this node.
-	Vector2 center_of_mass {0,0};
-
-	// The mass of all bodies in and below this node.
-	long mass_sum = 0l;
 
 	// Returns the width of this quad divided by the distance from its center of mass to the body.
 	float dist_ratio(const Body& body) const;

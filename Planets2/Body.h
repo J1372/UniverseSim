@@ -46,6 +46,27 @@ class Body {
 		END_TYPE
 	};
 
+	// Body's unique id.
+	int id = -1;
+
+	// Universe position vector.
+	Vector2 position;
+
+	// Velocity vector.
+	Vector2 velocity;
+
+	// Net force vector acting on this body this tick.
+	Vector2 force;
+
+	// The radius of the body.
+	float radius = 0.0f;
+
+	// The body's mass.
+	long mass = 0l;
+
+	// A pointer to this body's current planetary type.
+	const TypeExt* type;
+
 	// The current body's type index in TYPES.
 	int type_level = 0;
 
@@ -54,23 +75,6 @@ class Body {
 
 	// Observers to notify when this body is being removed.
 	Event<Removal> on_removal_observers;
-
-	// Body's unique id.
-	int id = -1;
-
-	// Body's physics vectors.
-
-	Vector2 position;
-	Vector2 velocity;
-
-	// Net force vector acting on this body this tick.
-	Vector2 force;
-
-	float radius = 0.0f; // in units. same as distance.
-	long mass = 0l; // in kg
-
-	// A pointer to this body's current planetary type.
-	const TypeExt* type;
 
 public:
 
