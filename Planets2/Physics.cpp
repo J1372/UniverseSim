@@ -123,12 +123,10 @@ void Physics::grav_pull(Body& body1, Body& body2, float grav_const)
 	// can move this to Body, and have physics' just be net_force for center of masses.
 	double force = Physics::net_force(body1, body2, grav_const);
 
-	// may be able to optimize by computing force vectors directly.
-
 	Vector2 dist_vector = body1.distv(body2);
-	float theta = atan2(dist_vector.x, dist_vector.y); // radians
+	float theta = atan2(dist_vector.y, dist_vector.x); // radians
 
-	Vector2 force_vector{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
+	Vector2 force_vector{ (float)(force * cos(theta)), (float)(force * sin(theta)) };
 	body1.grav_pull(force_vector);
 	body2.grav_pull(Vector2Negate(force_vector));
 
@@ -138,12 +136,10 @@ void Physics::grav_pull(Body& body, Vector2 center_mass, long point_mass, float 
 {
 	double force = Physics::net_force(body, center_mass, point_mass, grav_const);
 
-	// may be able to optimize by computing force vectors directly.
-
 	Vector2 dist_vector = Physics::distv(body.pos(), center_mass);
-	float theta = atan2(dist_vector.x, dist_vector.y); // radians
+	float theta = atan2(dist_vector.y, dist_vector.x); // radians
 
-	Vector2 force_vector{ (float)(force * sin(theta)), (float)(force * cos(theta)) };
+	Vector2 force_vector{ (float)(force * cos(theta)), (float)(force * sin(theta)) };
 	body.grav_pull(force_vector);
 
 }
