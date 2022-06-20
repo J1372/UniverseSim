@@ -11,6 +11,8 @@ class QuadTree : public SpatialPartitioning {
 
 public:
 
+	QuadTree() = default;
+
 	QuadTree(float size, int max_bodies_per_quad, int max_depth);
 
 	// internal constructor. still needs to be public for make_unique.
@@ -58,13 +60,13 @@ private:
 	static int quads_generated;
 
 	// The quad's unique id.
-	const int quad_id;
+	int quad_id;
 
 	// The current quad's depth from the root.
-	const int depth;
+	int depth;
 
 	// The dimensions of the quad node.
-	const Rectangle dimensions;
+	Rectangle dimensions;
 
 	// List of body pointers to bodies that are fully contained in this quad.
 	// They do not overlap with any other non-child quad.

@@ -10,6 +10,9 @@
 template <typename T>
 class QuadChildren
 {
+	// Assert T has a default ctor.
+	static_assert(std::is_default_constructible_v<T>,
+		"QuadChildren: node type must have a default constructor.");
 
 	std::array<T, 4> children;
 
@@ -17,8 +20,9 @@ class QuadChildren
 	template <class... ArgTypes>
 	std::array<T, 4> construct_array(float x, float y, float parent_size, ArgTypes&&... additional_args)
 	{
+		// Assert that T has a ctor which takes the given argument types.
 		static_assert(std::is_constructible_v<T, float, float, float, ArgTypes&&...>,
-			"Quad node must have a constructor that takes the given arguments.");
+			"QuadChildren: node type must have a constructor that takes the given argument types.");
 
 		float child_size = parent_size / 2;
 		float mid_x = x + child_size;
@@ -26,7 +30,7 @@ class QuadChildren
 		
 		return
 		{
-			T{ x, y, parent_size / 2, additional_args... },
+			T{ x, y, child_size, additional_args... },
 			T{ mid_x, y, child_size, additional_args... },
 			T{ x, mid_y, child_size, additional_args... },
 			T{ mid_x, mid_y, child_size, std::forward<ArgTypes>(additional_args)... },
@@ -39,6 +43,8 @@ public:
 	QuadChildren<T>(float x, float y, float parent_size, ArgTypes&&... additional_args)
 		: children(construct_array(x, y, parent_size, std::forward<ArgTypes>(additional_args)...))
 	{}
+
+	QuadChildren<T>() = default;
 
 	// Returns the upper left child node.
 	T& UL() { return children[0]; }
@@ -78,7 +84,7 @@ public:
 	{
 		// Assert provided bool_func returns a bool when called on a quad node with args... parameter types.
 		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), T&&, ArgTypes&&...>,
-			"Given function must return a bool when called on a quad node with the given parameters.");
+			"Given function must return a bool when called on a quad node with the given parameter types.");
 
 		for (T& child : children) {
 			if (std::invoke(bool_func, child, args...)) {
@@ -95,7 +101,7 @@ public:
 	{
 		// Assert provided bool_func returns a bool when called on a quad node with args... parameter types.
 		static_assert(std::is_invocable_r_v<bool, decltype(bool_func), T&&, ArgTypes&&...>,
-			"Given function must return a bool when called on a quad node with the given parameters.");
+			"Given function must return a bool when called on a quad node with the given parameter types.");
 
 		std::vector<T*> quads;
 		quads.reserve(4);

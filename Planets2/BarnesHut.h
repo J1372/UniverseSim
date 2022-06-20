@@ -39,8 +39,6 @@ class BarnesHut
 	// that calculating the node's grav pull on the body should stop early.
 	bool sufficiently_far(const Body& body) const;
 
-	Vector2 calc_force(const Body& body) const;
-
 	// Handles calculations for updating this node's mass sum and center of mass when a new point mass is added.
 	void update_mass_add(Vector2 center, long mass);
 
@@ -49,6 +47,8 @@ public:
 
 	// Sets the approximation value to use in the Barnes Hut algorithm. Increasing approximation will improve performance and decrease accuracy.
 	static void set_approximation(float to_set);
+
+	BarnesHut() = default;
 
 	BarnesHut(float size, float approximation_value); // can have max depth just in case
 
