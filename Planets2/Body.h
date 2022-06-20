@@ -2,9 +2,6 @@
 #define BODY_H
 
 #include <raylib.h>
-#include <cmath>
-#include <array>
-#include <vector>
 #include <string>
 
 #include "Event.h"
@@ -108,9 +105,6 @@ public:
 
 	// Returns this body's velocity vector.
 	Vector2 vel() const;
-
-	// Returns this body's acceleration vector.
-	Vector2 acc() const;
 
 	// Returns this body's radius.
 	float get_radius() const;

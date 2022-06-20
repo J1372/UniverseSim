@@ -1,8 +1,4 @@
 #include "Body.h"
-#include <cmath>
-#include <iostream>
-#include "my_random.h"
-#include <numbers>
 #include "Removal.h"
 #include "Physics.h"
 #include <raymath.h>
