@@ -162,15 +162,13 @@ void Body::absorb(const Body& other)
 
 void Body::upgrade_update()
 {
-	while (mass < TYPES[type_level].min_mass) {
-		type_level--;
-	}
+	int change = type->get_change(mass, type + 1);
 
-	while (mass >= TYPES[type_level + 1].min_mass) {
-		type_level++;
+	while (change != 0)
+	{
+		type = type + change;
+		change = type->get_change(mass, type + 1);
 	}
-
-	type = &TYPES[type_level];
 
 	// After updating type, recalculate body radius.
 	radius = std::max(((float)mass) / type->density, 1.0f);

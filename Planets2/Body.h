@@ -11,9 +11,28 @@ struct Removal;
 
 // Represents a type of planetary body.
 struct TypeExt {
-	int density; // Density of this type.
-	long min_mass; // Bodies below this mass cannot be this type.
 	Color color; // Color to use for the body.
+	int density; // Density of this type.
+	long min_mass; // Minimum mass required to be this type.
+
+	// Returns whether a body's type rank has changed due to change in mass.
+	int get_change(long body_mass, const TypeExt* next_type) const
+	{
+		// If mass has met the minimum mass requirement of the next type, return increased.
+		if (body_mass >= next_type->min_mass) {
+			return 1;
+		}
+
+		// If mass is now lower than this type's minimum mass, return decreased.
+		if (body_mass < min_mass) {
+			return -1;
+		}
+
+		// Body stayed the same type.
+		return 0;
+	}
+	
+
 };
 
 
@@ -28,19 +47,21 @@ class Body {
 	* 15
 	*
 	*/
-	static constexpr TypeExt ASTEROID_TYPE = { 10, 0, RAYWHITE };
-	static constexpr TypeExt PLANET_TYPE = { 15, 1000, SKYBLUE };
-	static constexpr TypeExt SUN_TYPE = { 100, 6000, GOLD };
-	static constexpr TypeExt BLACK_HOLE_TYPE = { 1200, 120000, DARKGRAY };
-	static constexpr TypeExt END_TYPE = { -1, LONG_MAX, SKYBLUE }; // A null type.
 
+	static constexpr TypeExt MIN_TYPE = { RAYWHITE, 1, -1};
+	static constexpr TypeExt ASTEROID_TYPE = { RAYWHITE, 10, 0 };
+	static constexpr TypeExt PLANET_TYPE = { SKYBLUE, 15, 1000};
+	static constexpr TypeExt SUN_TYPE = { GOLD, 100, 6000 };
+	static constexpr TypeExt BLACK_HOLE_TYPE = { DARKGRAY, 1200, 120000 };
+	static constexpr TypeExt MAX_TYPE = { SKYBLUE, 1, std::numeric_limits<long>::max()};
 	static constexpr TypeExt TYPES[] =
 	{
+		MIN_TYPE,
 		ASTEROID_TYPE,
 		PLANET_TYPE,
 		SUN_TYPE,
 		BLACK_HOLE_TYPE,
-		END_TYPE
+		MAX_TYPE
 	};
 
 	// Body's unique id.
@@ -62,10 +83,7 @@ class Body {
 	long mass = 0l;
 
 	// A pointer to this body's current planetary type.
-	const TypeExt* type;
-
-	// The current body's type index in TYPES.
-	int type_level = 0;
+	const TypeExt* type = &TYPES[1]; // Starts as asteroid, updates on construction.
 
 	// Represents debug info that has been attached to the body.
 	std::string debug_info;
