@@ -3,8 +3,14 @@
 class Body;
 struct Vector2;
 
+// Holds all variables needed to describe the orbit of a satellite around its orbited body.
+// Provides methods for getting relative satellite information at points in its orbit.
 struct Orbit
 {
+
+	Orbit(const Body& orbited) : orbited(orbited)
+	{}
+
 	// The body being orbited.
 	const Body& orbited;
 
@@ -43,7 +49,7 @@ struct Orbit
 	// The farthest distance of the satellite from the orbited body in the orbit.
 	float apoapsis() const;
 	
-	// Returns the orbit's semi major axis (periapsis + apoapsis) / 2
+	// Returns the orbit's semi major axis.
 	float semi_major_axis() const;
 
 	// Methods for getting various parameters at 'points' in the orbit, from [0, 1].
@@ -53,7 +59,7 @@ struct Orbit
 	// point > 0.5 < 1.0, returning to periapsis
 	// point = 1.0, periapsis.
 
-	// Translates a point [0,1] of an orbit to a radian degree [0, 2pi]
+	// Translates a point [0,1] of the satellite's orbit to a radian degree from orbited [0, 2pi]
 	float translate_point(float point) const;
 
 	// Relative distance of orbiter from orbited at a point in its orbit.
@@ -62,16 +68,13 @@ struct Orbit
 	// Relative position of orbiter around orbited at a point in its orbit.
 	Vector2 pos_at(float point) const;
 
-	// Relative velocity of orbiter around orbited at a point in its orbit.
+	// Relative scalar velocity of orbiter around orbited at a point in its orbit.
 	float vel_at(float point) const;
 
-	// Relative velocity of orbiter around orbited at a point in its orbit.
+	// Relative vector velocity of orbiter around orbited at a point in its orbit.
 	Vector2 vel_vec_at(float point) const;
 
 	// Returns the time needed to complete one orbit.
 	float orbital_period() const;
-
-	Orbit(const Body& orbited) : orbited(orbited)
-	{}
 
 };

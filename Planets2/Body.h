@@ -134,8 +134,8 @@ public:
 	Color color() const;
 
 
-	// Adjusts body's position and velocity such that its path is that of the given orbit.
-	// Body starts at the orbit's periapsis.
+	// Moves the body to be at the given point in the orbit.
+	// Sets body's velocity such that its path is that of the given orbit.
 	void set_orbit(const Orbit& orbit, float point);
 
 	// Returns true if this body's mass is greater than or equal to the mass of the other body.
