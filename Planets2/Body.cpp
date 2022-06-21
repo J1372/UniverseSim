@@ -35,7 +35,7 @@ void Body::change_pos(Vector2 movement)
 
 void Body::change_vel(Vector2 acceleration)
 {
-	velocity = Vector2Add(position, acceleration);
+	velocity = Vector2Add(velocity, acceleration);
 }
 
 int Body::get_id() const
