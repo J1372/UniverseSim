@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <type_traits>
 
 #include "UIElement.h"
 
@@ -29,6 +30,14 @@ public:
 	template <class T, class... ArgTypes>
 	T& add(ArgTypes&&... args)
 	{
+		// Assert that UIElement is a base class of T.
+		static_assert(std::is_convertible_v<T*, UIElement*>,
+			"GuiComponentList: T must publicly inherit from UIElement.");
+
+		// Assert that T has a constructor that takes the given arg types.
+		static_assert(std::is_constructible_v<T, ArgTypes&&...>,
+			"GuiComponentList: T does not have a constructor that takes the given argument types.");
+
 		std::unique_ptr<T> obj_ptr = std::make_unique<T>(std::forward<ArgTypes>(args)...);
 		T& element = *obj_ptr;
 
