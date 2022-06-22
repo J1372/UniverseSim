@@ -3,28 +3,29 @@
 #include <memory>
 
 #include "UIElement.h"
+
 struct Vector2;
 
+// A collection of gui elements that can be used for rendering itself,
+// and delegating user input to its gui elements.
 class GuiComponentList
 {
-	UIElement* active_element = nullptr; // where to send keypresses to.
-	// send keypress returns false if no response or true if it accepts the input.
-	// if false, process input yourself (tab inserts a tab char in TextBox, tab switches to next element in our Scene for example).
-	// must set_unactive() before switching elements.
-	// not all uielements care to store whether they are active or not, but TextBox for example draws a cursor line if active. 
+	// The currentlt active element, that should be notified of user input.
+	UIElement* active_element = nullptr;
+
+	// All gui elements in this component list.
 	std::vector<std::unique_ptr<UIElement>> elements;
 
-	// A separate list of only bisible element pointers, so no need to poll in render() and get_element().
-	// Could set a bool flag has_changed that is implicitly changed after send_click, show hide. And check first in render, so often no loop.
-	// But would still need to poll in get_element without this vector. Which would only happen on any click. Might not be bad.
+	// All gui elements in this component list that are visible.
 	std::vector<UIElement*> visible_elements;
 
-	// if maintain order needed, could give each element an id and keep vectors sorted.
-
+	// Sets the element to be the active element.
 	void set_active(UIElement* element);
 
 public:
 
+	// Adds an element of the given type to the gui.
+	// Constructs the element with the given arguments.
 	template <class T, class... ArgTypes>
 	T& add(ArgTypes&&... args)
 	{
@@ -35,19 +36,29 @@ public:
 		elements.emplace_back(std::move(obj_ptr));
 
 		return element;
-
-		//return *elements.back.get();
 	}
 
+	// Renders the gui.
 	void render();
 
-	UIElement* get_element(Vector2 point); // get top-most element at a point on the screen.
+	// Returns the top-most element at a point on the screen.
+	UIElement* get_element(Vector2 point);
 
+	// Sends a click to the gui.
+	// If the click was on a non-hidden element in the gui, clicks the element.
 	void send_click(Vector2 point);
+
+	// Sends a keypress to the gui.
+	// If an element is active, sends the keypress to the element.
 	bool send_keypress(int key_code);
+
+	// Notifies the active element that the mouse is being dragged.
 	void notify_drag();
 
+	// Shows an element.
 	void show(UIElement& element);
+
+	// Hides an element.
 	void hide(UIElement& element);
 };
 
