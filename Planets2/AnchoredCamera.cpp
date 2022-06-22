@@ -3,7 +3,7 @@
 #include "Body.h"
 #include "universe.h"
 
-void AnchoredCamera::init(const AdvCamera& starting_config)
+AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config)
 {
     camera = starting_config;
 

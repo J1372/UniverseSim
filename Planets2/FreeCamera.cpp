@@ -8,17 +8,17 @@
 
 #include "raylib.h"
 
-void FreeCamera::center_camera()
-{
-	Vector2 center = { GetScreenWidth() / 2, GetScreenHeight() / 2 };
-	camera.set_offset(center);
-}
-
-void FreeCamera::init(const AdvCamera & starting_config)
+FreeCamera::FreeCamera(const AdvCamera & starting_config)
 {
 	camera = starting_config;
 	camera.set_offset_bounds(0, 0, GetScreenWidth(), GetScreenHeight());
 	center_camera();
+}
+
+void FreeCamera::center_camera()
+{
+	Vector2 center = { GetScreenWidth() / 2, GetScreenHeight() / 2 };
+	camera.set_offset(center);
 }
 
 void FreeCamera::goto_body(Body& body)

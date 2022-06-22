@@ -20,9 +20,9 @@ protected:
 public:
 
 	// Camera state implementations
-	// Since these are static, they are initialized before Raylib runs its init.
-	// This means raylib functions wont work correctly in their constructors.
-	// Need to call their inits later, after Raylib has initialized itself and the window.
+	// Since these are static, they are constructed before Raylib runs its init.
+	// This means Raylib functions wont work correctly in their constructors.
+	// Need to initialize them later, after Raylib has initialized itself and the window.
 
 	static FreeCamera free_camera;
 	static AnchoredCamera anchored_camera;

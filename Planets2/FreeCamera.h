@@ -13,8 +13,10 @@ class FreeCamera : public CameraState
 
 public:
 
-	// Initialization to be called after Raylib's init.
-	void init(const AdvCamera& starting_config);
+	FreeCamera() = default;
+
+	// Sets the free camera to the provided configuration.
+	FreeCamera(const AdvCamera& starting_config);
 
 	// Moves the camera's center to the given body.
 	void goto_body(Body& body);

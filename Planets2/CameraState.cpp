@@ -9,6 +9,9 @@ AnchoredCamera CameraState::anchored_camera;
 
 void CameraState::init_cameras(const AdvCamera& starting_config)
 {
-	free_camera.init(starting_config);
-	anchored_camera.init(starting_config);
+	// Constructs cameras to be set to the provided camera configuration.
+	// Needs to be done since they are static,
+	// but rely on accessing Raylib's screen dimensions functions.
+	free_camera = { starting_config };
+	anchored_camera = { starting_config };
 }

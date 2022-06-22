@@ -36,8 +36,10 @@ class AnchoredCamera : public CameraState
 
 public:
 
-	// Initialization to be called after Raylib's init.
-	void init(const AdvCamera& starting_config);
+	AnchoredCamera() = default;
+
+	// Sets the anchored camera to the provided configuration.
+	AnchoredCamera(const AdvCamera& starting_config);
 
 	// Attaches the camera to the given body.
 	void goto_body(Body& body);
