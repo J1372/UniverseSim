@@ -199,7 +199,7 @@ Vector2 Body::get_momentum() const
 	return { mass * velocity.x , mass * velocity.y };
 }
 
-void Body::add_debug_text(const std::string&& text)
+void Body::add_debug_text(const std::string& text)
 {
 	debug_info += text + "\n";
 }

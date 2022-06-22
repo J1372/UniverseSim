@@ -10,13 +10,13 @@ struct Orbit;
 struct Removal;
 
 // Represents a type of planetary body.
-struct TypeExt {
+struct PlanetType {
 	Color color; // Color to use for the body.
 	int density; // Density of this type.
 	long min_mass; // Minimum mass required to be this type.
 
 	// Returns whether a body's type rank has changed due to change in mass.
-	int get_change(long body_mass, const TypeExt* next_type) const
+	int get_change(long body_mass, const PlanetType* next_type) const
 	{
 		// If mass has met the minimum mass requirement of the next type, return increased.
 		if (body_mass >= next_type->min_mass) {
@@ -48,13 +48,13 @@ class Body {
 	*
 	*/
 
-	static constexpr TypeExt MIN_TYPE = { RAYWHITE, 1, -1};
-	static constexpr TypeExt ASTEROID_TYPE = { RAYWHITE, 10, 0 };
-	static constexpr TypeExt PLANET_TYPE = { SKYBLUE, 15, 1000};
-	static constexpr TypeExt SUN_TYPE = { GOLD, 100, 6000 };
-	static constexpr TypeExt BLACK_HOLE_TYPE = { DARKGRAY, 1200, 120000 };
-	static constexpr TypeExt MAX_TYPE = { SKYBLUE, 1, std::numeric_limits<long>::max()};
-	static constexpr TypeExt TYPES[] =
+	static constexpr PlanetType MIN_TYPE = { RAYWHITE, 1, -1};
+	static constexpr PlanetType ASTEROID_TYPE = { RAYWHITE, 10, 0 };
+	static constexpr PlanetType PLANET_TYPE = { SKYBLUE, 15, 1000};
+	static constexpr PlanetType SUN_TYPE = { GOLD, 100, 6000 };
+	static constexpr PlanetType BLACK_HOLE_TYPE = { DARKGRAY, 1200, 120000 };
+	static constexpr PlanetType MAX_TYPE = { SKYBLUE, 1, std::numeric_limits<long>::max()};
+	static constexpr PlanetType TYPES[] =
 	{
 		MIN_TYPE,
 		ASTEROID_TYPE,
@@ -83,7 +83,7 @@ class Body {
 	long mass = 0l;
 
 	// A pointer to this body's current planetary type.
-	const TypeExt* type = &TYPES[1]; // Starts as asteroid, updates on construction.
+	const PlanetType* type = &TYPES[1]; // Starts as asteroid, updates on construction.
 
 	// Represents debug info that has been attached to the body.
 	std::string debug_info;
@@ -168,7 +168,7 @@ public:
 	float dist(const Body& other) const;
 
 	// Returns the scalar distance squared between this body and the other body.
-	float dist_squared(const Body & other) const;
+	float dist_squared(const Body& other) const;
 
 	// Returns true if the point overlaps with this body.
 	bool contains_point(Vector2 point) const;
@@ -189,12 +189,12 @@ public:
 	float diameter() const;
 
 	// Adds the given debug text to the body.
-	void add_debug_text(const std::string&& text);
+	void add_debug_text(const std::string& text);
 
 	// Returns the body's debug text.
 	const std::string& get_debug_text() const;
 
-	// Clears body's ddebug text.
+	// Clears body's debug text.
 	void clear_debug_text();
 
 	// Sets the body's mass to the given value, and checks for type changes.
