@@ -18,15 +18,12 @@ class PlanetCreation : public InteractionState
 	Modifying modify_mode = Modifying::NONE;
 
 	// The body being modified, and potentially added to the universe.
-	std::unique_ptr<Body> creating;
+	std::unique_ptr<Body> creating = nullptr;
 
 	// Creates a default body for the user to modify.
 	std::unique_ptr<Body> create_default_body(Vector2 pos) const;
 
 public:
-
-	// Initialization to be called after Raylib's init.
-	void init();
 
 	// Enters the state by creating a planet at the given position,
 	// which the user can modify.

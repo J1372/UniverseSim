@@ -10,7 +10,7 @@ SystemCreation InteractionState::system_interaction;
 
 void InteractionState::init_states()
 {
-	default_interaction.init();
-	planet_interaction.init();
-	system_interaction.init();
+	default_interaction = {};
+	planet_interaction = {};
+	system_interaction = {};
 }

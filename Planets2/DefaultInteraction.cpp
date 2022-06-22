@@ -7,13 +7,6 @@
 #include "PlanetCreation.h"
 #include "SystemCreation.h"
 
-
-void DefaultInteraction::init()
-{
-
-}
-
-
 InteractionState* DefaultInteraction::process_input(const CameraState& camera_state, Universe& universe)
 {
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {

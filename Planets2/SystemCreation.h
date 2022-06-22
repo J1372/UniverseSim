@@ -12,9 +12,6 @@ class SystemCreation : public InteractionState
 
 public:
 
-	// Initialization to be called after Raylib's init.
-	void init();
-
 	// Enters system generation state by generating a system at the current mouse position.
 	void enter(Vector2 mouse_pos, Universe& universe);
 

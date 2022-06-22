@@ -7,9 +7,6 @@ class DefaultInteraction : public InteractionState
 
 public:
 
-	// Initialization to be called after Raylib's init.
-	void init();
-
 	// Handles user deleting a body and state transitions.
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;
 

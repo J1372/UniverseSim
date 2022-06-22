@@ -13,11 +13,6 @@ std::unique_ptr<Body> PlanetCreation::create_default_body(Vector2 pos) const
 	return std::make_unique<Body>(pos.x, pos.y, mass);
 }
 
-void PlanetCreation::init()
-{
-	creating = nullptr;
-}
-
 void PlanetCreation::enter(Vector2 mouse_pos) // universe point of mouse param
 {
 	creating = create_default_body(mouse_pos);

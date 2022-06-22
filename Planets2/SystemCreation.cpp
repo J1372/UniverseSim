@@ -7,12 +7,6 @@
 #include "DefaultInteraction.h"
 #include "PlanetCreation.h"
 
-
-void SystemCreation::init()
-{
-	system.clear();
-}
-
 void SystemCreation::enter(Vector2 mouse_pos, Universe& universe)
 {
 	// Use universe's system generator to get a planetary system at the given position.
