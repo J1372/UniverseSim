@@ -8,38 +8,12 @@ void AdvCamera::recalculate_speed_target()
 	target_speed = 5 * target_speed_multiplier / camera.zoom;
 }
 
-AdvCamera::AdvCamera(Vector2& offset, Vector2& target) : target_speed_multiplier(8), offset_bounds{ 0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()) }
+AdvCamera::AdvCamera(Vector2 offset, Vector2 target) : target_speed_multiplier(8), offset_bounds{ 0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()) }
 {
 	camera.offset = offset;
 	camera.target = target;
 	camera.zoom = 1.0f;
 	camera.rotation = 0.0f;
-	recalculate_speed_target();
-}
-
-AdvCamera::AdvCamera(Vector2& offset, Vector2& target, int target_speed_multiplier) : target_speed_multiplier(target_speed_multiplier), offset_bounds{ 0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()) }
-{
-	camera.offset = offset;
-	camera.target = target;
-	camera.zoom = 1.0f;
-	camera.rotation = 0.0f;
-	recalculate_speed_target();
-}
-
-AdvCamera::AdvCamera(Vector2&& offset, Vector2&& target) : target_speed_multiplier(8), offset_bounds{ 0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()) }
-{
-	camera.offset = std::move(offset);
-	camera.target = std::move(target);
-	camera.zoom = 1.0f;
-	camera.rotation = 0.0f;
-	recalculate_speed_target();
-}
-
-AdvCamera::AdvCamera(Vector2&& offset, Vector2&& target, int target_speed_multiplier) : target_speed_multiplier(target_speed_multiplier), offset_bounds{ 0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()) }
-{
-	camera.offset = std::move(offset);
-	camera.target = std::move(target);
-	camera.zoom = 1.0f;
 	recalculate_speed_target();
 }
 
