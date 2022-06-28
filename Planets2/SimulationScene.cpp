@@ -231,8 +231,10 @@ void SimulationScene::render_partitioning() const
 
 	// When zoomed out, there is often a visual glitch, especially when line thickness is lowered.
 	// I'm not sure how to fix it.
-	for (const Rectangle& rect : rep) {
-		DrawRectangleLinesEx(rect, 30, WHITE);
+	for (Rectangle rect : rep) {
+		if (on_screen(rect)) {
+			DrawRectangleLinesEx(rect, 30, WHITE);
+		}
 	}
 }
 
@@ -264,6 +266,19 @@ bool SimulationScene::on_screen(const Body& body) const
 	// can optimize : screen_pos.x >= -body.radius && screen_pos.y >= -body.radius
 
 	return rightmost.x >= 0 and lowest.y >= 0 and leftmost.x < GetScreenWidth() and highest.y < GetScreenHeight();
+}
+
+bool SimulationScene::on_screen(Rectangle rect) const
+{
+	const Camera2D& camera = camera_state->get_raylib_camera();
+	
+	Vector2 UL = GetWorldToScreen2D({ rect.x, rect.y }, camera);
+	Vector2 LR = GetWorldToScreen2D({ rect.x + rect.width, rect.y + rect.height }, camera);
+	float width = LR.x - UL.x;
+	float height = LR.y - UL.y;
+
+	return UL.x < GetScreenWidth() and UL.y < GetScreenHeight()
+		and LR.x >= 0 and LR.y >= 0;
 }
 
 void SimulationScene::render_creating_bodies(std::span<const std::unique_ptr<Body>> bodies) const

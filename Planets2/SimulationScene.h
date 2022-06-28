@@ -82,6 +82,9 @@ class SimulationScene : public Scene
 	// Returns true if a body is at least partially on screen, else false.
 	bool on_screen(const Body& body) const;
 
+	// Returns true if a rectangle is at least partially on screen, else false.
+	bool on_screen(Rectangle rect) const;
+
 	// Renders all bodies that the user is creating.
 	void render_creating_bodies(std::span<const std::unique_ptr<Body>> bodies) const;
 
