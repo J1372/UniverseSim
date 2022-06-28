@@ -68,11 +68,11 @@ struct Orbit
 	// Relative position of orbiter around orbited at a point in its orbit.
 	Vector2 pos_at(float point) const;
 
-	// Relative scalar velocity of orbiter around orbited at a point in its orbit.
-	float vel_at(float point) const;
+	// Relative scalar speed of orbiter around orbited at a point in its orbit.
+	float speed_at(float point) const;
 
 	// Relative vector velocity of orbiter around orbited at a point in its orbit.
-	Vector2 vel_vec_at(float point) const;
+	Vector2 vel_at(float point) const;
 
 	// Returns the time needed to complete one orbit.
 	float orbital_period() const;

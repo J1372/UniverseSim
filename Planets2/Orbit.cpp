@@ -66,27 +66,21 @@ Vector2 Orbit::pos_at(float point) const
 
 }
 
-float Orbit::vel_at(float point) const
+float Orbit::speed_at(float point) const
 {
     float dist = dist_at(point);
 
     // Get the squared velocity at a point in its orbit using equation:
     // v2 = GM(2/r - 1/a), r == dist and a == semi major axis.
-    float vel_sq = grav_const * orbited.get_mass() * (2 / dist - (1 / semi_major_axis()));
+    float speed_sq = grav_const * orbited.get_mass() * (2 / dist - (1 / semi_major_axis()));
 
-    float velocity = std::sqrt(vel_sq);
-
-    if (prograde) {
-        return velocity;
-    }
-    else {
-        return -velocity;
-    }
+    float speed = std::sqrt(speed_sq);
+    return speed;
 }
 
-Vector2 Orbit::vel_vec_at(float point) const
+Vector2 Orbit::vel_at(float point) const
 {
-    float velocity = vel_at(point);
+    float speed = speed_at(point);
 
     // Get the radian degree from periapsis of this point in the orbit.
     float true_anomaly = translate_point(point);
@@ -97,7 +91,11 @@ Vector2 Orbit::vel_vec_at(float point) const
     // Flip on y-axis.
     float flipped = 2 * std::numbers::pi - from_central;
 
-    return { velocity * std::sin(flipped), velocity * std::cos(flipped) };
+    if (!prograde) {
+        speed = -speed;
+    }
+
+    return { speed * std::sin(flipped), speed * std::cos(flipped) };
 }
 
 float Orbit::orbital_period() const

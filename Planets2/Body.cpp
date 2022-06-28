@@ -132,7 +132,7 @@ void Body::set_orbit(const Orbit& orbit, float point)
 	position = Vector2Add(orbit.orbited.position, relative_pos);
 
 	// Relative velocity of this satellite around the body it is orbiting.
-	Vector2 relative_velocity = orbit.vel_vec_at(point);
+	Vector2 relative_velocity = orbit.vel_at(point);
 
 	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
 	velocity = Vector2Add(orbit.orbited.velocity, relative_velocity);
