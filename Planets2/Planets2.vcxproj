@@ -188,7 +188,7 @@
     <ClInclude Include="Removal.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="QuadTree.h" />
-    <ClInclude Include="my_random.h" />
+    <ClInclude Include="MyRandom.h" />
     <ClInclude Include="SpatialPartitioning.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Universe.h" />
@@ -222,7 +222,7 @@
     <ClCompile Include="SystemCreation.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="QuadTree.cpp" />
-    <ClCompile Include="my_random.cpp" />
+    <ClCompile Include="MyRandom.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="Universe.cpp" />

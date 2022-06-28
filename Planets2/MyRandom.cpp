@@ -1,5 +1,5 @@
 #include <random>
-#include "my_random.h"
+#include "MyRandom.h"
 #include <numbers>
 
 static std::default_random_engine engine;

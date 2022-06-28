@@ -1,5 +1,5 @@
 #include "Universe.h"
-#include "my_random.h"
+#include "MyRandom.h"
 #include "raylib.h"
 #include "Physics.h"
 #include <algorithm>

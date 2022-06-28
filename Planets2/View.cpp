@@ -1,10 +1,9 @@
 #include <raylib.h>
-#include <iostream>
 #include <chrono>
 
 #include "Scene.h"
 #include "SettingsScene.h"
-#include "my_random.h"
+#include "MyRandom.h"
 
 int main() {
 
