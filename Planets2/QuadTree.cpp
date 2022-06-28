@@ -5,6 +5,7 @@
 
 #include "Collision.h"
 
+DynamicPool<QuadChildren<QuadTree>> QuadTree::quad_pool{ 100 };
 int QuadTree::max_bodies_per_quad = 10;
 int QuadTree::max_depth = 5;
 int QuadTree::quads_generated = 0;
@@ -414,7 +415,7 @@ void QuadTree::split()
 	// Depth level of the child nodes.
 	int next_depth = depth + 1;
 
-	children = std::make_unique<QuadChildren<QuadTree>>(x, y, dimensions.width, next_depth);
+	children = quad_pool.get(x, y, dimensions.width, next_depth);
 
 	for (QuadTree& node : *children) {
 		node.parent = this;

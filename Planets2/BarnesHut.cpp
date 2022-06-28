@@ -3,6 +3,7 @@
 #include "Physics.h"
 #include <raymath.h>
 
+DynamicPool<QuadChildren<BarnesHut>> BarnesHut::quad_pool {1000};
 float BarnesHut::approximation_value;
 
 void BarnesHut::set_approximation(float to_set)
@@ -25,7 +26,6 @@ BarnesHut::BarnesHut(float x, float y, float size) :
 	dimensions{ x, y, size, size }
 {}
 
-
 float BarnesHut::dist_ratio(const Body& body) const
 {
 	return dimensions.width / Physics::dist(center_of_mass, body.pos());
@@ -35,6 +35,7 @@ bool BarnesHut::sufficiently_far(const Body& body) const
 {
 	return dist_ratio(body) < approximation_value;
 }
+
 void BarnesHut::update_mass_add(Vector2 center, long mass)
 {
 	/*
@@ -202,7 +203,7 @@ void BarnesHut::split()
 	float x = dimensions.x;
 	float y = dimensions.y;
 
-	children = std::make_unique<QuadChildren<BarnesHut>>(x, y, dimensions.width);
+	children = quad_pool.get(x, y, dimensions.width);
 
 	// add current body to correct quad
 	// We are a leaf, and leaves can only have 1 body.
@@ -219,10 +220,14 @@ void BarnesHut::concatenate()
 void BarnesHut::handle_gravity(Body& body, float grav_const) const
 {
 
-	if (is_leaf() or sufficiently_far(body)) {
+	if (is_leaf()) {
 		// Use center of mass and mass sum as an approximate grav pull.
 		// This is an approximation of a grav pull on the body by the group of bodies in child nodes.
-		// can add a check to see if mass_sum == 0.
+		if (!is_empty()) {
+			Physics::grav_pull(body, center_of_mass, mass_sum, grav_const);
+		}
+	}
+	else if (sufficiently_far(body)) {
 		Physics::grav_pull(body, center_of_mass, mass_sum, grav_const);
 	}
 	else {

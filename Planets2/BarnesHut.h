@@ -4,6 +4,7 @@
 #include <memory>
 #include <span>
 #include "QuadChildren.h"
+#include "DynamicPool.h"
 
 class Body;
 
@@ -13,6 +14,8 @@ class BarnesHut
 	// Used in determining whether a body is sufficiently far from a node's center of mass.
 	// A higher approximation will result in less accuracy.
 	static float approximation_value;
+
+	static DynamicPool<QuadChildren<BarnesHut>> quad_pool;
 
 	// A quad can only have 0 or 1 body.
 	// If a quad has a body, it cannot be a parent.
@@ -28,7 +31,9 @@ class BarnesHut
 	Rectangle dimensions{};
 
 	// The node's 4 potential children.
-	std::unique_ptr<QuadChildren<BarnesHut>> children = nullptr;
+	//std::unique_ptr<QuadChildren<BarnesHut>, PoolDeleter<QuadChildren<BarnesHut>>>
+	//std::unique_ptr<T, PoolDeleter<T>>
+	PoolPtr<QuadChildren<BarnesHut>> children {quad_pool};
 	// For this quad tree implementation in particular (Maximum 1 body per node, AND rebuilt on tick), 
 	// should look into object pooling.
 

@@ -165,6 +165,7 @@
     <ClInclude Include="Collision.h" />
     <ClInclude Include="DefaultInteraction.h" />
     <ClInclude Include="Dropdown.h" />
+    <ClInclude Include="DynamicPool.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="Grid.h" />

@@ -3,6 +3,7 @@
 #include "SpatialPartitioning.h"
 #include "raylib.h"
 #include "QuadChildren.h"
+#include "DynamicPool.h"
 
 class Body;
 
@@ -59,6 +60,8 @@ private:
 	// Total number of quads generated since root quad created.
 	static int quads_generated;
 
+	static DynamicPool<QuadChildren<QuadTree>> quad_pool;
+
 	// The quad's unique id.
 	int quad_id;
 
@@ -79,7 +82,7 @@ private:
 	QuadTree* parent = nullptr;
 
 	// The node's 4 potential children.
-	std::unique_ptr<QuadChildren<QuadTree>> children = nullptr;
+	PoolPtr<QuadChildren<QuadTree>> children {quad_pool};
 
 	// Adds the body to the appropriate quad, updating node sizes along the way.
 	// Returns a pointer to the node the body was added to.

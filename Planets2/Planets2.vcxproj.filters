@@ -200,6 +200,7 @@
       <Filter>Scenes\SimScene\CameraStates</Filter>
     </ClInclude>
     <ClInclude Include="QuadChildren.h" />
+    <ClInclude Include="DynamicPool.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
