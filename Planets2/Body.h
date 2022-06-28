@@ -88,9 +88,6 @@ class Body {
 	// Represents debug info that has been attached to the body.
 	std::string debug_info;
 
-	// Observers to notify when this body is being removed.
-	Event<Removal> on_removal_observers;
-
 public:
 
 	// Returns a pair of body pointers, where the first has more mass than the second.
@@ -202,15 +199,6 @@ public:
 
 	// Changes the body's mass by the given value, and checks for type changes.
 	void change_mass(long to_change);
-
-	// Notifies the body that it is being removed.
-	void notify_being_removed(Body* absorbed_by);
-
-	// Notifies the body that it is being removed.
-	void notify_being_removed(Removal removal);
-
-	// Returns the body's observer list for its removal.
-	Event<Removal>& removal_event();
 
 	// Returns a bounding box for the body.
 	Rectangle get_bounding_box() const;

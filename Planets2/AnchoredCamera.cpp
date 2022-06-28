@@ -3,7 +3,7 @@
 #include "Body.h"
 #include "universe.h"
 
-AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config)
+AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config, Universe& universe)
 {
     camera = starting_config;
 
@@ -35,34 +35,15 @@ CameraState* AnchoredCamera::goto_free_camera()
 
 void AnchoredCamera::switch_to(Body* anchor_to)
 {
-    if (anchored_to) {
-        // Remove camera as an observer to the anchored body's remove event.
-        anchored_to->removal_event().rem_observer(listener_id);
-    }
-
     anchored_to = anchor_to;
-
-    if (anchor_to) {
-        // Add camera as an observer to the new anchored body's remove event.
-        listener_id = anchored_to->removal_event().add_observer(on_body_removal);
-    }
 }
 
 void AnchoredCamera::switch_to(Body& anchor_to)
 {
-    if (anchored_to) {
-        // Remove camera as an observer to the anchored body's remove event.
-        anchored_to->removal_event().rem_observer(listener_id);
-    }
-
     anchored_to = &anchor_to;
-
-    // Add camera as an observer to the new anchored body's remove event.
-    listener_id = anchored_to->removal_event().add_observer(on_body_removal);
-
 }
 
-CameraState* AnchoredCamera::update(const Universe& universe)
+CameraState* AnchoredCamera::update(Universe& universe)
 {
     // Handle user switching to different bodies.
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
@@ -78,6 +59,7 @@ CameraState* AnchoredCamera::update(const Universe& universe)
     // anchored_to == nullptr if user right clicked on nothing or body deleted and was not absorbed by another body.
     // in any case, no body to anchor to, so return to a free camera state.
     if (!anchored_to) {
+        exit(universe);
         return goto_free_camera();
     }
 
@@ -125,8 +107,14 @@ CameraState* AnchoredCamera::update(const Universe& universe)
     return this;
 }
 
-void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to)
+void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to, Universe& universe)
 {
+    listener_id = universe.removal_event().add_observer([this](Removal remove_event) {
+        if (anchored_to == &remove_event.removed) {
+            this->switch_to(remove_event.absorbed_by);
+        }
+        });
+
     switch_to(anchor_to);
 
     const Camera2D& ray_cam = prev_camera.get_raylib_camera();
@@ -141,6 +129,14 @@ void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to)
     // update offset bounds in case screen was resized while another camera was active.
     camera.set_offset_bounds(0, 0, GetScreenWidth(), GetScreenHeight());
 
+}
+
+void AnchoredCamera::exit(Universe& universe)
+{
+    if (listener_id.has_value()) {
+        universe.removal_event().rem_observer(listener_id.value());
+        listener_id.reset();
+    }
 }
 
 void AnchoredCamera::notify_resize(int width, int height)

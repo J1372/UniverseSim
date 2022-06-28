@@ -26,7 +26,7 @@ void FreeCamera::goto_body(Body& body)
 	camera.set_target(body.pos());
 }
 
-CameraState* FreeCamera::update(const Universe& universe)
+CameraState* FreeCamera::update(Universe& universe)
 {
 	// Camera state change
 
@@ -38,7 +38,7 @@ CameraState* FreeCamera::update(const Universe& universe)
 
 		if (body) {
 			AnchoredCamera& transition_to = CameraState::anchored_camera;
-			transition_to.enter(camera, *body);
+			transition_to.enter(camera, *body, universe);
 			return &transition_to;
 		}
 	}

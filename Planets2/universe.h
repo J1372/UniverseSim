@@ -6,6 +6,7 @@
 #include "BarnesHut.h"
 
 #include "SpatialPartitioning.h"
+#include "Event.h"
 
 struct Collision;
 struct Vector2;
@@ -73,6 +74,9 @@ class Universe {
 
 	// Returns an iterator to the body in active bodies that has the given id.
 	std::vector<std::unique_ptr<Body>>::iterator get_iterator(int id);
+
+	// Observers to notify when this body is being removed.
+	Event<Removal> on_removal_observers;
 
 public:
 
@@ -162,4 +166,6 @@ public:
 	// Returns the current tick.
 	int get_tick() const;
 
+	// Returns the body's observer list for its removal.
+	Event<Removal>& removal_event();
 };

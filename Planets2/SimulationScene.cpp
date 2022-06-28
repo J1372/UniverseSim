@@ -16,7 +16,7 @@
 
 void SimulationScene::init()
 {
-	CameraState::init_cameras(starting_config);
+	CameraState::init_cameras(starting_config, universe);
 	help_prompt.set_color(WHITE);
 	help_message.set_color(RAYWHITE);
 	interaction_title.set_color(RAYWHITE);
@@ -27,7 +27,7 @@ void SimulationScene::init()
 void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
 {
 	camera_state = &CameraState::free_camera;
-	CameraState::init_cameras(starting_config); // Set cameras back to default. Could separate camerastate.exit() logic from this.
+	CameraState::init_cameras(starting_config, universe); // Set cameras back to default. Could separate camerastate.exit() logic from this.
 
 	interaction_state = &InteractionState::default_interaction;
 	InteractionState::init_states(); // Set all states back to default. could just .exit() current state.

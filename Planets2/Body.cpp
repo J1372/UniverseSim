@@ -226,22 +226,6 @@ void Body::change_mass(long to_change)
 	upgrade_update();
 }
 
-void Body::notify_being_removed(Body* absorbed_by)
-{
-	Removal removal { *this, absorbed_by };
-	on_removal_observers.notify_all(removal);
-}
-
-void Body::notify_being_removed(Removal removal)
-{
-	on_removal_observers.notify_all(removal);
-}
-
-Event<Removal>& Body::removal_event()
-{
-	return on_removal_observers;
-}
-
 Rectangle Body::get_bounding_box() const
 {
 	return { left(), top(), diameter(), diameter() };

@@ -28,13 +28,13 @@ public:
 	static AnchoredCamera anchored_camera;
 
 	// Initialization of cameras to be called after Raylib's init.
-	static void init_cameras(const AdvCamera& starting_config);
+	static void init_cameras(const AdvCamera& starting_config, Universe& universe);
 
 	// Adjusts the camera to focus on the given body.
 	virtual void goto_body(Body& body) = 0;
 
 	// Handles camera-related input.
-	virtual CameraState* update(const Universe& universe) = 0;
+	virtual CameraState* update(Universe& universe) = 0;
 
 	// Notifies the camera that the screen has been resized
 	virtual void notify_resize(int width, int height) = 0;

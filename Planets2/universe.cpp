@@ -173,6 +173,7 @@ void Universe::handle_gravity_approximation()
 
 void Universe::handle_removal(Removal removal)
 {
+	on_removal_observers.notify_all(removal);
 	Body& removed = removal.removed;
 	Body* absorbed = removal.absorbed_by;
 
@@ -195,8 +196,6 @@ void Universe::handle_removal(Removal removal)
 
 
 	}
-
-	removed.notify_being_removed(removal);
 
 	auto remove_it = get_iterator(removed.get_id());
 	active_bodies.erase(remove_it);
@@ -452,7 +451,7 @@ void Universe::rem_body(int id)
 		partitioning_method->rem_body(body);
 	}
 
-	body.notify_being_removed(nullptr);
+	on_removal_observers.notify_all({ body, nullptr });
 
 	active_bodies.erase(remove_it);
 }
@@ -515,4 +514,9 @@ int Universe::get_num_collision_checks_tick() const
 int Universe::get_tick() const
 {
 	return tick;
+}
+
+Event<Removal>& Universe::removal_event()
+{
+	return on_removal_observers;
 }
