@@ -1,5 +1,4 @@
 #include "SimulationScene.h"
-#include "universe.h"
 #include "Body.h"
 #include <string>
 
@@ -11,7 +10,6 @@
 #include "Physics.h"
 #include "InteractionState.h"
 #include "DefaultInteraction.h"
-#include <iostream>
 
 
 void SimulationScene::init()

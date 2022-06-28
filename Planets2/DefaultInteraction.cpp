@@ -1,7 +1,7 @@
 #include "DefaultInteraction.h"
 
 #include "Body.h"
-#include "universe.h"
+#include "Universe.h"
 #include "CameraState.h"
 
 #include "PlanetCreation.h"

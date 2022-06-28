@@ -1,7 +1,7 @@
 #pragma once
 #include "Scene.h"
 
-#include "universe.h"
+#include "Universe.h"
 #include "AdvCamera.h"
 #include <span>
 #include <chrono>

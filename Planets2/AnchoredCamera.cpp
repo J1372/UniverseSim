@@ -1,7 +1,7 @@
 #include "AnchoredCamera.h"
 #include "FreeCamera.h"
 #include "Body.h"
-#include "universe.h"
+#include "Universe.h"
 
 AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config, Universe& universe)
 {

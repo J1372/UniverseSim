@@ -1,6 +1,6 @@
 #include "PlanetCreation.h"
 
-#include "universe.h"
+#include "Universe.h"
 #include "CameraState.h"
 #include "Physics.h"
 

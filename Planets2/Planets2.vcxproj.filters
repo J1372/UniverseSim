@@ -42,7 +42,7 @@
     <ClCompile Include="Body.cpp">
       <Filter>Sim_Model</Filter>
     </ClCompile>
-    <ClCompile Include="universe.cpp">
+    <ClCompile Include="Universe.cpp">
       <Filter>Sim_Model</Filter>
     </ClCompile>
     <ClCompile Include="SettingsScene.cpp">
@@ -138,7 +138,7 @@
     <ClInclude Include="Body.h">
       <Filter>Sim_Model</Filter>
     </ClInclude>
-    <ClInclude Include="universe.h">
+    <ClInclude Include="Universe.h">
       <Filter>Sim_Model</Filter>
     </ClInclude>
     <ClInclude Include="UniverseSettings.h">

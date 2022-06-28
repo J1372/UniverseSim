@@ -191,7 +191,7 @@
     <ClInclude Include="my_random.h" />
     <ClInclude Include="SpatialPartitioning.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="universe.h" />
+    <ClInclude Include="Universe.h" />
     <ClInclude Include="UniverseSettings.h" />
   </ItemGroup>
   <ItemGroup>
@@ -225,7 +225,7 @@
     <ClCompile Include="my_random.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="UIElement.cpp" />
-    <ClCompile Include="universe.cpp" />
+    <ClCompile Include="Universe.cpp" />
     <ClCompile Include="View.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,6 @@
 #include "FreeCamera.h"
 #include "Body.h"
-#include "universe.h"
+#include "Universe.h"
 #include "AnchoredCamera.h"
 #include <utility>
 
