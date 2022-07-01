@@ -4,9 +4,11 @@ A highly customizable universe generator and n-body planetary physics simulator 
 
 
 ### What it does
+Mainly, simulates n-body physics between a number of planetary bodies. This means that every body is exerting gravitational forces on every other body, as opposed to moving on a predefined orbit or only simulating forces between a main body and its satellites individually.
+
 On startup, users use the gui to customize simulation settings for universe generation, physics, and partitioning methods.
 Afterwards, a universe is generated according to these settings. The simulation is paused on startup, but this can be toggled with the spacebar.
-The user can press the H key for help and to see a list of all toggles and commands.
+Additional commands and toggles can be found in the help menu by pressing the H key.
 
 
 ### Features:
