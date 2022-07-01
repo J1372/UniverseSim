@@ -167,17 +167,24 @@ void SimulationScene::attach_debug_info()
 	}
 }
 
-void SimulationScene::render_debug_text(int font_size) const {
+void SimulationScene::render_debug_text() const {
+
 	for (int i = 0; i < on_screen_bodies.size(); ++i) {
 		const Body& body = *on_screen_bodies[i];
 
 		Vector2 pos = body.pos();
+		float radius = body.get_radius();
 		Color planet_color = body.color();
 
 		const DebugInfo& info = body_info[i];
 
-		int text_x = pos.x + body.get_radius() + 20;
-		int text_y = pos.y + body.get_radius() + 20;
+		// Calculate font size with minor scaling based on body's radius.
+		constexpr float FONT_START = 25;
+		constexpr float FONT_SCALE = 0.05;
+		int font_size = FONT_START + FONT_SCALE * radius;
+
+		int text_x = pos.x + radius + 20;
+		int text_y = pos.y + radius + 20;
 		const std::string& debug_texts = info.get();
 
 		DrawText(debug_texts.c_str(), text_x, text_y, font_size, planet_color);
@@ -356,9 +363,7 @@ Scene* SimulationScene::update()
 					body_info.resize(on_screen_bodies.size());
 
 					attach_debug_info();
-
-					constexpr int font_size = 25;
-					render_debug_text(font_size);
+					render_debug_text();
 
 					body_info.clear();
 				}
