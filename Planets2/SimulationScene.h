@@ -76,7 +76,7 @@ class SimulationScene : public Scene
 	void attach_debug_info();
 
 	// Draws debug text alongside every body.
-	void render_debug_text(int font_size, int spacing) const;
+	void render_debug_text(int font_size) const;
 
 	// Returns true if a body is at least partially on screen, else false.
 	bool on_screen(const Body& body) const;

@@ -167,7 +167,7 @@ void SimulationScene::attach_debug_info()
 	}
 }
 
-void SimulationScene::render_debug_text(int font_size, int spacing) const {
+void SimulationScene::render_debug_text(int font_size) const {
 	for (int i = 0; i < on_screen_bodies.size(); ++i) {
 		const Body& body = *on_screen_bodies[i];
 
@@ -358,8 +358,7 @@ Scene* SimulationScene::update()
 					attach_debug_info();
 
 					constexpr int font_size = 25;
-					constexpr int spacing = 20;
-					render_debug_text(font_size, spacing);
+					render_debug_text(font_size);
 
 					body_info.clear();
 				}
