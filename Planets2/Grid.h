@@ -52,8 +52,8 @@ public:
 	// Returns a representation of the grid.
 	std::vector<Rectangle> get_representation() const override;
 
-	// Attaches grid-specific debug information to the body.
-	void attach_debug_text(Body& body) const override;
+	// Attaches grid-specific debug information about the body to info.
+	void get_info(const Body& body, DebugInfo& info) const override;
 
 	// Detects and returns a vector of all collision events between bodies in this grid.
 	std::vector<Collision> get_collisions() override;

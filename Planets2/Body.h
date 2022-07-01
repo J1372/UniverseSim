@@ -2,8 +2,6 @@
 #define BODY_H
 
 #include <raylib.h>
-#include <string>
-
 #include "Event.h"
 
 struct Orbit;
@@ -84,9 +82,6 @@ class Body {
 
 	// A pointer to this body's current planetary type.
 	const PlanetType* type = &TYPES[1]; // Starts as asteroid, updates on construction.
-
-	// Represents debug info that has been attached to the body.
-	std::string debug_info;
 
 public:
 
@@ -184,15 +179,6 @@ public:
 
 	// Returns this body's diameter.
 	float diameter() const;
-
-	// Adds the given debug text to the body.
-	void add_debug_text(const std::string& text);
-
-	// Returns the body's debug text.
-	const std::string& get_debug_text() const;
-
-	// Clears body's debug text.
-	void clear_debug_text();
 
 	// Sets the body's mass to the given value, and checks for type changes.
 	void set_mass(long to_set);

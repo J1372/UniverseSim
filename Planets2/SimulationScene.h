@@ -6,6 +6,7 @@
 #include <span>
 #include <chrono>
 #include "Label.h"
+#include "DebugInfo.h"
 
 class CameraState;
 class Body;
@@ -14,6 +15,7 @@ class InteractionState;
 // This scene handles user interaction during the simulation and rendering of the simulation universe.
 class SimulationScene : public Scene
 {
+
 	// The universe being simulated.
 	Universe universe;
 
@@ -54,6 +56,9 @@ class SimulationScene : public Scene
 	// A vector of pointers to all bodies that are currently on screen.
 	std::vector<Body*> on_screen_bodies;
 
+	// Information about all on screen bodies.
+	std::vector<DebugInfo> body_info;
+
 	// Labels to draw on the screen.
 	// These rely on screen size and are repositioned when window resized and on scene enter.
 	// If add other interactive gui elements to sim, should use a GuiComponentList to handle its update and render.
@@ -68,13 +73,10 @@ class SimulationScene : public Scene
 	void update_on_screen_bodies();
 
 	// Attaches standard debug info to bodies that are on screen.
-	void attach_debug_info() const;
+	void attach_debug_info();
 
 	// Attaches partitioning debug info to bodies that are on screen.
-	void attach_partitioning_debug_info() const;
-
-	// Clears debug info of all on screen bodies.
-	void clear_debug_text();
+	void attach_partitioning_debug_info();
 
 	// Draws debug text alongside every body.
 	void render_debug_text(int font_size, int spacing) const;

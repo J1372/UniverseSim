@@ -128,51 +128,50 @@ void SimulationScene::update_on_screen_bodies()
 	}
 }
 
-void SimulationScene::attach_debug_info() const
+void SimulationScene::attach_debug_info()
 {
-	for (Body* body_ptr : on_screen_bodies) {
-		Body& body = *body_ptr;
+	for (int i = 0; i < on_screen_bodies.size(); ++i) {
+		const Body& body = *on_screen_bodies[i];
 
 		Vector2 pos = body.pos();
 		Vector2 vel = body.vel();
 
-		body.add_debug_text("ID: " + std::to_string(body.get_id()));
-		body.add_debug_text("X: " + std::to_string(pos.x));
-		body.add_debug_text("Y: " + std::to_string(pos.y));
-		body.add_debug_text("Vel(x): " + std::to_string(vel.x));
-		body.add_debug_text("Vel(y): " + std::to_string(vel.y));
-		body.add_debug_text("Mass: " + std::to_string(body.get_mass()));
+		DebugInfo& info = body_info[i]; 
+
+		info.add("ID: " + std::to_string(body.get_id()));
+		info.add("X: " + std::to_string(pos.x));
+		info.add("Y: " + std::to_string(pos.y));
+		info.add("Vel(x): " + std::to_string(vel.x));
+		info.add("Vel(y): " + std::to_string(vel.y));
+		info.add("Mass: " + std::to_string(body.get_mass()));
 	}
 }
 
-void SimulationScene::attach_partitioning_debug_info() const
+void SimulationScene::attach_partitioning_debug_info()
 {
 	// Safe to dereference since this method only called if should_render_partitioning, which is only true if the universe has a partitioning method.
 	const SpatialPartitioning& partitioning = *universe.get_partitioning();
 
-	for (Body* body_ptr : on_screen_bodies) {
-		Body& body = *body_ptr;
-		partitioning.attach_debug_text(body);
+	for (int i = 0; i < on_screen_bodies.size(); ++i) {
+		const Body& body = *on_screen_bodies[i];
+		DebugInfo& info = body_info[i];
+
+		partitioning.get_info(body, info);
 	}
 }
-
-void SimulationScene::clear_debug_text()
-{
-	for (Body* body : on_screen_bodies) {
-		body->clear_debug_text();
-	}
-}
-
 
 void SimulationScene::render_debug_text(int font_size, int spacing) const {
-	for (const Body* body_ptr : on_screen_bodies) {
-		const Body& body = *body_ptr;
+	for (int i = 0; i < on_screen_bodies.size(); ++i) {
+		const Body& body = *on_screen_bodies[i];
+
 		Vector2 pos = body.pos();
 		Color planet_color = body.color();
 
-		const std::string& debug_texts = body.get_debug_text();
+		const DebugInfo& info = body_info[i];
+
 		int text_x = pos.x + body.get_radius() + 20;
 		int text_y = pos.y + body.get_radius() + 20;
+		const std::string& debug_texts = info.get();
 
 		DrawText(debug_texts.c_str(), text_x, text_y, font_size, planet_color);
 
@@ -347,6 +346,8 @@ Scene* SimulationScene::update()
 
 				// Render all relevant debug text.
 				if (should_render_debug_text) {
+					body_info.resize(on_screen_bodies.size());
+
 					attach_debug_info();
 
 					if (should_render_partitioning) {
@@ -357,6 +358,8 @@ Scene* SimulationScene::update()
 					constexpr int font_size = 25;
 					constexpr int spacing = 20;
 					render_debug_text(font_size, spacing);
+
+					body_info.clear();
 				}
 
 
@@ -366,8 +369,6 @@ Scene* SimulationScene::update()
 		render_screen_info();
 
 	EndDrawing();
-
-	clear_debug_text();
 
 	return return_scene;
 }

@@ -199,21 +199,6 @@ Vector2 Body::get_momentum() const
 	return { mass * velocity.x , mass * velocity.y };
 }
 
-void Body::add_debug_text(const std::string& text)
-{
-	debug_info += text + "\n";
-}
-
-const std::string& Body::get_debug_text() const
-{
-	return debug_info;
-}
-
-void Body::clear_debug_text()
-{
-	debug_info.clear();
-}
-
 void Body::set_mass(long to_set)
 {
 	mass = std::max(1l, to_set);

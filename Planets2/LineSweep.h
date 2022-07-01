@@ -63,8 +63,8 @@ public:
 	// Returns a visual representation of the algorithm's events.
 	std::vector<Rectangle> get_representation() const override;
 
-	// Attaches text indicating body's entry event index, leave event index to the body's debug text.
-	void attach_debug_text(Body& body) const override;
+	// Attaches text indicating body's entry event index, leave event index to info.
+	void get_info(const Body& body, DebugInfo& info) const override;
 
 	// Detects and returns a vector of all collision events.
 	std::vector<Collision> get_collisions() override;

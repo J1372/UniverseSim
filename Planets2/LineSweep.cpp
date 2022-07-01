@@ -5,6 +5,7 @@
 #include "Body.h"
 
 #include "Physics.h"
+#include "DebugInfo.h"
 
 LineSweep::LineSweep::SweepEvent LineSweep::get_next_event(int entries_processed, int leaves_processed) const
 {
@@ -100,7 +101,7 @@ std::vector<Rectangle> LineSweep::get_representation() const
     return rep;
 }
 
-void LineSweep::attach_debug_text(Body& body) const
+void LineSweep::get_info(const Body& body, DebugInfo& info) const
 {
     // entry index
     // exit index
@@ -111,8 +112,8 @@ void LineSweep::attach_debug_text(Body& body) const
     int entry_index = std::distance(entry_events.begin(), entry_event_it);
     int leave_index = std::distance(leave_events.begin(), leave_event_it);
 
-    body.add_debug_text("Entry event index: " + std::to_string(entry_index));
-    body.add_debug_text("Leave event index: " + std::to_string(leave_index));
+    info.add("Entry event index: " + std::to_string(entry_index));
+    info.add("Leave event index: " + std::to_string(leave_index));
 }
 
 std::vector<Collision> LineSweep::get_collisions()

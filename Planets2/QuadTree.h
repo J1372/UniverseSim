@@ -41,8 +41,8 @@ public:
 	// Returns a representation of the boundaries of the quad tree and all of its child nodes.
 	std::vector<Rectangle> get_representation() const;
 
-	// Finds the correct quad, then attaches the Quad id and number of bodies in the quad to the body's debug text.
-	void attach_debug_text(Body& body) const;
+	// Attaches text related to the quadtree node which contains the body to info.  
+	void get_info(const Body& body, DebugInfo& info) const;
 
 	// Performs a collision check, and returns all collision events.
 	std::vector<Collision> get_collisions();

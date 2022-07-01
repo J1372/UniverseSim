@@ -5,6 +5,8 @@
 class Body;
 struct Collision;
 
+class DebugInfo;
+
 
 // A node in a grid. Stores its dimensions and pointers to bodies, whose centers are inside the node's dimensions.
 class GridNode
@@ -40,8 +42,8 @@ public:
 	// Returns this nodes's dimensions.
 	Rectangle get_representation() const;
 
-	// Attaches to the body debug text related to this node.
-	void attach_debug_text(Body& body) const;
+	// Attaches text related to this node to info.
+	void get_info(const Body& body, DebugInfo& info) const;
 
 	// Scans for collisions between each body in this with each other and adds any to the collisions vector.
 	// Returns number of collision checks performed.

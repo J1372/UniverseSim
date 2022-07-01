@@ -4,6 +4,7 @@
 #include "Body.h"
 
 #include "Collision.h"
+#include "DebugInfo.h"
 
 DynamicPool<QuadChildren<QuadTree>> QuadTree::quad_pool{ 100 };
 int QuadTree::max_bodies_per_quad = 10;
@@ -581,11 +582,11 @@ const QuadTree& QuadTree::find_quad(const Body& body) const
 	return *this;
 }
 
-void QuadTree::attach_debug_text(Body& body) const
+void QuadTree::get_info(const Body& body, DebugInfo& info) const
 {
 	const QuadTree& quad = find_quad(body);
 
-	body.add_debug_text("Quad ID: " + std::to_string(quad.quad_id));
-	body.add_debug_text("Quad Bodies: " + std::to_string(quad.cur_size));
+	info.add("Quad ID: " + std::to_string(quad.quad_id));
+	info.add("Quad Bodies: " + std::to_string(quad.cur_size));
 
 }

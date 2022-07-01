@@ -122,10 +122,10 @@ std::vector<Rectangle> Grid::get_representation() const
     return rep;
 }
 
-void Grid::attach_debug_text(Body& body) const
+void Grid::get_info(const Body& body, DebugInfo& info) const
 {
     const GridNode& node = get_node(body.pos());
-    node.attach_debug_text(body);
+    node.get_info(body, info);
 
     // No general grid debug text to attach. Just node-specific.
 }

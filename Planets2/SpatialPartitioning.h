@@ -1,10 +1,14 @@
 #pragma once
 #include <vector>
+#include <string>
+
 
 struct Rectangle;
 struct Vector2;
 class Body;
 struct Collision;
+
+class DebugInfo;
 
 // An interface for spatial partitionings thatt can be used for collision detection.
 class SpatialPartitioning
@@ -31,8 +35,8 @@ public:
 	// Returns a representation of the partitioning method.
 	virtual std::vector<Rectangle> get_representation() const = 0;
 
-	// Attaches debug information related to the partitioning method to the body.
-	virtual void attach_debug_text(Body& body) const = 0;
+	// Adds information about the body as it relates to this partitioning method to info.
+	virtual void get_info(const Body& body, DebugInfo& info) const = 0;
 
 	// Scans for and returns a vector of Collision events.
 	virtual std::vector<Collision> get_collisions() = 0;

@@ -2,6 +2,7 @@
 #include "Body.h"
 #include "Physics.h"
 #include "Collision.h"
+#include "DebugInfo.h"
 
 GridNode::GridNode(float x, float y, float node_size, int id) : dimensions{ x, y, node_size, node_size }, id(id)
 {}
@@ -39,10 +40,10 @@ Rectangle GridNode::get_representation() const
     return dimensions;
 }
 
-void GridNode::attach_debug_text(Body& body) const
+void GridNode::get_info(const Body& body, DebugInfo& info) const
 {
-    body.add_debug_text("Grid id: " + std::to_string(id));
-    body.add_debug_text("Grid bodies: " + std::to_string(bodies.size()));
+    info.add("Grid id: " + std::to_string(id));
+    info.add("Grid bodies: " + std::to_string(bodies.size()));
 }
 
 int GridNode::get_collisions(std::vector<Collision>& collisions) const
