@@ -130,13 +130,10 @@ void SimulationScene::update_on_screen_bodies()
 
 void SimulationScene::attach_debug_info()
 {
-	for (int i = 0; i < on_screen_bodies.size(); ++i) {
-		const Body& body = *on_screen_bodies[i];
-
+	auto attach_body_info = [](const Body& body, DebugInfo& info)
+	{
 		Vector2 pos = body.pos();
 		Vector2 vel = body.vel();
-
-		DebugInfo& info = body_info[i]; 
 
 		info.add("ID: " + std::to_string(body.get_id()));
 		info.add("X: " + std::to_string(pos.x));
@@ -144,19 +141,29 @@ void SimulationScene::attach_debug_info()
 		info.add("Vel(x): " + std::to_string(vel.x));
 		info.add("Vel(y): " + std::to_string(vel.y));
 		info.add("Mass: " + std::to_string(body.get_mass()));
+	};
+
+	if (should_render_partitioning) {
+		// Safe to dereference since should_render_partitioning is only true if the universe has a partitioning method.
+		const SpatialPartitioning& partitioning = *universe.get_partitioning();
+
+		for (int i = 0; i < on_screen_bodies.size(); ++i) {
+			const Body& body = *on_screen_bodies[i];
+			DebugInfo& info = body_info[i];
+
+			attach_body_info(body, info);
+			partitioning.get_info(body, info);
+
+		}
 	}
-}
+	else {
+		for (int i = 0; i < on_screen_bodies.size(); ++i) {
+			const Body& body = *on_screen_bodies[i];
+			DebugInfo& info = body_info[i];
 
-void SimulationScene::attach_partitioning_debug_info()
-{
-	// Safe to dereference since this method only called if should_render_partitioning, which is only true if the universe has a partitioning method.
-	const SpatialPartitioning& partitioning = *universe.get_partitioning();
+			attach_body_info(body, info);
 
-	for (int i = 0; i < on_screen_bodies.size(); ++i) {
-		const Body& body = *on_screen_bodies[i];
-		DebugInfo& info = body_info[i];
-
-		partitioning.get_info(body, info);
+		}
 	}
 }
 
@@ -349,11 +356,6 @@ Scene* SimulationScene::update()
 					body_info.resize(on_screen_bodies.size());
 
 					attach_debug_info();
-
-					if (should_render_partitioning) {
-						attach_partitioning_debug_info();
-					}
-
 
 					constexpr int font_size = 25;
 					constexpr int spacing = 20;

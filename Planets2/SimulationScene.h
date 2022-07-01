@@ -75,9 +75,6 @@ class SimulationScene : public Scene
 	// Attaches standard debug info to bodies that are on screen.
 	void attach_debug_info();
 
-	// Attaches partitioning debug info to bodies that are on screen.
-	void attach_partitioning_debug_info();
-
 	// Draws debug text alongside every body.
 	void render_debug_text(int font_size, int spacing) const;
 
