@@ -78,6 +78,9 @@ class SimulationScene : public Scene
 	// Draws debug text alongside every body.
 	void render_debug_text() const;
 
+	// Draws text near the given body.
+	void render_near_body(const Body& body, const std::string& text) const;
+
 	// Returns true if a body is at least partially on screen, else false.
 	bool on_screen(const Body& body) const;
 

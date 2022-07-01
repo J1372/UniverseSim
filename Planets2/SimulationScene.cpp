@@ -171,23 +171,9 @@ void SimulationScene::render_debug_text() const {
 
 	for (int i = 0; i < on_screen_bodies.size(); ++i) {
 		const Body& body = *on_screen_bodies[i];
-
-		Vector2 pos = body.pos();
-		float radius = body.get_radius();
-		Color planet_color = body.color();
-
 		const DebugInfo& info = body_info[i];
 
-		// Calculate font size with minor scaling based on body's radius.
-		constexpr float FONT_START = 25;
-		constexpr float FONT_SCALE = 0.05;
-		int font_size = FONT_START + FONT_SCALE * radius;
-
-		int text_x = pos.x + radius + 20;
-		int text_y = pos.y + radius + 20;
-		const std::string& debug_texts = info.get();
-
-		DrawText(debug_texts.c_str(), text_x, text_y, font_size, planet_color);
+		render_near_body(body, info.get());
 
 	}
 	
@@ -305,9 +291,6 @@ void SimulationScene::render_creating_bodies(std::span<const std::unique_ptr<Bod
 
 		DrawCircle(pos.x, pos.y, radius, planet_color);
 
-		constexpr int font_size = 25;
-		int text_x = pos.x + radius + 20;
-		int text_y = pos.y + radius + 20;
 		DebugInfo info { "X: " + std::to_string(pos.x) };
 
 		info.add("Y: " + std::to_string(pos.y));
@@ -315,8 +298,23 @@ void SimulationScene::render_creating_bodies(std::span<const std::unique_ptr<Bod
 		info.add("Vel(y): " + std::to_string(vel.y));
 		info.add("Mass: " + std::to_string(body.get_mass()));
 
-		DrawText(info.c_str(), text_x, text_y, font_size, planet_color);
+		render_near_body(body, info.get());
 	}
+}
+void SimulationScene::render_near_body(const Body& body, const std::string& text) const
+{
+	Vector2 pos = body.pos();
+	float radius = body.get_radius();
+
+
+	// Calculate font size with minor scaling based on body's radius.
+	constexpr float FONT_START = 25;
+	constexpr float FONT_SCALE = 0.05;
+	int font_size = FONT_START + FONT_SCALE * radius;
+
+	int text_x = pos.x + radius + 20;
+	int text_y = pos.y + radius + 20;
+	DrawText(text.c_str(), text_x, text_y, font_size, body.color());
 }
 
 Scene* SimulationScene::update()
