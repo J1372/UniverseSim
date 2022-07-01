@@ -308,14 +308,14 @@ void SimulationScene::render_creating_bodies(std::span<const std::unique_ptr<Bod
 		constexpr int font_size = 25;
 		int text_x = pos.x + radius + 20;
 		int text_y = pos.y + radius + 20;
-		std::string info_text { "X: " + std::to_string(pos.x) + "\n" };
+		DebugInfo info { "X: " + std::to_string(pos.x) };
 
-		info_text += "Y: " + std::to_string(pos.y) + "\n";
-		info_text += "Vel(x): " + std::to_string(vel.x) + "\n";
-		info_text += "Vel(y): " + std::to_string(vel.y) + "\n";
-		info_text += "Mass: " + std::to_string(body.get_mass()) + "\n";
+		info.add("Y: " + std::to_string(pos.y));
+		info.add("Vel(x): " + std::to_string(vel.x));
+		info.add("Vel(y): " + std::to_string(vel.y));
+		info.add("Mass: " + std::to_string(body.get_mass()));
 
-		DrawText(info_text.c_str(), text_x, text_y, font_size, planet_color);
+		DrawText(info.c_str(), text_x, text_y, font_size, planet_color);
 	}
 }
 
