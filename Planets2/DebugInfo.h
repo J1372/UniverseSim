@@ -13,6 +13,9 @@ class DebugInfo
 
 public:
 
+	DebugInfo() = default;
+	DebugInfo(const std::string& text);
+
 	// Adds the given text to info.
 	void add(const std::string& text);
 
