@@ -66,16 +66,16 @@ public:
 	// Moves the offset position in a given direction using offset movement speed.
 	void move_offset(Direction dir);
 
-	// Moves the target position by the given (x, y) vectors.
+	// Moves the target position by the given (x, y) vector.
 	void move_target(Vector2 vec);
 
-	// Moves the offset position by the given (x, y) vectors.
+	// Moves the offset position by the given (x, y) vector.
 	void move_offset(Vector2 vec);
 
-	// Sets the target position to the given (x, y) vectors.
+	// Sets the target position to the given (x, y) vector.
 	void set_target(Vector2 vec);
 
-	// Sets the offset position to the given (x, y) vectors.
+	// Sets the offset position to the given (x, y) vector.
 	void set_offset(Vector2 vec);
 
 	// Sets the offset bounds.
