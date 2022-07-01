@@ -24,5 +24,8 @@ public:
 
 	// Clears this debug information.
 	void clear();
+	
+	// Returns the C-style string of the information.
+	const char* c_str() const;
 
 };

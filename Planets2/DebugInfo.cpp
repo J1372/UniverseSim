@@ -24,3 +24,8 @@ void DebugInfo::clear()
 {
 	info.clear();
 }
+
+const char* DebugInfo::c_str() const
+{
+	return info.c_str();
+}
