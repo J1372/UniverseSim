@@ -75,6 +75,9 @@ class SimulationScene : public Scene
 	// Attaches standard debug info to bodies that are on screen.
 	void attach_debug_info();
 
+	// Renders the body.
+	void render_body(const Body& body) const;
+
 	// Draws debug text alongside every body.
 	void render_debug_text() const;
 

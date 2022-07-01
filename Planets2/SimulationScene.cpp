@@ -241,11 +241,7 @@ void SimulationScene::render_universe() const
 {
 	// Render all bodies in the universe that are on screen.
 	for (const Body* body_ptr : on_screen_bodies) {
-		const Body& body = *body_ptr;
-		Vector2 pos = body.pos();
-		Color planet_color = body.color();
-
-		DrawCircle(pos.x, pos.y, body.get_radius(), planet_color);
+		render_body(*body_ptr);
 	}
 }
 
@@ -280,27 +276,37 @@ bool SimulationScene::on_screen(Rectangle rect) const
 		and LR.x >= 0 and LR.y >= 0;
 }
 
+void SimulationScene::render_body(const Body& body) const
+{
+	Vector2 pos = body.pos();
+	Color planet_color = body.color();
+
+	DrawCircle(pos.x, pos.y, body.get_radius(), planet_color);
+}
+
 void SimulationScene::render_creating_bodies(std::span<const std::unique_ptr<Body>> bodies) const
 {
 	for (const std::unique_ptr<Body>& body_ptr : bodies) {
 		const Body& body = *body_ptr;
-		Vector2 pos = body.pos();
-		Vector2 vel = body.vel();
-		float radius = body.get_radius();
-		Color planet_color = body.color();
 
-		DrawCircle(pos.x, pos.y, radius, planet_color);
+		if (on_screen(body))
+		{
+			render_body(body);
 
-		DebugInfo info { "X: " + std::to_string(pos.x) };
+			Vector2 pos = body.pos();
+			Vector2 vel = body.vel();
+			DebugInfo info{ "X: " + std::to_string(pos.x) };
 
-		info.add("Y: " + std::to_string(pos.y));
-		info.add("Vel(x): " + std::to_string(vel.x));
-		info.add("Vel(y): " + std::to_string(vel.y));
-		info.add("Mass: " + std::to_string(body.get_mass()));
+			info.add("Y: " + std::to_string(pos.y));
+			info.add("Vel(x): " + std::to_string(vel.x));
+			info.add("Vel(y): " + std::to_string(vel.y));
+			info.add("Mass: " + std::to_string(body.get_mass()));
 
-		render_near_body(body, info.get());
+			render_near_body(body, info.get());
+		}
 	}
 }
+
 void SimulationScene::render_near_body(const Body& body, const std::string& text) const
 {
 	Vector2 pos = body.pos();
