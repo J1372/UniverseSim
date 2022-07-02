@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "Body.h"
 #include <numbers>
+#include <cmath>
 
 void Orbit::set_periapsis(const Body& orbiter, float sat_dist)
 {

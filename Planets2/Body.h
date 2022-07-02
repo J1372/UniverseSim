@@ -2,7 +2,6 @@
 #define BODY_H
 
 #include <raylib.h>
-#include "Event.h"
 #include "PlanetType.h"
 
 struct Orbit;
