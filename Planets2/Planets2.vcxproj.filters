@@ -203,6 +203,9 @@
     <ClInclude Include="QuadChildren.h" />
     <ClInclude Include="DynamicPool.h" />
     <ClInclude Include="DebugInfo.h" />
+    <ClInclude Include="PlanetType.h">
+      <Filter>Sim_Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
