@@ -36,14 +36,16 @@ public:
 	// Constructs a grid of the given size with (nodes_per_row^2) nodes.
 	Grid(float grid_size, int nodes_per_row);
 
-	// Updates bodies to be in the correct grid node.
-	void update();
-
 	// Adds body to the grid.
-	void add_body(Body& body);
+	void add_body(Body& body) override;
 
 	// Removes body from the grid.
 	void rem_body(const Body& body) override;
+
+	void notify_move(const Body* from, Body* to) override;
+
+	// Updates bodies to be in the correct grid node.
+	void update() override;
 
 	// Tries to find and return a pointer to the body that overlaps with the point.
 	// If none found, returns nullptr.

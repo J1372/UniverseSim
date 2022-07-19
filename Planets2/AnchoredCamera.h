@@ -15,7 +15,7 @@ class AnchoredCamera : public CameraState
 
 	// The body to be followed.
 	// If nullptr, will switch to a different camera on update call.
-	Body* anchored_to = nullptr;
+	const Body* anchored_to = nullptr;
 	
 	// The listener id returned when adding camera as an observer to anchored_to's remove event observer list.
 	std::optional<int> listener_id;
@@ -27,10 +27,10 @@ class AnchoredCamera : public CameraState
 	CameraState* goto_free_camera();
 
 	// Switches the camera to follow a different body.
-	void switch_to(Body* anchor_to);
+	void switch_to(const Body* anchor_to);
 
 	// Switches the camera to follow a different body.
-	void switch_to(Body& anchor_to);
+	void switch_to(const Body& anchor_to);
 
 public:
 
@@ -48,7 +48,7 @@ public:
 
 	// Enters an anchored camera state using the previous camera information
 	// and anchors camera to the given body.
-	void enter(const AdvCamera& prev_camera, Body& anchor_to, Universe& universe);
+	void enter(const AdvCamera& prev_camera, const Body& anchor_to, Universe& universe);
 	void exit(Universe& universe);
 
 	// Notifies the camera that the screen has been resized

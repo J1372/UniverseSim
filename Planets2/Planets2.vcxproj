@@ -158,6 +158,7 @@
     <ClInclude Include="AnchoredCamera.h" />
     <ClInclude Include="BarnesHut.h" />
     <ClInclude Include="Body.h" />
+    <ClInclude Include="BodyList.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CameraState.h" />
     <ClInclude Include="CheckBox.h" />
@@ -199,6 +200,7 @@
     <ClCompile Include="AnchoredCamera.cpp" />
     <ClCompile Include="BarnesHut.cpp" />
     <ClCompile Include="Body.cpp" />
+    <ClCompile Include="BodyList.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="CameraState.cpp" />
     <ClCompile Include="CheckBox.cpp" />

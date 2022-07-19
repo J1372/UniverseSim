@@ -34,7 +34,7 @@ CameraState* FreeCamera::update(Universe& universe)
 		Vector2 screen_point = GetMousePosition();
 		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera.get_raylib_camera());
 
-		Body* body = universe.get_body(universe_point);
+		const Body* body = universe.get_body(universe_point);
 
 		if (body) {
 			AnchoredCamera& transition_to = CameraState::anchored_camera;

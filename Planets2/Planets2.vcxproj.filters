@@ -94,6 +94,7 @@
       <Filter>Scenes\SimScene\CameraStates</Filter>
     </ClCompile>
     <ClCompile Include="DebugInfo.cpp" />
+    <ClCompile Include="BodyList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyRandom.h" />
@@ -203,6 +204,7 @@
     <ClInclude Include="QuadChildren.h" />
     <ClInclude Include="DynamicPool.h" />
     <ClInclude Include="DebugInfo.h" />
+    <ClInclude Include="BodyList.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

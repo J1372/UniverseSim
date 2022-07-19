@@ -18,6 +18,19 @@ Grid::Grid(float grid_size, int nodes_per_row) : grid_size(grid_size), node_size
     }
 }
 
+void Grid::notify_move(const Body* from, Body* to)
+{
+    std::vector<GridNode*> nodes = get_all_nodes(*from);
+
+    for (GridNode* node : nodes) {
+        node->notify_move(from, to);
+    }
+
+    // may be better to not store bodies vector.
+    auto it = std::find(bodies.begin(), bodies.end(), from);
+    *it = to;
+}
+
 int Grid::get_index(int pos) const
 {
     return (pos + grid_size / 2) / node_size;
@@ -99,9 +112,13 @@ void Grid::update()
 
 void Grid::rem_body(const Body& body)
 {
-    // dont think we need to removed from nodes, we'll just clear them in update().
     auto it = std::find(bodies.begin(), bodies.end(), &body);
     bodies.erase(it);
+
+    std::vector<GridNode*> nodes = get_all_nodes(body);
+    for (GridNode* node : nodes) {
+        node->rem(body);
+    }
 }
 
 Body* Grid::find_body(Vector2 point) const

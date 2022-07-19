@@ -36,13 +36,13 @@ void Universe::add_body(std::unique_ptr<Body>&& body_ptr)
 		return;
 	}
 
-	body.set_id(generated_bodies++);
-
-	active_bodies.emplace_back(std::move(body_ptr));
+	active_bodies.add(std::move(body));
 
 	if (has_partitioning()) {
-		partitioning_method->add_body(body);
+		partitioning_method->add_body(active_bodies.back());
 	}
+
+
 }
 
 void Universe::add_bodies(std::vector<std::unique_ptr<Body>>& bodies)
@@ -66,15 +66,20 @@ void Universe::add_bodies(std::vector<std::unique_ptr<Body>>& bodies)
 
 }
 
-std::vector<std::unique_ptr<Body>>::iterator Universe::get_iterator(int id)
+void Universe::rem_from_partitioning(Body& to_remove)
 {
-	auto predicate = [](const std::unique_ptr<Body>& ptr, int id) {
-		return ptr->get_id() < id;
-	};
+	partitioning_method->rem_body(to_remove);
 
-	// active_bodies is sorted by id. Find iterator to body by id using binary search.
-	return std::lower_bound(active_bodies.begin(), active_bodies.end(), id, predicate);
+	const Body& moving = active_bodies.back();
+	if (moving != to_remove) {
+		// Bodies are removed by swapping with last element, then popping from the vector.
+		// This means any pointer in partitioning to the last Body in the vector needs to 
+		// be updated to point to the now removed body.
+		partitioning_method->notify_move(&moving, &to_remove);
+	}
 }
+
+
 
 void Universe::create_universe()
 {
@@ -88,17 +93,12 @@ void Universe::create_universe()
 	tick = 0;
 	num_collision_checks = 0;
 	num_collision_checks_tick = 0;
-	generated_bodies = 0;
 
 	barnes_quad.set_size(settings.universe_size_max);
 	BarnesHut::set_approximation(settings.grav_approximation_value);
 
 	active_bodies.clear();
 	active_bodies.reserve(settings.universe_capacity);
-
-	for (int i = 0; i < settings.num_rand_planets; ++i) {
-		create_rand_body();
-	}
 
 	for (int i = 0; i < settings.num_rand_systems; ++i) {
 		create_rand_system();
@@ -152,10 +152,10 @@ void Universe::handle_gravity()
 	// Changing this loop to use iterators had a big performance decrease,
 	// which probably only affects the debug build, but is still annoying.
 	for (int i = 0; i < active_bodies.size() - 1; i++) {
-		Body& body1 = *active_bodies[i];
+		Body& body1 = active_bodies[i];
 
 		for (int j = i + 1; j < active_bodies.size(); j++) {
-			Body& body2 = *active_bodies[j];
+			Body& body2 = active_bodies[j];
 
 			Physics::grav_pull(body1, body2, settings.grav_const);
 
@@ -166,7 +166,7 @@ void Universe::handle_gravity()
 void Universe::handle_gravity_approximation()
 {
 	for (int i = 0; i < active_bodies.size(); i++) {
-		Body& body1 = *active_bodies[i];
+		Body& body1 = active_bodies[i];
 		barnes_quad.handle_gravity(body1, settings.grav_const);
 	}
 }
@@ -174,12 +174,8 @@ void Universe::handle_gravity_approximation()
 void Universe::handle_removal(Removal removal)
 {
 	on_removal_observers.notify_all(removal);
-	Body& removed = removal.removed;
+	Body* removed = removal.removed;
 	Body* absorbed = removal.absorbed_by;
-
-	if (has_partitioning()) {
-		partitioning_method->rem_body(removed);
-	}
 
 	if (absorbed) {
 		if (has_partitioning()) {
@@ -187,24 +183,31 @@ void Universe::handle_removal(Removal removal)
 			// A more efficient notify_radius_changed(Body, future_radius) can be a part of SpatialPartitioning,
 			// but it would be messier. we would need to use its future radius, not previous radius.
 			partitioning_method->rem_body(*absorbed);
-			absorbed->absorb(removed);
+			absorbed->absorb(*removed);
 			partitioning_method->add_body(*absorbed);
 		}
 		else {
-			absorbed->absorb(removed);
+			absorbed->absorb(*removed);
 		}
 
 
 	}
+	
+	if (absorbed == &active_bodies.back()) {
+		removal.absorbed_by = removed;
+	}
 
-	auto remove_it = get_iterator(removed.get_id());
-	active_bodies.erase(remove_it);
+	if (has_partitioning()) {
+		rem_from_partitioning(*removed);
+	}
+
+	active_bodies.rem(*removed);
 }
 
 void Universe::update_pos()
 {
 	for (auto it = active_bodies.begin(); it != active_bodies.end(); it++) {
-		Body& body = **it;
+		Body& body = *it;
 
 		body.pos_update();
 
@@ -245,9 +248,9 @@ std::vector<Collision> Universe::get_collisions_no_partitioning()
 	collisions.reserve(active_bodies.size()); // could reserve on start, and on create_body resize it (after done handling).
 
 	for (auto it1 = active_bodies.begin(); it1 != active_bodies.end() - 1; it1++) {
-		Body& body1 = **it1;
+		Body& body1 = *it1;
 		for (auto it2 = it1 + 1; it2 != active_bodies.end(); it2++) {
-			Body& body2 = **it2;
+			Body& body2 = *it2;
 
 			num_collision_checks_tick++;
 
@@ -283,13 +286,13 @@ void Universe::handle_collision(Collision collision, std::vector<Removal>& to_re
 	// or just loop through the presumably small to_remove vector
 
 	// already_removed == true if one of the bodies in this collision event are already set to be removed.
-	bool already_removed = std::any_of(to_remove.begin(), to_remove.end(), [&bigger, &smaller](Removal removal) { return removal.removed == bigger or removal.removed == smaller; });
+	bool already_removed = std::any_of(to_remove.begin(), to_remove.end(), [&bigger, &smaller](Removal removal) { return removal.removed == &bigger or removal.removed == &smaller; });
 
 	if (already_removed) {
 		return;
 	}
 
-	to_remove.emplace_back(smaller, &bigger);
+	to_remove.emplace_back(&smaller, &bigger);
 
 }
 
@@ -302,8 +305,24 @@ void Universe::handle_collisions(std::span<const Collision> collisions)
 		handle_collision(collision, to_remove);
 	}
 
-	for (Removal removal : to_remove) {
+	for (int i = 0; i < to_remove.size(); ++i) {
+		Removal removal = to_remove[i];
 		handle_removal(removal);
+
+		for (int j = i + 1; j < to_remove.size(); ++j) {
+			Removal to_update = to_remove[j];
+			if (to_update.removed == &active_bodies.back()) {
+				to_update.removed = removal.removed;
+			}
+
+			if (to_update.absorbed_by == removal.removed) {
+				to_update.absorbed_by = removal.absorbed_by; // maybe ??
+			}
+			
+			if (to_update.absorbed_by == &active_bodies.back()) {
+				to_update.absorbed_by = removal.removed;
+			}
+		}
 	}
 }
 
@@ -336,15 +355,6 @@ void Universe::update()
 	handle_collisions(collisions);
 
 	tick++;
-}
-
-Body& Universe::create_rand_body()
-{
-	float x = Rand::num(-settings.universe_size_start, settings.universe_size_start);
-	float y = Rand::num(-settings.universe_size_start, settings.universe_size_start);
-	long mass = Rand::num(1, settings.RAND_MASS);
-
-	return create_body(x, y, mass);
 }
 
 Body& Universe::create_rand_system()
@@ -403,8 +413,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 	return system;
 }
 
-
-Body* Universe::get_body(Vector2 point) const
+Body* Universe::get_body(Vector2 point)
 {
 	if (!in_bounds(point)) {
 		return nullptr;
@@ -416,44 +425,17 @@ Body* Universe::get_body(Vector2 point) const
 	}
 	else {
 		// Try to find the body by looping through all bodies.
-		auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [point](const std::unique_ptr<Body>& body) {return body->contains_point(point); });
+		// Could use a template method or std::function in BodyList.
+		auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [point](const Body& body) {return body.contains_point(point); });
 		if (it != active_bodies.end()) {
-			return it->get();
+			Body& body = *it;
+			return &body;
 		}
 		else {
 			return nullptr;
 		}
 	}
 	return nullptr;
-}
-
-Body* Universe::get_body(int id) const
-{
-	// Can use binary search.
-	auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [id](const std::unique_ptr<Body>& body) { return body->get_id() == id; });
-
-	if (it != active_bodies.end()) {
-		return it->get();
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void Universe::rem_body(int id)
-{
-	// Find iterator->body to remove.
-	auto remove_it = get_iterator(id);
-
-	Body& body = **remove_it;
-
-	if (has_partitioning()) {
-		partitioning_method->rem_body(body);
-	}
-
-	on_removal_observers.notify_all({ body, nullptr });
-
-	active_bodies.erase(remove_it);
 }
 
 Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter) const
@@ -472,8 +454,14 @@ Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter) const
 
 void Universe::rem_body(Body& body)
 {
-	// Active bodies is sorted by id, so call more efficient rem_body by id method.
-	rem_body(body.get_id());
+	if (has_partitioning()) {
+		rem_from_partitioning(body);
+	}
+
+	on_removal_observers.notify_all({ &body, nullptr });
+
+	// Active bodies no longer needs to be sorted by id, so we can swap-pop.
+	active_bodies.rem(body);
 }
 
 bool Universe::has_partitioning() const
@@ -491,7 +479,12 @@ UniverseSettings& Universe::get_settings()
 	return settings;
 }
 
-std::span<const std::unique_ptr<Body>> Universe::get_bodies() const
+std::span<const Body> Universe::get_bodies() const
+{
+	return active_bodies.span();
+}
+
+std::span<Body> Universe::get_bodies()
 {
 	return active_bodies;
 }

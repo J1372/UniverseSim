@@ -209,7 +209,10 @@ template<typename T>
 inline void PoolPtr<T>::reset()
 {
 	if (!is_null()) {
-		object->~T(); // call object's destructor.
+		// If not trivially destructible.
+		if constexpr(std::negation_v<std::is_trivially_destructible<T>>) {
+			object->~T(); // call object's destructor.
+		}
 		pool.free(object);
 		object = nullptr;
 	}

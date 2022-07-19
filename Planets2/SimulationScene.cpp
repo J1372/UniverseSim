@@ -117,13 +117,11 @@ void SimulationScene::update_on_screen_bodies()
 {
 	on_screen_bodies.clear();
 
-	std::span<const std::unique_ptr<Body>> bodies = universe.get_bodies();
+	std::span<Body> bodies = universe.get_bodies();
 
-	for (const auto& body_ptr : bodies) {
-		Body& body = *body_ptr;
-
+	for (Body& body : bodies) {
 		if (on_screen(body)) {
-			on_screen_bodies.push_back(&body); // this shouldnt work o.o get_bodies returns a const vector.
+			on_screen_bodies.push_back(&body);
 		}
 	}
 }

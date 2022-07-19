@@ -33,12 +33,12 @@ CameraState* AnchoredCamera::goto_free_camera()
     return &transition_to;
 }
 
-void AnchoredCamera::switch_to(Body* anchor_to)
+void AnchoredCamera::switch_to(const Body* anchor_to)
 {
     anchored_to = anchor_to;
 }
 
-void AnchoredCamera::switch_to(Body& anchor_to)
+void AnchoredCamera::switch_to(const Body& anchor_to)
 {
     anchored_to = &anchor_to;
 }
@@ -50,7 +50,7 @@ CameraState* AnchoredCamera::update(Universe& universe)
         Vector2 screen_point = GetMousePosition();
         Vector2 universe_point = GetScreenToWorld2D(screen_point, camera.get_raylib_camera());
 
-        Body* body = universe.get_body(universe_point);
+        const Body* body = universe.get_body(universe_point);
 
         switch_to(body);
     }
@@ -107,10 +107,10 @@ CameraState* AnchoredCamera::update(Universe& universe)
     return this;
 }
 
-void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to, Universe& universe)
+void AnchoredCamera::enter(const AdvCamera& prev_camera, const Body& anchor_to, Universe& universe)
 {
     listener_id = universe.removal_event().add_observer([this](Removal remove_event) {
-        if (anchored_to == &remove_event.removed) {
+        if (anchored_to == remove_event.removed) {
             this->switch_to(remove_event.absorbed_by);
         }
         });

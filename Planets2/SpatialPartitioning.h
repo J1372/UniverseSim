@@ -33,6 +33,8 @@ public:
 
 	// Removes a body from the partitioning.
 	virtual void rem_body(const Body& body) = 0;
+	
+	virtual void notify_move(const Body* from, Body* to) = 0;
 
 	// Updates the partitioning to reflect new positions.
 	virtual void update() = 0;

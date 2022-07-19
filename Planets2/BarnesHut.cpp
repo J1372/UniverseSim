@@ -106,7 +106,7 @@ void BarnesHut::update_mass_add(Vector2 center, long mass)
 
 }
 
-void BarnesHut::add_body(Body& to_add)
+void BarnesHut::add_body(const Body& to_add)
 {
 	add_body(to_add.pos(), to_add.get_mass());
 }
@@ -186,14 +186,14 @@ bool BarnesHut::is_full() const
 	return mass_sum != 0l;
 }
 
-void BarnesHut::update(std::span<const std::unique_ptr<Body>> bodies)
+void BarnesHut::update(std::span<const Body> bodies)
 {
 	concatenate();
 	center_of_mass = { 0,0 };
 	mass_sum = 0l;
 
-	for (const std::unique_ptr<Body>& body : bodies) {
-		add_body(*body);
+	for (const Body& body : bodies) {
+		add_body(body);
 	}
 
 }
