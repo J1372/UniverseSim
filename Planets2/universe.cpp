@@ -173,6 +173,7 @@ void Universe::handle_gravity_approximation()
 
 void Universe::handle_removal(Removal removal)
 {
+	removal.last = &active_bodies.back();
 	on_removal_observers.notify_all(removal);
 	Body* removed = removal.removed;
 	Body* absorbed = removal.absorbed_by;
@@ -191,10 +192,6 @@ void Universe::handle_removal(Removal removal)
 		}
 
 
-	}
-	
-	if (absorbed == &active_bodies.back()) {
-		removal.absorbed_by = removed;
 	}
 
 	if (has_partitioning()) {
@@ -307,22 +304,25 @@ void Universe::handle_collisions(std::span<const Collision> collisions)
 
 	for (int i = 0; i < to_remove.size(); ++i) {
 		Removal removal = to_remove[i];
-		handle_removal(removal);
 
 		for (int j = i + 1; j < to_remove.size(); ++j) {
-			Removal to_update = to_remove[j];
+			Removal& to_update = to_remove[j];
 			if (to_update.removed == &active_bodies.back()) {
 				to_update.removed = removal.removed;
 			}
 
 			if (to_update.absorbed_by == removal.removed) {
-				to_update.absorbed_by = removal.absorbed_by; // maybe ??
+				to_update.absorbed_by = removal.absorbed_by; // Could also just delete this event instead.
 			}
-			
-			if (to_update.absorbed_by == &active_bodies.back()) {
+
+			if (to_update.absorbed_by == &active_bodies.back()) { // can else if with first if
 				to_update.absorbed_by = removal.removed;
 			}
 		}
+
+		handle_removal(removal);
+
+		
 	}
 }
 

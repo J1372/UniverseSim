@@ -92,6 +92,11 @@ std::vector<GridNode*> Grid::get_all_nodes(const Body& body)
 void Grid::add_body(Body& body)
 {
     bodies.push_back(&body);
+    std::vector<GridNode*> nodes = get_all_nodes(body);
+
+    for (GridNode* node : nodes) {
+        node->add(body);
+    }
 }
 
 void Grid::update()

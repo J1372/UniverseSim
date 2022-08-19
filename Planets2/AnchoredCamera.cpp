@@ -111,7 +111,13 @@ void AnchoredCamera::enter(const AdvCamera& prev_camera, const Body& anchor_to, 
 {
     listener_id = universe.removal_event().add_observer([this](Removal remove_event) {
         if (anchored_to == remove_event.removed) {
-            this->switch_to(remove_event.absorbed_by);
+            if (remove_event.absorbed_by != remove_event.last)
+            {
+                this->switch_to(remove_event.absorbed_by);
+            }
+        } else if (anchored_to == remove_event.last)
+        {
+            this->switch_to(remove_event.removed);
         }
         });
 
