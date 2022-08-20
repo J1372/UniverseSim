@@ -84,13 +84,13 @@ public:
 	bool can_create_body() const;
 
 	// Generates a system where the central body is at (x,y), using the current settings.
-	std::vector<std::unique_ptr<Body>> generate_rand_system(float x, float y);
+	std::vector<Body> generate_rand_system(float x, float y);
 
 	// Command to add the body to the universe.
-	void add_body(std::unique_ptr<Body>&& body_ptr);
+	void add_body(Body&& body);
 
 	// Transfers all bodies from the vector and then clears the vector.
-	void add_bodies(std::vector<std::unique_ptr<Body>>& bodies);
+	void add_bodies(std::vector<Body>&& bodies);
 
 	// Creates a new universe, using the current settings.
 	void create_universe();
@@ -98,8 +98,8 @@ public:
 	// Returns a random orbit
 	Orbit gen_rand_orbit(const Body& orbited, const Body& orbiter) const;
 
-	// Creates a random system and returns a reference to the central body.
-	Body& create_rand_system();
+	// Creates a random system and adds it to the universe.
+	void create_rand_system();
 
 	// Returns true if there is a partitioning method that can be used.
 	bool has_partitioning() const;

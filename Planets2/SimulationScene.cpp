@@ -282,11 +282,9 @@ void SimulationScene::render_body(const Body& body) const
 	DrawCircle(pos.x, pos.y, body.get_radius(), planet_color);
 }
 
-void SimulationScene::render_creating_bodies(std::span<const std::unique_ptr<Body>> bodies) const
+void SimulationScene::render_creating_bodies(std::span<const Body> bodies) const
 {
-	for (const std::unique_ptr<Body>& body_ptr : bodies) {
-		const Body& body = *body_ptr;
-
+	for (const Body& body : bodies) {
 		if (on_screen(body))
 		{
 			render_body(body);
@@ -350,12 +348,11 @@ Scene* SimulationScene::update()
 				// Not relevant to every interaction state, and not every state wants their planets to have info rendered as well.
 				// In the future, can allow states to queue render commands to sim scene in their update maybe,
 				// instead of explicitly asking the state.
-				std::span<const std::unique_ptr<Body>> creating = interaction_state->get_creating_bodies();
+				std::span<const Body> creating = interaction_state->get_creating_bodies();
 
 				// Render bodies that the user is creating.
-				if (!creating.empty()) {
-					render_creating_bodies(creating);
-				}
+				render_creating_bodies(creating);
+				
 
 				// Render the actual bodies in the universe.
 				render_universe();

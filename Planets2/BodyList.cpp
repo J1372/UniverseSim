@@ -2,8 +2,8 @@
 
 void BodyList::add(Body&& body)
 {
-	body.set_id(generated_bodies++);
-	active_bodies.emplace_back(body);
+	Body& added = active_bodies.emplace_back(body);
+	added.set_id(generated_bodies++);
 }
 
 void BodyList::rem(Body& body)

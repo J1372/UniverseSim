@@ -24,13 +24,11 @@ Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartit
 	create_universe();
 }
 
-void Universe::add_body(std::unique_ptr<Body>&& body_ptr)
+void Universe::add_body(Body&& body)
 {
 	if (!can_create_body()) {
 		return;
 	}
-
-	Body& body = *body_ptr;
 
 	if (!in_bounds(body.pos())) {
 		return;
@@ -45,7 +43,7 @@ void Universe::add_body(std::unique_ptr<Body>&& body_ptr)
 
 }
 
-void Universe::add_bodies(std::vector<std::unique_ptr<Body>>& bodies)
+void Universe::add_bodies(std::vector<Body>&& bodies)
 {
 	int prev_size = active_bodies.size();
 
@@ -57,7 +55,7 @@ void Universe::add_bodies(std::vector<std::unique_ptr<Body>>& bodies)
 	auto it = bodies.begin();
 	auto end_it = bodies.begin() + adding;
 	while (it != end_it and can_create_body()) {
-		std::unique_ptr<Body>& body = *it;
+		Body& body = *it;
 		add_body(std::move(body));
 		it++;
 	}
@@ -357,22 +355,18 @@ void Universe::update()
 	tick++;
 }
 
-Body& Universe::create_rand_system()
+void Universe::create_rand_system()
 {
 	float star_x = Rand::num(-settings.universe_size_start, settings.universe_size_start);
 	float star_y = Rand::num(-settings.universe_size_start, settings.universe_size_start);
-	std::vector<std::unique_ptr<Body>> system = generate_rand_system(star_x, star_y);
+	std::vector<Body> system = generate_rand_system(star_x, star_y);
 
-	Body& star = *system[0];
-
-	add_bodies(system);
-
-	return star;
+	add_bodies(std::move(system));
 }
 
-std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float y)
+std::vector<Body> Universe::generate_rand_system(float x, float y)
 {
-	std::vector<std::unique_ptr<Body>> system;
+	std::vector<Body> system;
 
 	int num_planets = Rand::num(settings.system_min_planets, settings.system_max_planets);
 	int approximate_num_moons = settings.moon_chance * num_planets;
@@ -382,7 +376,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 	long star_mass = settings.system_mass_ratio * system_mass;
 	long remaining_mass = system_mass * (1 - settings.system_mass_ratio);
 
-	Body& star = *system.emplace_back(std::make_unique<Body>(x, y, star_mass));
+	Body& star = system.emplace_back(x, y, star_mass);
 
 	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
 
@@ -392,7 +386,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 	for (int i = 0; i < num_planets; ++i) {
 		long planet_mass = mass_ratios[i] * remaining_mass;
 
-		Body& planet = *system.emplace_back(std::make_unique<Body>(0.0f, 0.0f, planet_mass));
+		Body& planet = system.emplace_back(0.0f, 0.0f, planet_mass);
 		Orbit planet_orbit = gen_rand_orbit(star, planet);
 		planet.set_orbit(planet_orbit, Rand::real());
 		
@@ -402,7 +396,7 @@ std::vector<std::unique_ptr<Body>> Universe::generate_rand_system(float x, float
 			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
 			long moon_mass = Rand::real(0.01f, 0.1f) * planet.get_mass();
 
-			Body& moon = *system.emplace_back(std::make_unique<Body>(0.0f, 0.0f, moon_mass));
+			Body& moon = system.emplace_back(0.0f, 0.0f, moon_mass);
 			Orbit moon_orbit = gen_rand_orbit(planet, moon);
 			moon_orbit.set_periapsis(planet, Rand::real(settings.satellite_min_dist, moon_max_dist));
 			moon.set_orbit(moon_orbit, Rand::real());

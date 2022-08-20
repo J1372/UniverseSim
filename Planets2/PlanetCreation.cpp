@@ -7,10 +7,10 @@
 #include "SystemCreation.h"
 #include "DefaultInteraction.h"
 
-std::unique_ptr<Body> PlanetCreation::create_default_body(Vector2 pos) const
+Body PlanetCreation::create_default_body(Vector2 pos) const
 {
 	long mass = 200;
-	return std::make_unique<Body>(pos.x, pos.y, mass);
+	return { pos.x, pos.y, mass };
 }
 
 void PlanetCreation::enter(Vector2 mouse_pos) // universe point of mouse param
@@ -43,15 +43,15 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 
 		}
 		else {
-			Vector2 creating_pos = creating->pos();
+			Vector2 creating_pos = creating.pos();
 			// select modifying mode based on where user clicked.
-			float inner_radius = .6 * creating->get_radius();
+			float inner_radius = .6 * creating.get_radius();
 			if (Physics::point_in_circle(universe_point, creating_pos.x, creating_pos.y, inner_radius)) {
 				// Clicked on the inside section of the body.
 				modify_mode = Modifying::VELOCITY;
 
 			}
-			else if (creating->contains_point(universe_point)) {
+			else if (creating.contains_point(universe_point)) {
 				// Clicked on the outside section of the body.
 				modify_mode = Modifying::MASS;
 
@@ -72,7 +72,7 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 
 		if (modify_mode == Modifying::MASS) {
 			// User is altering body's mass.
-			Vector2 creating_pos = creating->pos();
+			Vector2 creating_pos = creating.pos();
 
 			// This determines whether the user dragged the mouse towards the body.
 			float towards_body_x = creating_pos.x < universe_point.x ? -movement.x : movement.x;
@@ -80,33 +80,27 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 			float towards_body_delta = towards_body_x + towards_body_y;
 
 			// Increase mass if dragged towards, else decrease.
-			creating->change_mass(5 * -towards_body_delta);
+			creating.change_mass(5 * -towards_body_delta);
 
 		}
 		else if (modify_mode == Modifying::VELOCITY) {
 			// User is altering body's velocity.
 
 			// Increase velocity in opposite direction of the mouse drag.
-			creating->change_vel({ -movement.x / 2 , -movement.y / 2 });
+			creating.change_vel({ -movement.x / 2 , -movement.y / 2 });
 		}
 	}
 	else if (IsKeyPressed(KEY_ENTER)) {
 		// Add user body to universe, and end creation mode. 
 		universe.add_body(std::move(creating));
-		creating = nullptr;
-
 		DefaultInteraction& ret_state = InteractionState::default_interaction;
 		return &ret_state;
 	}
 	else if (IsKeyPressed(KEY_ONE)) {
-		creating = nullptr;
-
 		DefaultInteraction& ret_state = InteractionState::default_interaction;
 		return &ret_state;
 	}
 	else if (IsKeyPressed(KEY_THREE)) {
-		creating = nullptr;
-
 		SystemCreation& ret_state = InteractionState::system_interaction;
 		ret_state.enter(universe_point, universe);
 		return &ret_state;
@@ -132,7 +126,7 @@ std::string PlanetCreation::get_help_text() const
 
 }
 
-std::span<const std::unique_ptr<Body>> PlanetCreation::get_creating_bodies() const
+std::span<const Body> PlanetCreation::get_creating_bodies() const
 {
 	return { &creating, 1 };
 }

@@ -71,7 +71,7 @@ std::string DefaultInteraction::get_help_text() const
 		"[3] to go to system generator\n";
 }
 
-std::span<const std::unique_ptr<Body>> DefaultInteraction::get_creating_bodies() const
+std::span<const Body> DefaultInteraction::get_creating_bodies() const
 {
 	return {};
 }

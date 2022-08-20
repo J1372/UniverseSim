@@ -18,10 +18,10 @@ class PlanetCreation : public InteractionState
 	Modifying modify_mode = Modifying::NONE;
 
 	// The body being modified, and potentially added to the universe.
-	std::unique_ptr<Body> creating = nullptr;
+	Body creating;
 
 	// Creates a default body for the user to modify.
-	std::unique_ptr<Body> create_default_body(Vector2 pos) const;
+	Body create_default_body(Vector2 pos) const;
 
 public:
 
@@ -39,7 +39,7 @@ public:
 	std::string get_help_text() const override;
 
 	// Returns the body being created.
-	std::span<const std::unique_ptr<Body>> get_creating_bodies() const override;
+	std::span<const Body> get_creating_bodies() const override;
 
 };
 
