@@ -452,7 +452,7 @@ void Universe::rem_body(Body& body)
 		rem_from_partitioning(body);
 	}
 
-	on_removal_observers.notify_all({ &body, nullptr });
+	on_removal_observers.notify_all({ &body, nullptr, &active_bodies.back()});
 
 	// Active bodies no longer needs to be sorted by id, so we can swap-pop.
 	active_bodies.rem(body);
