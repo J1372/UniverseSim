@@ -39,13 +39,18 @@ UIElement* GuiComponentList::get_element(Vector2 point)
 
 void GuiComponentList::send_click(Vector2 point)
 {
-	UIElement* element = get_element(point);
+	UIElement* clicked_on = get_element(point);
 
-	set_active(element);
-
-	if (element) {
-		element->click();
+	if (active_element and active_element != clicked_on) {
+		active_element->deactivate();
 	}
+
+	if (clicked_on) {
+		clicked_on->click();
+		clicked_on->activate();
+	}
+
+	active_element = clicked_on;
 }
 
 bool GuiComponentList::send_keypress(int key_code)

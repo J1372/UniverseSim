@@ -36,11 +36,15 @@ class TextBox : public UIElement
 	// Thickness of the textbox's edge.
 	static constexpr int edge_width = 10;
 
+	// Whether the textbox should display a cursor line or not.
+	bool should_render_cursor = false;
+
 	// A validator that checks input into the textbox and potentially modifies it on deactivation.
 	std::unique_ptr<TextValidator> validator = nullptr;
 
 	// Returns the x coord of where to begin drawing the currently entered text.
 	int get_start_x_text() const;
+
 
 public:
 
@@ -79,9 +83,12 @@ public:
 	// Sets the text to be shown when no text has been entered.
 	void set_prompt_text(const std::string& text);
 
-	// Sets a validator for user input into this text box..
+	// Sets a validator for user input into this text box.
 	void set_validator(std::unique_ptr<TextValidator>&& to_set);
 
+	// Sets the textbox to active rendering.
+	void activate() override;
+
 	// If a validator was set, allows it to modify the final-result input.
-	void on_deactivation() override;
+	void deactivate() override;
 };

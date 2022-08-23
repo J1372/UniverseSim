@@ -4,17 +4,8 @@ struct Vector2;
 // An element of a gui that may be shown, hid, or sent input to in order for it to react.
 class UIElement
 {
-protected:
-
 	// Whether the element should be rendered.
 	bool hidden = false;
-
-	// Whether the element is currently activated.
-	bool active = false;
-
-	// Called after a call to deactivate.
-	// Optionally, UIElement subclasses can implement this to do other actions on deactivation.
-	virtual void on_deactivation() {};
 
 public:
 
@@ -34,10 +25,10 @@ public:
 	bool is_visible() const;
 
 	// Notifies the element that it has been activated.
-	void activate();
+	virtual void activate() {};
 
 	// Notifies the element that it has been deactivated.
-	void deactivate();
+	virtual void deactivate() {};
 
 	// Notifies the element that it has been clicked on by the left mouse button.
 	virtual void click() {};

@@ -23,6 +23,9 @@ class Dropdown : public UIElement
 
 	static constexpr int edge_width = 10;
 
+	// Whether the dropdown should display its options or not.
+	bool should_render_options = false;
+
 	std::function<void(const std::string& text)> callback = nullptr;
 
 	// Returns the selection which the user has clicked on.
@@ -52,6 +55,10 @@ public:
 	void render() const override;
 
 	void set_on_selection(std::function<void(const std::string& text)> to_set);
+
+	void activate() override;
+
+	void deactivate() override;
 
 };
 

@@ -8,7 +8,7 @@ Dropdown::Dropdown(float x, float y, int font_size) :
 
 float Dropdown::get_render_height() const
 {
-	if (active) {
+	if (should_render_options) {
 		return (choices.size() + 1) * rect.height;
 	}
 	else {
@@ -80,9 +80,14 @@ std::string Dropdown::get_selected() const
 
 void Dropdown::click()
 {
-	if (active) {
+	if (should_render_options) {
 		int index = translate_click();
 		set_selected(index);
+		should_render_options = false;
+	}
+	else
+	{
+		should_render_options = true;
 	}
 }
 
@@ -97,13 +102,12 @@ void Dropdown::render() const
 	DrawRectangleRec(render_rect, background_color);
 	DrawRectangleLinesEx(render_rect, edge_width, edge_color);
 
-
 	int start_x = rect.x + edge_width + rect.width * (width_padding / 2);
 	int top_y = rect.y + edge_width; // y coord of the bottom of the top edge.
 	int full_width = rect.height - 2 * edge_width; // distance from bottom of top edge to top of bottom edge.
 	int start_y = top_y + full_width / 3;
 
-	if (active) { // render choices list
+	if (should_render_options) { // render choices list
 		constexpr float SEPARATOR_THICKNESS = 3.0f;
 
 		// draw separator lines
@@ -124,16 +128,23 @@ void Dropdown::render() const
 		}
 	}
 	
-
 	if (has_selected()) { // if selected an option, draw current choice in the base box.
 		DrawText(get_selected().c_str(), start_x, start_y, font_size, WHITE);
 	}
-
-
 	
 }
 
 void Dropdown::set_on_selection(std::function<void(const std::string& text)> to_set)
 {
 	callback = to_set;
+}
+
+void Dropdown::activate()
+{
+	should_render_options = true;
+}
+
+void Dropdown::deactivate()
+{
+	should_render_options = false;
 }

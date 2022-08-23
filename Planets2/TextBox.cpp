@@ -48,7 +48,7 @@ void TextBox::render() const {
 	}
 
 	
-	if (active) {
+	if (should_render_cursor) {
 		constexpr int CURSOR_LINE_PADDING = 3;
 		constexpr double CURSOR_LINE_PADDING_HEIGHT = 0.2;
 		int cursor_line_x = start_x + MeasureText(entered_text.substr(0, cursor_pos).c_str(), font_size) + CURSOR_LINE_PADDING;
@@ -131,8 +131,15 @@ void TextBox::set_validator(std::unique_ptr<TextValidator>&& to_set)
 	validator = std::move(to_set);
 }
 
-void TextBox::on_deactivation()
+void TextBox::activate()
 {
+	should_render_cursor = true;
+}
+
+void TextBox::deactivate()
+{
+	should_render_cursor = false;
+
 	if (validator)
 	{
 		validator->on_exit(entered_text);
