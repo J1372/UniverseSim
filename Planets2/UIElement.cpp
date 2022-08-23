@@ -38,6 +38,7 @@ void UIElement::activate()
 
 void UIElement::deactivate()
 {
+	on_deactivation();
 	active = false;
 }
 
