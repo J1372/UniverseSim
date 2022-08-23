@@ -12,6 +12,10 @@ protected:
 	// Whether the element is currently activated.
 	bool active = false;
 
+	// Called after a call to deactivate.
+	// Optionally, UIElement subclasses can implement this to do other actions on deactivation.
+	virtual void on_deactivation() {};
+
 public:
 
 	// Marks the element so that it should not be rendered.
@@ -33,7 +37,7 @@ public:
 	void activate();
 
 	// Notifies the element that it has been deactivated.
-	virtual void deactivate();
+	void deactivate();
 
 	// Notifies the element that it has been clicked on by the left mouse button.
 	virtual void click() {};

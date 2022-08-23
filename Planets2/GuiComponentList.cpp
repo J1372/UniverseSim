@@ -41,11 +41,11 @@ void GuiComponentList::send_click(Vector2 point)
 {
 	UIElement* element = get_element(point);
 
+	set_active(element);
+
 	if (element) {
 		element->click();
 	}
-
-	set_active(element);
 }
 
 bool GuiComponentList::send_keypress(int key_code)

@@ -3,6 +3,8 @@
 #include "UIElement.h"
 #include <string>
 #include <raylib.h>
+#include <memory>
+#include "TextValidator.h"
 
 // A gui textbox that the user can type characters into.
 class TextBox : public UIElement
@@ -34,6 +36,9 @@ class TextBox : public UIElement
 	// Thickness of the textbox's edge.
 	static constexpr int edge_width = 10;
 
+	// A validator that checks input into the textbox and potentially modifies it on deactivation.
+	std::unique_ptr<TextValidator> validator = nullptr;
+
 	// Returns the x coord of where to begin drawing the currently entered text.
 	int get_start_x_text() const;
 
@@ -56,21 +61,11 @@ public:
 	bool send_keypress(int key_code);
 
 	// Sets the entered text.
-	void set_text(std::string& to_set);
-
-	// Sets the entered text.
-	void set_text(std::string&& to_set);
+	// If a validator was set, this input will go through the validator.
+	void set_text(std::string_view to_set);
 
 	// Returns the currently entered text.
 	const std::string& get_text() const;
-
-	// is_int and is_number could/should be in a Text namespace.
-	
-	//Returns true if the text in this textbox is just an integer, else false.
-	bool is_int() const;
-
-	//Returns true if the text in this textbox is just a number, else false.
-	bool is_number() const;
 
 	// Returns the currently entered text as an integer.
 	int get_int() const;
@@ -83,4 +78,10 @@ public:
 
 	// Sets the text to be shown when no text has been entered.
 	void set_prompt_text(const std::string& text);
+
+	// Sets a validator for user input into this text box..
+	void set_validator(std::unique_ptr<TextValidator>&& to_set);
+
+	// If a validator was set, allows it to modify the final-result input.
+	void on_deactivation() override;
 };

@@ -134,18 +134,12 @@ class SettingsScene : public GuiScene
 	// Creates and returns the selected partitioning method.
 	std::unique_ptr<SpatialPartitioning> gen_partitioning();
 
-	// Handles any user input errors by setting the error message.
+	// Handles any semantic user input errors by setting the error message.
 	// Returns true if there was an error, else false.
 	bool handle_errors();
 
-	// Scans general input for errors related to not being a number and returns any error message.
-	std::string scan_nan_errors() const;
-
 	// Scans general input for semantic errors and returns any error message.
-	std::string scan_other_errors() const;
-
-	// Scans partitioning input for any errors and returns any error message.
-	std::string scan_partitioning_errors() const;
+	std::string scan_semantic_errors() const;
 
 public:
 

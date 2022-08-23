@@ -1,5 +1,6 @@
 #include "TextBox.h"
 #include <algorithm>
+#include "TextValidator.h"
 
 int TextBox::get_start_x_text() const
 {
@@ -9,8 +10,10 @@ int TextBox::get_start_x_text() const
 TextBox::TextBox(float x, float y, float width) : rect{ x, y, width, 50 }
 {}
 
-TextBox::TextBox(const std::string& start_text, float x, float y, float width) : entered_text(start_text), rect{ x, y, width, 50 }
-{}
+TextBox::TextBox(const std::string& start_text, float x, float y, float width) : rect{x, y, width, 50}
+{
+	set_text(start_text);
+}
 
 
 void TextBox::click() {
@@ -58,6 +61,11 @@ void TextBox::render() const {
 
 bool TextBox::send_keypress(int key_code)
 {
+	if (validator and !validator->on_press(entered_text, key_code, cursor_pos))
+	{
+		return false;
+	}
+
 	if (key_code == KEY_BACKSPACE) {
 		if (cursor_pos > 0) {
 			cursor_pos--;
@@ -85,75 +93,17 @@ bool TextBox::send_keypress(int key_code)
 	return true;
 }
 
-void TextBox::set_text(std::string& to_set)
+void TextBox::set_text(std::string_view to_set)
 {
-	entered_text = to_set;
-}
-
-void TextBox::set_text(std::string&& to_set)
-{
-	entered_text = to_set;
+	for (char character : to_set)
+	{
+		send_keypress(character);
+	}
 }
 
 const std::string& TextBox::get_text() const
 {
 	return entered_text;
-}
-
-bool TextBox::is_int() const
-{
-	if (entered_text.empty()) {
-		return false;
-	}
-
-	int check_from = 0;
-	if (entered_text[0] == '-') { // negative number, start scan after hyphen.
-		check_from = 1;
-	}
-
-	for (int i = check_from; i < entered_text.size(); i++) {
-		char letter = entered_text[i];
-
-		if (!std::isdigit(letter)) {
-			return false;
-		}
-
-	}
-
-	return true;
-
-}
-
-bool TextBox::is_number() const
-{
-	if (entered_text.empty()) {
-		return false;
-	}
-
-	int check_from = 0;
-	if (entered_text[0] == '-') { // negative number, start scan after hyphen.
-		check_from = 1;
-	}
-
-	bool scanned_decimal = false;
-
-	for (int i = check_from; i < entered_text.size(); i++) {
-		char letter = entered_text[i];
-
-		if (letter == '.') {
-			if (scanned_decimal) {
-				return false; // number cannot have more than one decimal.
-			}
-			else {
-				scanned_decimal = true;
-			}
-		} else if (!std::isdigit(letter)) {
-			return false;
-		}
-
-	}
-
-	return true;
 }
 
 int TextBox::get_int() const
@@ -174,4 +124,17 @@ double TextBox::get_double() const
 void TextBox::set_prompt_text(const std::string& text)
 {
 	prompt_text = text;
+}
+
+void TextBox::set_validator(std::unique_ptr<TextValidator>&& to_set)
+{
+	validator = std::move(to_set);
+}
+
+void TextBox::on_deactivation()
+{
+	if (validator)
+	{
+		validator->on_exit(entered_text);
+	}
 }
