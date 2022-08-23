@@ -24,10 +24,7 @@ public:
 	// Returns true if the element is not hidden.
 	bool is_visible() const;
 
-	// Notifies the element that it has been activated.
-	virtual void activate() {};
-
-	// Notifies the element that it has been deactivated.
+	// Notifies the element that it has been deactivated (user clicked something else).
 	virtual void deactivate() {};
 
 	// Notifies the element that it has been clicked on by the left mouse button.

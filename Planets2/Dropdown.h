@@ -56,8 +56,6 @@ public:
 
 	void set_on_selection(std::function<void(const std::string& text)> to_set);
 
-	void activate() override;
-
 	void deactivate() override;
 
 };

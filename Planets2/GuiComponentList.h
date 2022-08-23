@@ -20,9 +20,6 @@ class GuiComponentList
 	// All gui elements in this component list that are visible.
 	std::vector<UIElement*> visible_elements;
 
-	// Sets the element to be the active element.
-	void set_active(UIElement* element);
-
 public:
 
 	// Adds an element of the given type to the gui.

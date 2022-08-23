@@ -86,9 +86,6 @@ public:
 	// Sets a validator for user input into this text box.
 	void set_validator(std::unique_ptr<TextValidator>&& to_set);
 
-	// Sets the textbox to active rendering.
-	void activate() override;
-
 	// If a validator was set, allows it to modify the final-result input.
 	void deactivate() override;
 };

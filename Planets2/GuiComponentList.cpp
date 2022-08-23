@@ -1,21 +1,6 @@
 #include "GuiComponentList.h"
 #include "raylib.h" // for Vector2
 
-void GuiComponentList::set_active(UIElement* element)
-{
-	// Deactivate current active element
-	if (active_element) {
-		active_element->deactivate();
-	}
-
-	active_element = element;
-
-	// If element was not null, then activate new active element.
-	if (element) {
-		active_element->activate();
-	}
-}
-
 void GuiComponentList::render()
 {
 	for (auto&& element : visible_elements) {
@@ -47,7 +32,6 @@ void GuiComponentList::send_click(Vector2 point)
 
 	if (clicked_on) {
 		clicked_on->click();
-		clicked_on->activate();
 	}
 
 	active_element = clicked_on;

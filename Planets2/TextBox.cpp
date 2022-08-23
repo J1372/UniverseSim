@@ -16,13 +16,16 @@ TextBox::TextBox(const std::string& start_text, float x, float y, float width) :
 }
 
 
-void TextBox::click() {
+void TextBox::click()
+{
 	double mouse_x_in_box = GetMouseX() - get_start_x_text();
 
 	double mouse_pct = mouse_x_in_box / MeasureText(entered_text.c_str(), font_size);
 
 	int len_text = entered_text.size();
 	cursor_pos = std::clamp(static_cast<int>(mouse_pct * len_text), 0, len_text);
+
+	should_render_cursor = true;
 
 }
 
@@ -129,11 +132,6 @@ void TextBox::set_prompt_text(const std::string& text)
 void TextBox::set_validator(std::unique_ptr<TextValidator>&& to_set)
 {
 	validator = std::move(to_set);
-}
-
-void TextBox::activate()
-{
-	should_render_cursor = true;
 }
 
 void TextBox::deactivate()

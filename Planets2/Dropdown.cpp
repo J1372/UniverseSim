@@ -139,11 +139,6 @@ void Dropdown::set_on_selection(std::function<void(const std::string& text)> to_
 	callback = to_set;
 }
 
-void Dropdown::activate()
-{
-	should_render_options = true;
-}
-
 void Dropdown::deactivate()
 {
 	should_render_options = false;
