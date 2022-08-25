@@ -196,7 +196,7 @@ void Body::grav_pull(Vector2 pull)
 
 Vector2 Body::get_momentum() const
 {
-	return { mass * velocity.x , mass * velocity.y };
+	return Physics::moment(velocity, mass);
 }
 
 void Body::set_mass(long to_set)
