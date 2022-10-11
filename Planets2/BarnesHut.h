@@ -31,11 +31,7 @@ class BarnesHut
 	Rectangle dimensions{};
 
 	// The node's 4 potential children.
-	//std::unique_ptr<QuadChildren<BarnesHut>, PoolDeleter<QuadChildren<BarnesHut>>>
-	//std::unique_ptr<T, PoolDeleter<T>>
 	PoolPtr<QuadChildren<BarnesHut>> children {quad_pool};
-	// For this quad tree implementation in particular (Maximum 1 body per node, AND rebuilt on tick), 
-	// should look into object pooling.
 
 	// Returns the width of this quad divided by the distance from its center of mass to the body.
 	float dist_ratio(const Body& body) const;
