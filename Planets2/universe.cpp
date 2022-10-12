@@ -10,16 +10,16 @@
 #include "Orbit.h"
 
 Universe::Universe() : barnes_quad { settings.universe_size_max, .5f },
-	dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
+dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
 {
 	partitioning_method = nullptr;
 	//std::cout << std::thread::hardware_concurrency();
 }
 
 Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning) : settings(to_set),
-	partitioning_method(std::move(partitioning)),
-	dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
-	barnes_quad{ settings.universe_size_max, 10.0f }
+partitioning_method(std::move(partitioning)),
+dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
+barnes_quad{ settings.universe_size_max, 10.0f }
 {
 	create_universe();
 }
@@ -171,32 +171,30 @@ void Universe::handle_gravity_approximation()
 
 void Universe::handle_removal(Removal removal)
 {
-	removal.last = &active_bodies.back();
 	on_removal_observers.notify_all(removal);
-	Body* removed = removal.removed;
-	Body* absorbed = removal.absorbed_by;
+	Body& removed = active_bodies[active_bodies.get_index(removal.removed)];
 
-	if (absorbed) {
+	if (removal.was_absorbed()) {
+		Body& absorbed = active_bodies[active_bodies.get_index(removal.absorbed_by)];
+
 		if (has_partitioning()) {
-			// Remove the body before absorption re-add after to deal with radius change.
+			// Remove the body before absorption. Re-add after to deal with radius change.
 			// A more efficient notify_radius_changed(Body, future_radius) can be a part of SpatialPartitioning,
 			// but it would be messier. we would need to use its future radius, not previous radius.
-			partitioning_method->rem_body(*absorbed);
-			absorbed->absorb(*removed);
-			partitioning_method->add_body(*absorbed);
+			partitioning_method->rem_body(absorbed);
+			absorbed.absorb(removed);
+			partitioning_method->add_body(absorbed);
 		}
 		else {
-			absorbed->absorb(*removed);
+			absorbed.absorb(removed);
 		}
-
-
 	}
 
 	if (has_partitioning()) {
-		rem_from_partitioning(*removed);
+		rem_from_partitioning(removed);
 	}
 
-	active_bodies.rem(*removed);
+	active_bodies.rem(removed);
 }
 
 void Universe::update_pos()
@@ -268,7 +266,7 @@ void Universe::handle_collision(Collision collision, std::vector<Removal>& to_re
 {
 	/*
 	* A simple handling of collisions. The bigger object completely absorbs the smaller object.
-	* 
+	*
 	* However, since this method is in charge of what happens when a collision occurs (spatial partitionings and physics delegate that decision making to here),
 	* it should be easy to add more complex and customizable collision mechanics later if wanted.
 	*
@@ -281,13 +279,16 @@ void Universe::handle_collision(Collision collision, std::vector<Removal>& to_re
 	// or just loop through the presumably small to_remove vector
 
 	// already_removed == true if one of the bodies in this collision event are already set to be removed.
-	bool already_removed = std::any_of(to_remove.begin(), to_remove.end(), [&bigger, &smaller](Removal removal) { return removal.removed == &bigger or removal.removed == &smaller; });
+	int big_id = bigger.get_id();
+	int small_id = smaller.get_id();
 
-	if (already_removed) {
-		return;
+	// Could use a set for this check, but number of removals is small.
+	bool already_removed = std::any_of(to_remove.begin(), to_remove.end(),
+		[big_id, small_id](Removal removal) { return removal.removed == big_id or removal.removed == small_id; });
+
+	if (!already_removed) {
+		to_remove.emplace_back(small_id, big_id);
 	}
-
-	to_remove.emplace_back(&smaller, &bigger);
 
 }
 
@@ -300,27 +301,8 @@ void Universe::handle_collisions(std::span<const Collision> collisions)
 		handle_collision(collision, to_remove);
 	}
 
-	for (int i = 0; i < to_remove.size(); ++i) {
-		Removal removal = to_remove[i];
-
-		for (int j = i + 1; j < to_remove.size(); ++j) {
-			Removal& to_update = to_remove[j];
-			if (to_update.removed == &active_bodies.back()) {
-				to_update.removed = removal.removed;
-			}
-
-			if (to_update.absorbed_by == removal.removed) {
-				to_update.absorbed_by = removal.absorbed_by; // Could also just delete this event instead.
-			}
-
-			if (to_update.absorbed_by == &active_bodies.back()) { // can else if with first if
-				to_update.absorbed_by = removal.removed;
-			}
-		}
-
+	for (Removal removal : to_remove) {
 		handle_removal(removal);
-
-		
 	}
 }
 
@@ -332,7 +314,7 @@ void Universe::update()
 		handle_gravity_approximation();
 	}
 	else {
-		handle_gravity(); 
+		handle_gravity();
 	}
 
 	update_pos(); // update velocities and positions
@@ -389,7 +371,7 @@ std::vector<Body> Universe::generate_rand_system(float x, float y)
 		Body& planet = system.emplace_back(0.0f, 0.0f, planet_mass);
 		Orbit planet_orbit = gen_rand_orbit(star, planet);
 		planet.set_orbit(planet_orbit, Rand::real());
-		
+
 
 		if (Rand::chance(settings.moon_chance)) {
 			// Currently only one moon can be generated per planet.
@@ -467,7 +449,7 @@ void Universe::rem_body(Body& body)
 		rem_from_partitioning(body);
 	}
 
-	on_removal_observers.notify_all({ &body, nullptr, &active_bodies.back()});
+	on_removal_observers.notify_all({ body.get_id() });
 
 	// Active bodies no longer needs to be sorted by id, so we can swap-pop.
 	active_bodies.rem(body);
