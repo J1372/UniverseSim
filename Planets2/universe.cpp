@@ -432,6 +432,21 @@ Body* Universe::get_body(Vector2 point)
 	return nullptr;
 }
 
+Body* Universe::get_body(int search_id)
+{
+	int index = active_bodies.get_index(search_id);
+
+	if (index != -1)
+	{
+		return &active_bodies[index];
+	}
+	else
+	{
+		return nullptr;
+	}
+
+}
+
 Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter) const
 {
 	Orbit orbit { orbited };

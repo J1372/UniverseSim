@@ -118,6 +118,9 @@ public:
 	// Returns the body at the coordinate, or nullptr if not found.
 	Body* get_body(Vector2 point);
 
+	// Returns the body whose id matches the given id, or nullptr if invalid id.
+	Body* get_body(int search_id);
+
 
 	// Returns a reference to all bodies in the universe
 	std::span<const Body> get_bodies() const;
