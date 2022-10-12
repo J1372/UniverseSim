@@ -12,7 +12,7 @@ class BodyList
 	std::vector<Body> active_bodies;
 
 	// Maps body ids to indices in active_bodies.
-	// std::unordered_map<int, int> id_map;
+	std::unordered_map<int, int> id_map;
 
 	// Total number of generated bodies (through calls to add())
 	int generated_bodies = 0;
@@ -42,6 +42,8 @@ public:
 	std::vector<Body>::const_iterator cend() const;
 
 	Body& operator[](int index);
+
+	int get_index(int id) const;
 
 
 };
