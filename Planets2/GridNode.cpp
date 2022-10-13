@@ -19,6 +19,12 @@ void GridNode::rem(const Body& body)
     bodies.erase(it);
 }
 
+void GridNode::notify_move(const Body* from, Body* to)
+{
+    auto it = std::find(bodies.begin(), bodies.end(), from);
+    *it = to;
+}
+
 void GridNode::clear()
 {
     bodies.clear();

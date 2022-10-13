@@ -60,7 +60,7 @@ public:
 	void set_size(float size);
 
 	// Will add a body to the most appropriate quad node. Potentially splits that node if it reached its capacity.
-	void add_body(Body& to_add);
+	void add_body(const Body& to_add);
 
 	// Will add a point mass to the most appropriate quad node. Potentially splits that node if it reached its capacity.
 	void add_body(Vector2 center, long mass);
@@ -75,7 +75,7 @@ public:
 	void handle_gravity(Body& body, float grav_const) const;
 
 	// Rebuilds the quadtree used for Barnes-Hut approximation.
-	void update(std::span<const std::unique_ptr<Body>> bodies);
+	void update(std::span<const Body> bodies);
 
 	// Returns true if a point is inside the quad's dimensions.
 	bool contains(Vector2 point) const;

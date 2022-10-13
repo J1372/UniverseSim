@@ -67,6 +67,16 @@ void LineSweep::rem_body(const Body& body)
 
 }
 
+void LineSweep::notify_move(const Body* from, Body* to)
+{
+    auto entry_event_it = get_entry_it(*from);
+    auto leave_event_it = get_leave_it(*from);
+
+    *entry_event_it = to;
+    *leave_event_it = to;
+
+}
+
 void LineSweep::update()
 {
     sort_events();
@@ -203,12 +213,37 @@ std::vector<Body*>::const_iterator LineSweep::get_entry_it(const Body& body) con
     return it;
 }
 
+std::vector<Body*>::iterator LineSweep::get_entry_it(const Body& body)
+{
+    auto it = std::lower_bound(entry_events.begin(), entry_events.end(), &body, left_less_than);
+
+    // it can be pointing at leftmost body whose leftmost point >= body's leftmost point. should be guaranteed == if in entry events.
+    // might be multiple entry events with same point.
+    while (it != entry_events.end() and **it != body) { // if in events, shouldnt need to check for != cend().
+        it++;
+    }
+
+    return it;
+}
+
 std::vector<Body*>::const_iterator LineSweep::get_leave_it(const Body& body) const
 {
     auto it = std::lower_bound(leave_events.cbegin(), leave_events.cend(), &body, right_less_than);
 
     // it is pointing at first body whose rightmost point >= body's rightmost point. if in events, should be first ==.
     while (it != leave_events.cend() and **it != body) { // if in events, shouldnt need to check for != cend().
+        it++;
+    }
+
+    return it;
+}
+
+std::vector<Body*>::iterator LineSweep::get_leave_it(const Body& body)
+{
+    auto it = std::lower_bound(leave_events.begin(), leave_events.end(), &body, right_less_than);
+
+    // it is pointing at first body whose rightmost point >= body's rightmost point. if in events, should be first ==.
+    while (it != leave_events.end() and **it != body) { // if in events, shouldnt need to check for != cend().
         it++;
     }
 

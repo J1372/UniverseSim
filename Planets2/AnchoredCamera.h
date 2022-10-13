@@ -15,22 +15,25 @@ class AnchoredCamera : public CameraState
 
 	// The body to be followed.
 	// If nullptr, will switch to a different camera on update call.
-	Body* anchored_to = nullptr;
+	int anchored_to = -1;
 	
 	// The listener id returned when adding camera as an observer to anchored_to's remove event observer list.
 	std::optional<int> listener_id;
 
 	// Moves the camera's target position to the center of the anchored body.
-	void snap_camera_to_target();
+	void snap_camera_to_target(const Body& target);
 
 	// Enters a free camera state and returns a pointer to it.
 	CameraState* goto_free_camera();
 
-	// Switches the camera to follow a different body.
-	void switch_to(Body* anchor_to);
+	// Given an id, switches the camera to follow the body whose id matches.
+	void switch_to(int anchor_to);
 
-	// Switches the camera to follow a different body.
-	void switch_to(Body& anchor_to);
+	// Unanchors the camera;
+	void unanchor();
+
+	// Returns whether the canera is still anchored to a body.
+	bool is_anchored() const;
 
 public:
 
@@ -39,7 +42,7 @@ public:
 	// Sets the anchored camera to the provided configuration.
 	AnchoredCamera(const AdvCamera& starting_config, Universe& universe);
 
-	// Attaches the camera to the given body.
+	// Adjusts the camera to focus on the given body.
 	void goto_body(Body& body);
 
 	// Snaps camera target to the currently anchored body's center.
@@ -48,7 +51,7 @@ public:
 
 	// Enters an anchored camera state using the previous camera information
 	// and anchors camera to the given body.
-	void enter(const AdvCamera& prev_camera, Body& anchor_to, Universe& universe);
+	void enter(const AdvCamera& prev_camera, const Body& anchor_to, Universe& universe);
 	void exit(Universe& universe);
 
 	// Notifies the camera that the screen has been resized

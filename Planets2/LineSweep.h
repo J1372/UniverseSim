@@ -32,8 +32,13 @@ class LineSweep : public SpatialPartitioning
 
 	// Gets an iterator for the body's entry event.
 	std::vector<Body*>::const_iterator get_entry_it(const Body& body) const;
+	// Gets an iterator for the body's entry event.
+	std::vector<Body*>::iterator get_entry_it(const Body& body);
+
 	// Gets an iterator for the body's leave event.
 	std::vector<Body*>::const_iterator get_leave_it(const Body& body) const;
+	// Gets an iterator for the body's leave event.
+	std::vector<Body*>::iterator get_leave_it(const Body& body);
 
 	// predicates for STL algorithms
 	static bool left_less_than_point(const Body* body, float entry_x);
@@ -53,6 +58,8 @@ public:
 
 	// Removes the body from being considered by the algorithm.
 	void rem_body(const Body& body) override;
+
+	void notify_move(const Body* from, Body* to) override;
 
 	// Updates algorithm's entry and leave events.
 	void update() override;

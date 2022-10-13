@@ -15,7 +15,7 @@ public:
 	// Returns default help text.
 	std::string get_help_text() const override;
 
-	std::span<const std::unique_ptr<Body>> get_creating_bodies() const override;
+	std::span<const Body> get_creating_bodies() const override;
 
 };
 
