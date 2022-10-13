@@ -65,7 +65,7 @@ long Body::get_mass() const
 
 Color Body::color() const
 {
-	return type->color;
+	return type->get_color();
 }
 
 Vector2 Body::distv(const Body& other) const
@@ -171,7 +171,7 @@ void Body::upgrade_update()
 	}
 
 	// After updating type, recalculate body radius.
-	radius = std::max(((float)mass) / type->density, 1.0f);
+	radius = type->get_radius(mass);
 }
 
 void Body::pos_update()
@@ -196,7 +196,7 @@ void Body::grav_pull(Vector2 pull)
 
 Vector2 Body::get_momentum() const
 {
-	return { mass * velocity.x , mass * velocity.y };
+	return Physics::moment(velocity, mass);
 }
 
 void Body::set_mass(long to_set)

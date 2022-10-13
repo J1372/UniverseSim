@@ -1,24 +1,9 @@
 #include "GuiComponentList.h"
 #include "raylib.h" // for Vector2
 
-void GuiComponentList::set_active(UIElement* element)
-{
-	// Deactivate current active element
-	if (active_element) {
-		active_element->deactivate();
-	}
-
-	active_element = element;
-
-	// If element was not null, then activate new active element.
-	if (element) {
-		active_element->activate();
-	}
-}
-
 void GuiComponentList::render()
 {
-	for (auto&& element : visible_elements) {
+	for (UIElement* element : visible_elements) {
 		element->render();
 	}
 }
@@ -27,7 +12,7 @@ UIElement* GuiComponentList::get_element(Vector2 point)
 {
 	// elements are rendered first->last. so last elements are on top. loop backwards.
 	for (int i = visible_elements.size() - 1; i >= 0; i--) {
-		auto&& element = visible_elements[i];
+		UIElement* element = visible_elements[i];
 		if (element->contains_point(point)) {
 			return element;
 		}
@@ -39,13 +24,17 @@ UIElement* GuiComponentList::get_element(Vector2 point)
 
 void GuiComponentList::send_click(Vector2 point)
 {
-	UIElement* element = get_element(point);
+	UIElement* clicked_on = get_element(point);
 
-	if (element) {
-		element->click();
+	if (active_element and active_element != clicked_on) {
+		active_element->deactivate();
 	}
 
-	set_active(element);
+	if (clicked_on) {
+		clicked_on->click();
+	}
+
+	active_element = clicked_on;
 }
 
 bool GuiComponentList::send_keypress(int key_code)

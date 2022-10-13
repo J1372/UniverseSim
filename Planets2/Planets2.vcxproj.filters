@@ -95,6 +95,12 @@
     </ClCompile>
     <ClCompile Include="DebugInfo.cpp" />
     <ClCompile Include="BodyList.cpp" />
+    <ClCompile Include="IntValidator.cpp">
+      <Filter>UI\Validators</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatValidator.cpp">
+      <Filter>UI\Validators</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyRandom.h" />
@@ -205,6 +211,18 @@
     <ClInclude Include="DynamicPool.h" />
     <ClInclude Include="DebugInfo.h" />
     <ClInclude Include="BodyList.h" />
+    <ClInclude Include="PlanetType.h">
+      <Filter>Sim_Model</Filter>
+    </ClInclude>
+    <ClInclude Include="TextValidator.h">
+      <Filter>UI\Validators</Filter>
+    </ClInclude>
+    <ClInclude Include="IntValidator.h">
+      <Filter>UI\Validators</Filter>
+    </ClInclude>
+    <ClInclude Include="FloatValidator.h">
+      <Filter>UI\Validators</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">
@@ -236,6 +254,9 @@
     </Filter>
     <Filter Include="Scenes\SimScene\CameraStates">
       <UniqueIdentifier>{99038bc2-c793-46cb-83cf-73fb1d8949f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Validators">
+      <UniqueIdentifier>{5dd73d72-cc58-4fb5-8bad-8b36afa23780}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

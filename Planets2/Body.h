@@ -2,41 +2,17 @@
 #define BODY_H
 
 #include <raylib.h>
-#include "Event.h"
+#include "PlanetType.h"
 
 struct Orbit;
 struct Removal;
 
-// Represents a type of planetary body.
-struct PlanetType {
-	Color color; // Color to use for the body.
-	int density; // Density of this type.
-	long min_mass; // Minimum mass required to be this type.
-
-	// Returns whether a body's type rank has changed due to change in mass.
-	int get_change(long body_mass, const PlanetType* next_type) const
-	{
-		// If mass has met the minimum mass requirement of the next type, return increased.
-		if (body_mass >= next_type->min_mass) {
-			return 1;
-		}
-
-		// If mass is now lower than this type's minimum mass, return decreased.
-		if (body_mass < min_mass) {
-			return -1;
-		}
-
-		// Body stayed the same type.
-		return 0;
-	}
-	
-
-};
-
-
+// A body in the universe.
 class Body {
 
 	/*
+	* Planetary type definitions.
+	* 
 	* Min mass progressions (from prev type)
 	*
 	* 1,
@@ -46,7 +22,7 @@ class Body {
 	*
 	*/
 
-	static constexpr PlanetType MIN_TYPE = { RAYWHITE, 1, -1};
+	static constexpr PlanetType MIN_TYPE { RAYWHITE, 1, -1};
 	static constexpr PlanetType ASTEROID_TYPE = { RAYWHITE, 10, 0 };
 	static constexpr PlanetType PLANET_TYPE = { SKYBLUE, 15, 1000};
 	static constexpr PlanetType SUN_TYPE = { GOLD, 100, 6000 };
@@ -139,9 +115,7 @@ public:
 
 	// Can have a partial absorb method as well.
 
-	// Checks the body to see if it should change its type.
-	// If this body's mass no longer meets its type's minimum mass requirement, downgrades this body's type.
-	// If this body's mass >= to the next type's minimum mass requirement, upgrades this body's type.
+	// Checks the body to see if it should downgrade or upgrade its type.
 	void upgrade_update();
 
 	// Updates the body's position, using its current velocity, and resets its acceleration to 0.

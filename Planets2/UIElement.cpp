@@ -31,16 +31,6 @@ bool UIElement::is_visible() const
 	return !hidden;
 }
 
-void UIElement::activate()
-{
-	active = true;
-}
-
-void UIElement::deactivate()
-{
-	active = false;
-}
-
 bool UIElement::send_keypress(int key_code)
 {
 	return false;
