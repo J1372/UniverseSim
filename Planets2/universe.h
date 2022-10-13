@@ -7,6 +7,7 @@
 
 #include "SpatialPartitioning.h"
 #include "Event.h"
+#include "BodyList.h"
 
 struct Collision;
 struct Vector2;
@@ -22,10 +23,8 @@ class Universe {
 	// Gravity approximation method.
 	BarnesHut barnes_quad;
 
-	// Bodies that are being updated every tick.
-	// Currently using vector of unique_ptrs for while developing partitioning methods.
-	// Later will just be vector of Body.
-	std::vector<std::unique_ptr<Body>> active_bodies;
+	// Bodies being updated every tick.
+	BodyList active_bodies;
 
 	// Bounds of the universe. Bodies that go outside this rectangle wraparound.
 	Rectangle dimensions;
@@ -38,9 +37,6 @@ class Universe {
 
 	// Number of collision checks that occurred last tick.
 	int num_collision_checks_tick = 0;
-
-	// Total number of bodies that have evere been added to the universe.
-	int generated_bodies = 0;
 
 	// Handles all collision events.
 	void handle_collisions(std::span<const Collision> collisions);
@@ -72,9 +68,6 @@ class Universe {
 	// Returns true if a point is within the universe's area, else false.
 	bool in_bounds(Vector2 point) const;
 
-	// Returns an iterator to the body in active bodies that has the given id.
-	std::vector<std::unique_ptr<Body>>::iterator get_iterator(int id);
-
 	// Observers to notify when this body is being removed.
 	Event<Removal> on_removal_observers;
 
@@ -90,30 +83,14 @@ public:
 	// Returns true if the universe is not already at capacity, else false.
 	bool can_create_body() const;
 
-	template <class... ArgTypes>
-	// Creates a body in the universe by forwarding the arguments to a Body constructor and giving it an id.
-	Body& create_body(ArgTypes&&... args)
-	{
-		int id = generated_bodies++;
-
-		Body& body = *active_bodies.emplace_back(std::make_unique<Body>(std::forward<ArgTypes>(args)...));
-		body.set_id(id);
-
-		if (has_partitioning()) {
-			partitioning_method->add_body(body);
-		}
-
-		return body;
-	}
-
 	// Generates a system where the central body is at (x,y), using the current settings.
-	std::vector<std::unique_ptr<Body>> generate_rand_system(float x, float y);
+	std::vector<Body> generate_rand_system(float x, float y);
 
 	// Command to add the body to the universe.
-	void add_body(std::unique_ptr<Body>&& body_ptr);
+	void add_body(Body&& body);
 
 	// Transfers all bodies from the vector and then clears the vector.
-	void add_bodies(std::vector<std::unique_ptr<Body>>& bodies);
+	void add_bodies(std::vector<Body>&& bodies);
 
 	// Creates a new universe, using the current settings.
 	void create_universe();
@@ -121,11 +98,8 @@ public:
 	// Returns a random orbit
 	Orbit gen_rand_orbit(const Body& orbited, const Body& orbiter) const;
 
-	// Creates a random body and returns a reference to it.
-	Body& create_rand_body();
-
-	// Creates a random system and returns a reference to the central body.
-	Body& create_rand_system();
+	// Creates a random system and adds it to the universe.
+	void create_rand_system();
 
 	// Returns true if there is a partitioning method that can be used.
 	bool has_partitioning() const;
@@ -133,23 +107,26 @@ public:
 	// Returns a pointer to the partitioning method.
 	const SpatialPartitioning* get_partitioning() const;
 
+	void rem_from_partitioning(Body& to_remove);
+
 	// Returns the universe's current settings.
 	UniverseSettings& get_settings();
-
-	// Removes a body from the universe by its id.
-	void rem_body(int id);
 
 	// Removes a body from the universe.
 	void rem_body(Body& body);
 
 	// Returns the body at the coordinate, or nullptr if not found.
-	Body* get_body(Vector2 point) const;
+	Body* get_body(Vector2 point);
 
-	// Returns the body associated with the id, or nullptr if not found.
-	Body* get_body(int id) const;
+	// Returns the body whose id matches the given id, or nullptr if invalid id.
+	Body* get_body(int search_id);
+
 
 	// Returns a reference to all bodies in the universe
-	std::span<const std::unique_ptr<Body>> get_bodies() const;
+	std::span<const Body> get_bodies() const;
+
+	// Returns a reference to all bodies in the universe
+	std::span<Body> get_bodies();
 
 	// Returns number of bodies currently in the universe.
 	int get_num_bodies() const;

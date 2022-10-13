@@ -8,22 +8,17 @@ AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config, Universe& unive
     camera = starting_config;
 
     // restrict panning so anchored body's center never goes off screen.
-    camera.set_offset_bounds(0, 0, GetScreenWidth(), GetScreenHeight()); 
+    camera.set_offset_bounds(0, 0, GetScreenWidth(), GetScreenHeight());
 
-    if (anchored_to) {
-        switch_to(nullptr);
-    }
 }
-
 void AnchoredCamera::goto_body(Body& body)
 {
-    switch_to(body);
-    snap_camera_to_target();
+    switch_to(body.get_id());
+    snap_camera_to_target(body);
 }
-
-void AnchoredCamera::snap_camera_to_target()
+void AnchoredCamera::snap_camera_to_target(const Body& target)
 {
-    camera.set_target(anchored_to->pos());
+    camera.set_target(target.pos());
 }
 
 CameraState* AnchoredCamera::goto_free_camera()
@@ -33,14 +28,19 @@ CameraState* AnchoredCamera::goto_free_camera()
     return &transition_to;
 }
 
-void AnchoredCamera::switch_to(Body* anchor_to)
+void AnchoredCamera::unanchor()
 {
-    anchored_to = anchor_to;
+    anchored_to = -1;
 }
 
-void AnchoredCamera::switch_to(Body& anchor_to)
+bool AnchoredCamera::is_anchored() const
 {
-    anchored_to = &anchor_to;
+    return anchored_to != -1;
+}
+
+void AnchoredCamera::switch_to(int anchor_to)
+{
+    anchored_to = anchor_to;
 }
 
 CameraState* AnchoredCamera::update(Universe& universe)
@@ -50,15 +50,22 @@ CameraState* AnchoredCamera::update(Universe& universe)
         Vector2 screen_point = GetMousePosition();
         Vector2 universe_point = GetScreenToWorld2D(screen_point, camera.get_raylib_camera());
 
-        Body* body = universe.get_body(universe_point);
+        const Body* body = universe.get_body(universe_point);
 
-        switch_to(body);
+        if (body)
+        {
+            switch_to(body->get_id());
+        }
+        else
+        {
+            unanchor();
+        }
     }
     
     // Handle state transitions
     // anchored_to == nullptr if user right clicked on nothing or body deleted and was not absorbed by another body.
     // in any case, no body to anchor to, so return to a free camera state.
-    if (!anchored_to) {
+    if (!is_anchored()) {
         exit(universe);
         return goto_free_camera();
     }
@@ -66,7 +73,8 @@ CameraState* AnchoredCamera::update(Universe& universe)
     // Will remain in an anchored camera state, so update camera and handle other user camera input.
 
     // Update camera to follow the body it is anchored to.
-    snap_camera_to_target();
+    const Body& body = *universe.get_body(anchored_to); // Guaranteed valid id.
+    snap_camera_to_target(body);
 
     // Camera movement, offset to the target body
     // The center of the anchored body is never able to go off screen.
@@ -107,23 +115,39 @@ CameraState* AnchoredCamera::update(Universe& universe)
     return this;
 }
 
-void AnchoredCamera::enter(const AdvCamera& prev_camera, Body& anchor_to, Universe& universe)
+void AnchoredCamera::enter(const AdvCamera& prev_camera, const Body& anchor_to, Universe& universe)
 {
-    listener_id = universe.removal_event().add_observer([this](Removal remove_event) {
-        if (anchored_to == &remove_event.removed) {
-            this->switch_to(remove_event.absorbed_by);
-        }
+    // Add a listener, so that we update when the planet we are attached to
+    // is removed.
+    listener_id = universe.removal_event().add_observer(
+        [this](Removal remove_event)
+        {
+            if (anchored_to == remove_event.removed)
+            {
+                // Since absorbed_by == -1 if just deleted, could switch to it without check.
+                // since -1 will transition out of anchored camera state on update.
+
+                if (remove_event.was_absorbed())
+                {
+                    this->switch_to(remove_event.absorbed_by);
+                }
+                else
+                {
+                    unanchor();
+                }
+            }
         });
 
-    switch_to(anchor_to);
+    switch_to(anchor_to.get_id());
 
     const Camera2D& ray_cam = prev_camera.get_raylib_camera();
 
+    // note if wanted:
     // to keep camera still instead of snapping target to center, set
     // offset to the targets original screen_pos
 
     camera.set_offset(ray_cam.offset);
-    camera.set_target(anchored_to->pos());
+    camera.set_target(anchor_to.pos());
     camera.set_zoom(ray_cam.zoom);
 
     // update offset bounds in case screen was resized while another camera was active.

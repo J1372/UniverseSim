@@ -186,6 +186,25 @@ void QuadTree::rem_body(const Body& body)
 	quad.rem_body_internal(body);
 }
 
+void QuadTree::notify_move(const Body* from, Body* to)
+{
+	if (is_leaf()) {
+		auto it = std::find(quad_bodies.begin(), quad_bodies.end(), from);
+		*it = to;
+	}
+	else {
+		QuadTree* contained_in = children->get_quad<&QuadTree::contains_fully>(*from);
+		if (contained_in) {
+			contained_in->notify_move(from, to);
+		}
+		else {
+			auto it = std::find(quad_bodies.begin(), quad_bodies.end(), from);
+			*it = to;
+		}
+	}
+	
+}
+
 bool QuadTree::is_leaf() const
 {
 	return children == nullptr;
@@ -210,6 +229,7 @@ bool QuadTree::is_full() const
 {
 	return cur_size >= max_bodies_per_quad;
 }
+
 bool QuadTree::should_concatenate() const
 {
 	return cur_size <= max_bodies_per_quad;

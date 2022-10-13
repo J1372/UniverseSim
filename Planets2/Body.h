@@ -42,13 +42,13 @@ class Body {
 	int id = -1;
 
 	// Universe position vector.
-	Vector2 position;
+	Vector2 position{};
 
 	// Velocity vector.
-	Vector2 velocity;
+	Vector2 velocity{};
 
 	// Net force vector acting on this body this tick.
-	Vector2 force;
+	Vector2 force{};
 
 	// The radius of the body.
 	float radius = 0.0f;

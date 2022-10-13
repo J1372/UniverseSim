@@ -10,7 +10,7 @@
 void SystemCreation::enter(Vector2 mouse_pos, Universe& universe)
 {
 	// Use universe's system generator to get a planetary system at the given position.
-    system = std::move(universe.generate_rand_system(mouse_pos.x, mouse_pos.y));
+    system = universe.generate_rand_system(mouse_pos.x, mouse_pos.y);
 }
 
 InteractionState* SystemCreation::process_input(const CameraState& camera_state, Universe& universe)
@@ -20,14 +20,14 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		// Add the current planetary system to the universe and generate a new one.
-		universe.add_bodies(system);
+		universe.add_bodies(std::move(system));
 		system = universe.generate_rand_system(universe_point.x, universe_point.y);
 
 		return this;
 	}
 	else if (IsKeyPressed(KEY_ENTER)) {
 		// Add the current planetary system to the universe and goto default interaction.
-		universe.add_bodies(system);
+		universe.add_bodies(std::move(system));
 		system.clear();
 
 		DefaultInteraction& ret_state = InteractionState::default_interaction;
@@ -58,7 +58,7 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 	else {
 		// Potentially snap the system position to mouse position.
 
-		Body& central_body = *system[0];
+		Body& central_body = system[0];
 		Vector2 central_pos = central_body.pos();
 
 		// Check if mouse is still centered on the system's central body.
@@ -73,8 +73,8 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 										universe_point.y - central_pos.y };
 
 			// Update system positions to be centered around the mouse.
-			for (std::unique_ptr<Body>& body : system) {
-				body->change_pos(movement);
+			for (Body& body : system) {
+				body.change_pos(movement);
 			}
 		}
 
@@ -100,7 +100,7 @@ std::string SystemCreation::get_help_text() const
 
 }
 
-std::span<const std::unique_ptr<Body>> SystemCreation::get_creating_bodies() const
+std::span<const Body> SystemCreation::get_creating_bodies() const
 {
     return system;
 }        

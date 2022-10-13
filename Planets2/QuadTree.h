@@ -20,10 +20,12 @@ public:
 	QuadTree(float x, float y, float size, int depth);
 
 	// Will add a body to the most appropriate quad node. Potentially splits that node if it reached its capacity.
-	void add_body(Body& body);
+	void add_body(Body& body) override;
 
 	// Will remove the body from the quad node that it is in. Potentially concatenates that node or its parent.
-	void rem_body(const Body& body);
+	void rem_body(const Body& body) override;
+
+	void notify_move(const Body* from, Body* to) override;
 
 	// Returns whether the current quad is a leaf or not.
 	bool is_leaf() const;

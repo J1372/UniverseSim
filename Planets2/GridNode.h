@@ -31,6 +31,8 @@ public:
 
 	// Removes body from the node.
 	void rem(const Body& body);
+	
+	void notify_move(const Body* from, Body* to);
 
 	// Clears the node.
 	void clear();

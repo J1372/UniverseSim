@@ -91,7 +91,7 @@ class SimulationScene : public Scene
 	bool on_screen(Rectangle rect) const;
 
 	// Renders all bodies that the user is creating.
-	void render_creating_bodies(std::span<const std::unique_ptr<Body>> bodies) const;
+	void render_creating_bodies(std::span<const Body> bodies) const;
 
 	// Handles rendering of the universe.
 	void render_universe() const;
