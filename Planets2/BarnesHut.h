@@ -59,10 +59,12 @@ public:
 	// Resizes this node's dimensions.
 	void set_size(float size);
 
-	// Will add a body to the most appropriate quad node. Potentially splits that node if it reached its capacity.
+	// Will add a body to the most appropriate quad node.
+	// Potentially splits that node if it reached its capacity.
 	void add_body(const Body& to_add);
 
-	// Will add a point mass to the most appropriate quad node. Potentially splits that node if it reached its capacity.
+	// Will add a point mass to the most appropriate quad node.
+	// Potentially splits that node if it reached its capacity.
 	void add_body(Vector2 center, long mass);
 
 	// Adds the point mass to the correct child quad.
@@ -86,7 +88,8 @@ public:
 	// Returns true if the node has a body in it.
 	bool is_full() const;
 
-	// Creates 4 new child nodes. The current body is moved into the child node that contains it.
+	// Creates 4 new child nodes.
+	// The current point mass is moved into the child node that contains it.
 	void split();
 
 	// Frees 4 child nodes.
