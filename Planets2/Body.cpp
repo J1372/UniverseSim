@@ -63,6 +63,11 @@ long Body::get_mass() const
 	return mass;
 }
 
+Vector2 Body::get_forces() const
+{
+	return force;
+}
+
 Color Body::color() const
 {
 	return type->get_color();
@@ -184,9 +189,12 @@ void Body::pos_update()
 	velocity = Vector2Add(velocity, acceleration);
 	position = Vector2Add(position, velocity);
 
+}
+
+void Body::reset_forces()
+{
 	// set forces on this body to 0 for next tick.
 	force = { 0,0 };
-
 }
 
 void Body::grav_pull(Vector2 pull)

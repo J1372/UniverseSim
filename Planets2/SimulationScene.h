@@ -43,6 +43,8 @@ class SimulationScene : public Scene
 	// Whether to render and update the debug text of bodies that are on screen.
 	bool should_render_debug_text = false;
 
+	bool should_render_forces = false;
+
 	// Default help text.
 	const std::string default_help_text = "[H] to close help text\n";
 
@@ -104,6 +106,8 @@ class SimulationScene : public Scene
 
 	// Handles rendering of any information that has a simple screen position, as opposed to a place in the universe.
 	void render_screen_info();
+
+	void render_forces() const;
 
 	// Moves text elements that adjust to screen size to new positions.
 	void reposition_elements(int screen_width, int screen_height);

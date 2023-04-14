@@ -308,6 +308,11 @@ void Universe::handle_collisions(std::span<const Collision> collisions)
 
 void Universe::update()
 {
+	for (Body& body : active_bodies)
+	{
+		body.reset_forces();
+	}
+
 	// do grav pulls (update acceleration)
 	if (settings.use_gravity_approximation) {
 		barnes_quad.update(active_bodies);

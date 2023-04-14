@@ -10,6 +10,7 @@
 #include "Physics.h"
 #include "InteractionState.h"
 #include "DefaultInteraction.h"
+#include <raymath.h>
 
 
 void SimulationScene::init()
@@ -88,6 +89,12 @@ void SimulationScene::process_input()
 	
 	if (IsKeyPressed(KEY_N)) {
 		should_render_tick_info = !should_render_tick_info;
+	}
+
+
+	if (IsKeyPressed(KEY_F))
+	{
+		should_render_forces = !should_render_forces;
 	}
 
 	if (IsKeyPressed(KEY_H)) {
@@ -319,6 +326,17 @@ void SimulationScene::render_near_body(const Body& body, const std::string& text
 	DrawText(text.c_str(), text_x, text_y, font_size, body.color());
 }
 
+void SimulationScene::render_forces() const
+{
+	for (const Body* body : on_screen_bodies)
+	{
+		Vector2 dir = Vector2Normalize(body->get_forces());
+		Vector2 start_pos = Vector2Add(body->pos(), Vector2Scale(dir, body->get_radius()));
+		Vector2 end_pos = Vector2Add(start_pos, Vector2Scale(dir, 50));
+		DrawLineEx(start_pos, end_pos, 5.0, RED);
+	}
+}
+
 Scene* SimulationScene::update()
 {
 	process_input();
@@ -339,9 +357,14 @@ Scene* SimulationScene::update()
 
 			BeginMode2D(camera_state->get_raylib_camera());
 				// Begin rendering anything that should take the camera, universe position, into account.
-
+				
 				if (should_render_partitioning) {
 					render_partitioning();
+				}
+
+				if (should_render_forces)
+				{
+					render_forces();
 				}
 				
 				// Need to render user creation bodies differently (always print their specs)

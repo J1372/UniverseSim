@@ -98,8 +98,13 @@ public:
 	// Returns this body's mass.
 	long get_mass() const;
 
+	// Returns current forces acting on the body.
+	Vector2 get_forces() const;
+
 	// Returns this body's color.
 	Color color() const;
+
+	void reset_forces();
 
 
 	// Moves the body to be at the given point in the orbit.
