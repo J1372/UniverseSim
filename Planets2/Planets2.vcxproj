@@ -233,7 +233,6 @@
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="MyRandom.cpp" />
-    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="Universe.cpp" />
     <ClCompile Include="View.cpp" />

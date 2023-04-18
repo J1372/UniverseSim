@@ -117,14 +117,10 @@ class SimulationScene : public Scene
 
 public:
 
-	// Initialization to be called after Raylib's init.
-	void init();
-
-	// Enters the scene, creates a new universe after passing it the given settings and partitioning.
-	void enter(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning);
+	SimulationScene(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning);
 
 	// Handles all user input, updates and renders the universe, and then renders any additional scene items.
-	Scene* update();
+	Scene* update() override;
 	
 	// Adjusts any elements that rely on screensize.
 	void notify_resize(int width, int height) override;

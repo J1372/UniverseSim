@@ -13,50 +13,28 @@
 #include <raymath.h>
 
 
-void SimulationScene::init()
-{
-	CameraState::init_cameras(starting_config, universe);
-	help_prompt.set_color(WHITE);
-	help_message.set_color(RAYWHITE);
-	interaction_title.set_color(RAYWHITE);
-
-	help_message.hide();
-}
-
-void SimulationScene::enter(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
+SimulationScene::SimulationScene(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
+	: universe(settings, std::move(partitioning))
 {
 	camera_state = &CameraState::free_camera;
 	CameraState::init_cameras(starting_config, universe); // Set cameras back to default. Could separate camerastate.exit() logic from this.
 
 	interaction_state = &InteractionState::default_interaction;
 	InteractionState::init_states(); // Set all states back to default. could just .exit() current state.
-	current_help_text = default_help_text + interaction_state->get_help_text();
-
-	universe.set_settings(settings);
-	universe.set_partitioning(std::move(partitioning));
-	universe.create_universe();
 
 	on_screen_bodies.reserve(universe.get_settings().universe_capacity);
 
-	// set default toggles
-	running = false;
-	should_render_tick_info = false;
-	should_render_partitioning = false;
-	should_render_debug_text = false;
-
+	help_prompt.set_color(WHITE);
+	help_message.set_color(RAYWHITE);
+	interaction_title.set_color(RAYWHITE);
 	help_message.hide();
 
-	if (help_prompt.is_visible()) {
-		// Is only visible if it has not been displayed long enough.
-		// Only reset the prompt_time if the prompt is still enabled.
-		prompt_time = std::chrono::system_clock::now();
-	}
-
+	current_help_text = default_help_text + interaction_state->get_help_text();
 	help_message.set_text(current_help_text);
 	interaction_title.set_text(interaction_state->get_name());
 	reposition_elements(GetScreenWidth(), GetScreenHeight());
 
-	return_scene = this;
+	prompt_time = std::chrono::system_clock::now();
 }
 
 void SimulationScene::process_input()
@@ -112,10 +90,10 @@ void SimulationScene::process_input()
 	// Exiting to settings
 
 	if (IsKeyPressed(KEY_ESCAPE)) {
-		SettingsScene& settings = Scene::settings_scene;
-		settings.enter();
-
-		return_scene = &settings;
+		if (return_scene == this)
+		{
+			return_scene = new SettingsScene(universe.get_settings());
+		}
 	}
 	
 }

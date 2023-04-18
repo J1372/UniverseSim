@@ -19,12 +19,6 @@ Button::Button(const std::string& text, float x, float y, int font_size) :
 	rect{ x, y, get_default_width(), 50 }
 {}
 
-void Button::init()
-{
-	text_length_pixels = MeasureText(text.c_str(), font_size);
-	rect.width = get_default_width();
-}
-
 void Button::set_min_width(float min_width)
 {
 	rect.width = std::max(min_width, get_default_width());

@@ -12,28 +12,26 @@
 #include "IntValidator.h"
 #include "FloatValidator.h"
 
-void SettingsScene::init()
+void SettingsScene::setup()
 {
-	start_button.set_on_action([this]() {
+	start_button.set_on_action([this]()
+	{
 		// Do not start if there are errors with the currently entered settings.
 		if (handle_errors())
 		{
 			return;
 		}
 
-		error_msg.set_text("");
 		generate_settings();
 
-		SimulationScene& sim = Scene::simulation_scene;
-		sim.enter(settings, gen_partitioning());
-		return_scene = &sim;
-
+		if (return_scene == this)
+		{
+			return_scene = new SimulationScene(settings, gen_partitioning());
+		}
 	});
 
 	exit_button.set_on_action([this]() { return_scene = nullptr; });
 
-	start_button.init();
-	exit_button.init();
 	start_button.set_min_width(BUTTON_MIN_WIDTH);
 	exit_button.set_min_width(BUTTON_MIN_WIDTH);
 
@@ -45,8 +43,10 @@ void SettingsScene::init()
 	partitioning_dropdown.add_choice("Grid");
 	partitioning_dropdown.add_choice("Line sweep");
 
-	partitioning_dropdown.set_on_selection([this](const std::string& selection) {
-		if (selection == "Quad tree") {
+	partitioning_dropdown.set_on_selection([this](const std::string& selection)
+	{
+		if (selection == "Quad tree")
+		{
 			gui.hide(grid_nodes_per_row_input);
 			gui.hide(grid_label);
 			gui.show(quadtree_max_depth_input);
@@ -54,7 +54,8 @@ void SettingsScene::init()
 			gui.show(quad_bodies_label);
 			gui.show(quad_depth_label);
 		}
-		else if (selection == "Grid") {
+		else if (selection == "Grid")
+		{
 			gui.show(grid_nodes_per_row_input);
 			gui.show(grid_label);
 			gui.hide(quadtree_max_depth_input);
@@ -62,7 +63,8 @@ void SettingsScene::init()
 			gui.hide(quad_bodies_label);
 			gui.hide(quad_depth_label);
 		}
-		else if (selection == "Line sweep") {
+		else if (selection == "Line sweep")
+		{
 			gui.hide(grid_nodes_per_row_input);
 			gui.hide(grid_label);
 			gui.hide(quadtree_max_depth_input);
@@ -70,7 +72,8 @@ void SettingsScene::init()
 			gui.hide(quad_bodies_label);
 			gui.hide(quad_depth_label);
 		}
-		else {
+		else
+		{
 			gui.hide(grid_nodes_per_row_input);
 			gui.hide(grid_label);
 			gui.hide(quadtree_max_depth_input);
@@ -88,20 +91,22 @@ void SettingsScene::init()
 
 
 	approximate_gravity_checkbox.set_desc_font_size(10);
-	approximate_gravity_checkbox.set_on_click([this](bool checked) {
-		if (checked) {
+	approximate_gravity_checkbox.set_on_click([this](bool checked)
+	{
+		if (checked)
+		{
 			gui.show(approximation_slider);
 			gui.show(approximation_label);
 			gui.show(approximation_description);
 
 		}
-		else {
+		else
+		{
 			gui.hide(approximation_slider);
 			gui.hide(approximation_label);
 			gui.hide(approximation_description);
 		}
-	}
-	);
+	});
 
 	background_color = SKYBLUE;
 
@@ -127,8 +132,19 @@ void SettingsScene::init()
 	grid_nodes_per_row_input.set_validator(std::make_unique<IntValidator>(1));
 
 	read_settings_to_gui();
-
 }
+
+SettingsScene::SettingsScene()
+{
+	setup();
+}
+
+SettingsScene::SettingsScene(const UniverseSettings& settings)
+	: settings(settings)
+{
+	setup();
+}
+
 
 bool SettingsScene::handle_errors()
 {
@@ -200,6 +216,12 @@ void SettingsScene::read_settings_to_gui()
 	sys_max_dist_input.set_text(std::to_string(settings.satellite_max_dist).substr(0, rounding + 1));
 	sys_moon_chance_input.set_text(std::to_string(settings.moon_chance).substr(0, rounding + 1));
 	sys_retrograde_input.set_text(std::to_string(settings.retrograde_chance).substr(0, rounding + 1));
+
+	if (settings.use_gravity_approximation)
+	{
+		approximate_gravity_checkbox.click();
+		approximation_slider.set_val(settings.grav_approximation_value);
+	}
 }
 
 std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
@@ -226,9 +248,4 @@ std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
 	}
 
 	return nullptr;
-}
-
-void SettingsScene::enter()
-{
-	return_scene = this;
 }

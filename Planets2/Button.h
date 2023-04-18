@@ -30,9 +30,6 @@ public:
 
 	Button(const std::string& text, float x, float y, int font_size);
 
-	// Late initialization for Buttons that are in a static object. Raylib's MeasureText won't work well with static objects.
-	void init();
-
 	// Sets width of background to be at least min_width.
 	void set_min_width(float min_width);
 

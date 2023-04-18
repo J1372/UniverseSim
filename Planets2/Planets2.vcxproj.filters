@@ -9,9 +9,6 @@
     <ClCompile Include="CheckBox.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="QuadTree.cpp">
       <Filter>Partitioning</Filter>
     </ClCompile>

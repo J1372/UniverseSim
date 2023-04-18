@@ -141,14 +141,11 @@ class SettingsScene : public GuiScene
 	// Scans general input for semantic errors and returns any error message.
 	std::string scan_semantic_errors() const;
 
+	void setup();
+
 public:
 
-	// Initialization after Raylib init.
-	// Register event handling and other gui setup.
-	void init();
-
-	// Enters the settings scene.
-	void enter();
+	SettingsScene();
+	SettingsScene(const UniverseSettings& settings);
 
 };
-

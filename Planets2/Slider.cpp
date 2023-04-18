@@ -39,9 +39,9 @@ float Slider::get_val() const
 
 void Slider::set_val(float val)
 {
-	cur_val = std::min(val, max_val);
-	cur_val = std::max(cur_val, min_val);
+	cur_val = std::clamp(val, min_val, max_val);
 	cur_val_str = std::to_string(cur_val);
+	move_slider();
 }
 
 void Slider::click()
