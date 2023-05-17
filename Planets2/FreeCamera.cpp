@@ -13,6 +13,12 @@ FreeCamera::FreeCamera(const AdvCamera & starting_config)
 	camera = starting_config;
 	camera.set_offset_bounds(0, 0, GetScreenWidth(), GetScreenHeight());
 	center_camera();
+
+	const Camera2D& ray_cam = starting_config.get_raylib_camera();
+	Vector2 center = { GetScreenWidth() / 2, GetScreenHeight() / 2 };
+	Vector2 my_target = GetScreenToWorld2D(center, ray_cam);
+	camera.set_target(my_target);
+	camera.set_zoom(starting_config.get_zoom());
 }
 
 void FreeCamera::center_camera()
@@ -29,7 +35,6 @@ void FreeCamera::goto_body(Body& body)
 CameraState* FreeCamera::update(Universe& universe)
 {
 	// Camera state change
-
 	if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
 		Vector2 screen_point = GetMousePosition();
 		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera.get_raylib_camera());
@@ -37,9 +42,7 @@ CameraState* FreeCamera::update(Universe& universe)
 		const Body* body = universe.get_body(universe_point);
 
 		if (body) {
-			AnchoredCamera& transition_to = CameraState::anchored_camera;
-			transition_to.enter(camera, *body, universe);
-			return &transition_to;
+			return new AnchoredCamera(camera, *body, universe);
 		}
 	}
 
@@ -79,19 +82,6 @@ CameraState* FreeCamera::update(Universe& universe)
 	}
 
     return this;
-}
-
-void FreeCamera::enter(const AdvCamera& prev_camera)
-{
-	const Camera2D& ray_cam = prev_camera.get_raylib_camera();
-	Vector2 center = { GetScreenWidth() / 2, GetScreenHeight() / 2 };
-
-	Vector2 my_target = GetScreenToWorld2D(center, ray_cam);
-
-	camera.set_offset(center);
-	camera.set_target(my_target);
-	camera.set_zoom(prev_camera.get_zoom());
-
 }
 
 void FreeCamera::notify_resize(int width, int height)

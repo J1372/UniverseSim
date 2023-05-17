@@ -2,11 +2,8 @@
 #include "AdvCamera.h"
 #include <utility>
 
-struct CameraList;
 struct Camera2D;
 class Universe;
-class FreeCamera;
-class AnchoredCamera;
 class Body;
 
 // Camera mode state machine.
@@ -18,17 +15,6 @@ protected:
 	AdvCamera camera;
 
 public:
-
-	// Camera state implementations
-	// Since these are static, they are constructed before Raylib runs its init.
-	// This means Raylib functions wont work correctly in their constructors.
-	// Need to initialize them later, after Raylib has initialized itself and the window.
-
-	static FreeCamera free_camera;
-	static AnchoredCamera anchored_camera;
-
-	// Initialization of cameras to be called after Raylib's init.
-	static void init_cameras(const AdvCamera& starting_config, Universe& universe);
 
 	// Adjusts the camera to focus on the given body.
 	virtual void goto_body(Body& body) = 0;

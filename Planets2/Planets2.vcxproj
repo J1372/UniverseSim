@@ -206,7 +206,6 @@
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="BodyList.cpp" />
     <ClCompile Include="Button.cpp" />
-    <ClCompile Include="CameraState.cpp" />
     <ClCompile Include="CheckBox.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DebugInfo.cpp" />

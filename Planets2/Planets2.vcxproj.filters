@@ -84,9 +84,6 @@
     <ClCompile Include="AnchoredCamera.cpp">
       <Filter>Scenes\SimScene\CameraStates</Filter>
     </ClCompile>
-    <ClCompile Include="CameraState.cpp">
-      <Filter>Scenes\SimScene\CameraStates</Filter>
-    </ClCompile>
     <ClCompile Include="FreeCamera.cpp">
       <Filter>Scenes\SimScene\CameraStates</Filter>
     </ClCompile>

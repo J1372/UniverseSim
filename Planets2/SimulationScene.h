@@ -23,7 +23,7 @@ class SimulationScene : public Scene
 	AdvCamera starting_config { Vector2{0,0}, Vector2{0,0} };
 
 	// The current camera state.
-	CameraState* camera_state;
+	std::unique_ptr<CameraState> camera_state;
 
 	// The current user interaction state.
 	InteractionState* interaction_state;

@@ -16,8 +16,7 @@
 SimulationScene::SimulationScene(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
 	: universe(settings, std::move(partitioning))
 {
-	camera_state = &CameraState::free_camera;
-	CameraState::init_cameras(starting_config, universe); // Set cameras back to default. Could separate camerastate.exit() logic from this.
+	camera_state = std::make_unique<FreeCamera>(starting_config);
 
 	interaction_state = &InteractionState::default_interaction;
 	InteractionState::init_states(); // Set all states back to default. could just .exit() current state.
@@ -341,7 +340,11 @@ Scene* SimulationScene::update()
 	}
 
 	// Handle input related to the camera.
-	camera_state = camera_state->update(universe);
+	CameraState* next_camera_state = camera_state->update(universe);
+	if (camera_state.get() != next_camera_state)
+	{
+		camera_state.reset(next_camera_state);
+	}
 
 	// Camera may have moved, or universe updated.
 	// Need to get a new list of bodies that are on screen.
