@@ -289,6 +289,7 @@ void SimulationScene::render_creating_bodies(std::span<const Body> bodies) const
 			info.add("Mass: " + std::to_string(body.get_mass()));
 
 			render_near_body(body, info.get());
+			render_velocity(body);
 		}
 	}
 }
@@ -320,14 +321,19 @@ void SimulationScene::render_forces() const
 	}
 }
 
+void SimulationScene::render_velocity(const Body& body) const
+{
+	Vector2 dir = Vector2Normalize(body.vel());
+	Vector2 start_pos = Vector2Add(body.pos(), Vector2Scale(dir, body.get_radius()));
+	Vector2 end_pos = Vector2Add(start_pos, Vector2Scale(dir, 50));
+	DrawLineEx(start_pos, end_pos, 5.0, SKYBLUE);
+}
+
 void SimulationScene::render_velocities() const
 {
 	for (const Body* body : on_screen_bodies)
 	{
-		Vector2 dir = Vector2Normalize(body->vel());
-		Vector2 start_pos = Vector2Add(body->pos(), Vector2Scale(dir, body->get_radius()));
-		Vector2 end_pos = Vector2Add(start_pos, Vector2Scale(dir, 50));
-		DrawLineEx(start_pos, end_pos, 5.0, SKYBLUE);
+		render_velocity(*body);
 	}
 }
 
