@@ -59,29 +59,35 @@ void SimulationScene::process_input()
 	}
 
 	// Toggles
-	if (IsKeyPressed(KEY_V)) {
+	if (IsKeyPressed(KEY_B)) {
 		if (universe.has_partitioning()) {
 			should_render_partitioning = !should_render_partitioning;
 		}
 	}
-	
-	if (IsKeyPressed(KEY_N)) {
-		should_render_tick_info = !should_render_tick_info;
+
+	if (IsKeyPressed(KEY_N))
+	{
+		should_render_debug_text = !should_render_debug_text;
 	}
 
+	if (IsKeyPressed(KEY_M)) {
+		should_render_tick_info = !should_render_tick_info;
+	}
 
 	if (IsKeyPressed(KEY_F))
 	{
 		should_render_forces = !should_render_forces;
 	}
 
+	if (IsKeyPressed(KEY_V))
+	{
+		should_render_velocities = !should_render_velocities;
+	}
+
 	if (IsKeyPressed(KEY_H)) {
 		help_message.toggle_hide();
 	}
 
-	if (IsKeyPressed(KEY_B)) {
-		should_render_debug_text = !should_render_debug_text;
-	}
 
 	if (IsKeyPressed(KEY_SPACE)) {
 		running = !running;
@@ -315,6 +321,17 @@ void SimulationScene::render_forces() const
 	}
 }
 
+void SimulationScene::render_velocities() const
+{
+	for (const Body* body : on_screen_bodies)
+	{
+		Vector2 dir = Vector2Normalize(body->vel());
+		Vector2 start_pos = Vector2Add(body->pos(), Vector2Scale(dir, body->get_radius()));
+		Vector2 end_pos = Vector2Add(start_pos, Vector2Scale(dir, 50));
+		DrawLineEx(start_pos, end_pos, 5.0, SKYBLUE);
+	}
+}
+
 Scene* SimulationScene::update()
 {
 	process_input();
@@ -343,6 +360,11 @@ Scene* SimulationScene::update()
 				if (should_render_forces)
 				{
 					render_forces();
+				}
+
+				if (should_render_velocities)
+				{
+					render_velocities();
 				}
 				
 				// Need to render user creation bodies differently (always print their specs)

@@ -44,6 +44,7 @@ class SimulationScene : public Scene
 	bool should_render_debug_text = false;
 
 	bool should_render_forces = false;
+	bool should_render_velocities = false;
 
 	// Default help text.
 	const std::string default_help_text = "[H] to close help text\n";
@@ -108,6 +109,7 @@ class SimulationScene : public Scene
 	void render_screen_info();
 
 	void render_forces() const;
+	void render_velocities() const;
 
 	// Moves text elements that adjust to screen size to new positions.
 	void reposition_elements(int screen_width, int screen_height);

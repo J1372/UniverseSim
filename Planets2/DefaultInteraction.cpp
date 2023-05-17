@@ -55,10 +55,11 @@ InteractionState* DefaultInteraction::process_input(const CameraState& camera_st
 std::string DefaultInteraction::get_help_text() const
 {
 	return
-		"[V] to show partitioning representation\n"
-		"[B] to show debug text info\n"
-		"[N] to show tick # and collision stats\n"
+		"[B] to show partitioning representation\n"
+		"[N] to show debug text info\n"
+		"[M] to show tick # and collision stats\n"
 		"[F] to show show force directions\n"
+		"[V] to show show velocity directions\n"
 		"[SPACE] to toggle pause\n"
 		"[W] [A] [S] [D] to move the camera\n"
 		"[-, +] to control the camera's speed\n"
