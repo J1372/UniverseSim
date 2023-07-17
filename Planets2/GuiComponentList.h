@@ -66,5 +66,8 @@ public:
 
 	// Hides an element.
 	void hide(UIElement& element);
+
+	// Toggles element's visibility.
+	void toggle_visibility(UIElement& element);
 };
 

@@ -6,7 +6,10 @@
 #include <span>
 #include <chrono>
 #include "Label.h"
+#include "TextBox.h"
 #include "DebugInfo.h"
+
+#include "GuiComponentList.h"
 
 class CameraState;
 class Body;
@@ -33,8 +36,11 @@ class SimulationScene : public Scene
 	// Whether the simulation is currently running.
 	bool running = false;
 
+	GuiComponentList gui;
+
 	// Whether to render the tick number and collision statistics.
-	bool should_render_tick_info = false;
+	Label& tick_info_label = gui.add<Label>("_", 50.0f, 95.0f, 20, RAYWHITE);
+	Label& num_bodies_label = gui.add<Label>("_", 50.0f, 70.0f, 20, RAYWHITE);
 
 	// Whether to render a representation of the collision partitioning method.
 	// Can only be set to true if universe.has_partitioning() is true.
@@ -65,9 +71,9 @@ class SimulationScene : public Scene
 	// Labels to draw on the screen.
 	// These rely on screen size and are repositioned when window resized and on scene enter.
 	// If add other interactive gui elements to sim, should use a GuiComponentList to handle its update and render.
-	Label help_prompt { "Press [H] to open the help menu", 0.0f, 0.0f, 20 };
-	Label interaction_title { "_", 0.0f,0.0f, 20 };
-	Label help_message { current_help_text, 0.0f,0.0f, 20 };
+	Label& help_prompt = gui.add<Label>( "Press [H] to open the help menu", 0.0f, 0.0f, 20, WHITE );
+	Label& interaction_title = gui.add<Label>( "_", 0.0f, 0.0f, 20, RAYWHITE );
+	Label& help_message = gui.add<Label>( current_help_text, 0.0f, 0.0f, 20, RAYWHITE);
 
 	// Handles all user input.
 	void process_input();

@@ -23,10 +23,8 @@ SimulationScene::SimulationScene(UniverseSettings settings, std::unique_ptr<Spat
 
 	on_screen_bodies.reserve(universe.get_settings().universe_capacity);
 
-	help_prompt.set_color(WHITE);
-	help_message.set_color(RAYWHITE);
-	interaction_title.set_color(RAYWHITE);
-	help_message.hide();
+	gui.hide(help_message);
+	gui.hide(tick_info_label);
 
 	current_help_text = default_help_text + interaction_state->get_help_text();
 	help_message.set_text(current_help_text);
@@ -70,7 +68,7 @@ void SimulationScene::process_input()
 	}
 
 	if (IsKeyPressed(KEY_M)) {
-		should_render_tick_info = !should_render_tick_info;
+		gui.toggle_visibility(tick_info_label);
 	}
 
 	if (IsKeyPressed(KEY_F))
@@ -84,7 +82,7 @@ void SimulationScene::process_input()
 	}
 
 	if (IsKeyPressed(KEY_H)) {
-		help_message.toggle_hide();
+		gui.toggle_visibility(help_message);
 	}
 
 
@@ -174,40 +172,32 @@ void SimulationScene::render_screen_info()
 
 	// Draw number of bodies in the universe below fps display.
 	std::string num_bodies_str = "Number bodies: " + std::to_string(universe.get_num_bodies());
-	DrawText(num_bodies_str.c_str(), 50, 70, 20, RAYWHITE);
+	num_bodies_label.set_text(num_bodies_str);
 
 	// Render the tick and collision statistics below the number bodies display.
-	if (should_render_tick_info) {
+	if (tick_info_label.is_visible()) {
 		std::string tick_info = "Tick " + std::to_string(universe.get_tick()) + "\n";
 		tick_info += "Collision checks (tick) : " + std::to_string(universe.get_num_collision_checks_tick()) + "\n";
 		tick_info += "Collision checks (total): " + std::to_string(universe.get_num_collision_checks());
-		DrawText(tick_info.c_str(), 50, 95, 20, RAYWHITE);
-	}
-
-	// Render a relevant help message.
-	if (help_message.is_visible()) {
-		help_message.render();
+		
+		tick_info_label.set_text(tick_info);
 	}
 
 	// Render the help prompt if it has not been disabled.
 	// Disable the help prompt if it has been rendered to the user long enough.
 	if (help_prompt.is_visible()) {
-		help_prompt.render();
-
 		// Get time elapsed since prompt was first displayed.
 		auto cur_time = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = cur_time - prompt_time;
 
 		// If more than a certain amount of seconds have passed, disable the prompt.
 		if (elapsed_seconds.count() > 5.0) {
-			help_prompt.hide();
+			gui.hide(help_prompt);
 		}
 
 	}
 
-	// Render the title of the current interaction state.
-	interaction_title.render();
-
+	gui.render();
 }
 
 void SimulationScene::render_partitioning() const

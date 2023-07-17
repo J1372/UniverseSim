@@ -21,6 +21,7 @@ class Label : public UIElement
 public:
 
 	Label(const std::string& text, float x, float y, int font_size);
+	Label(const std::string& text, float x, float y, int font_size, Color color);
 
 	// Sets the label's position.
 	void set_pos(Vector2 pos);

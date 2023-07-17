@@ -81,3 +81,15 @@ void GuiComponentList::hide(UIElement& element)
 		visible_elements.erase(it);
 	}
 }
+
+void GuiComponentList::toggle_visibility(UIElement& element)
+{
+	if (element.is_visible())
+	{
+		hide(element);
+	}
+	else
+	{
+		show(element);
+	}
+}

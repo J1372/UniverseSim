@@ -3,6 +3,9 @@
 Label::Label(const std::string& text, float x, float y, int font_size) : text(text), pos{ x, y }, font_size(font_size)
 {}
 
+Label::Label(const std::string& text, float x, float y, int font_size, Color color) : text(text), pos{ x, y }, font_size(font_size), color(color)
+{}
+
 void Label::set_pos(Vector2 to_set)
 {
 	pos = to_set;

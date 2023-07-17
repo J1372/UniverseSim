@@ -23,7 +23,7 @@ protected:
 public:
 
 	// Does a standard GUI update handling of user clicks and keypresses.
-	Scene* update();
+	Scene* update() override;
 
 	virtual ~GuiScene() = default;
 
