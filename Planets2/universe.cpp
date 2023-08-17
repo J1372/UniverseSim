@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "Physics.h"
 #include <algorithm>
+#include <execution>
 
 #include "Collision.h"
 #include "Removal.h"
@@ -163,10 +164,10 @@ void Universe::handle_gravity()
 
 void Universe::handle_gravity_approximation()
 {
-	for (int i = 0; i < active_bodies.size(); i++) {
-		Body& body1 = active_bodies[i];
-		barnes_quad.handle_gravity(body1, settings.grav_const);
-	}
+	std::for_each(std::execution::par_unseq, active_bodies.begin(), active_bodies.end(), [this](Body& body)
+	{
+		barnes_quad.handle_gravity(body, settings.grav_const);
+	});
 }
 
 void Universe::handle_removal(Removal removal)
@@ -199,13 +200,11 @@ void Universe::handle_removal(Removal removal)
 
 void Universe::update_pos()
 {
-	for (auto it = active_bodies.begin(); it != active_bodies.end(); it++) {
-		Body& body = *it;
-
+	std::for_each(std::execution::par_unseq, active_bodies.begin(), active_bodies.end(), [this](Body& body)
+	{
 		body.pos_update();
-
 		handle_wraparound(body);
-	}
+	});
 }
 
 std::vector<float> Universe::gen_rand_portions(int num_slots) const
@@ -308,11 +307,11 @@ void Universe::handle_collisions(std::span<const Collision> collisions)
 
 void Universe::update()
 {
-	for (Body& body : active_bodies)
+	std::for_each(std::execution::par_unseq, active_bodies.begin(), active_bodies.end(), [](Body& body)
 	{
 		body.reset_forces();
-	}
-
+	});
+	
 	// do grav pulls (update acceleration)
 	if (settings.use_gravity_approximation) {
 		barnes_quad.update(active_bodies);
