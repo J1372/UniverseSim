@@ -26,6 +26,9 @@ class LineSweep : public SpatialPartitioning
 	// Returns number of collision checks performed.
 	int get_collisions(Body& entry, std::span<Body*> currently_active, std::vector<Collision>& collisions) const;
 
+	// Detects and returns a vector of all collision events.
+	std::vector<Collision> get_collisions_impl() override;
+
 	// Sorts entry and leave events in ascending order.
 	void sort_events();
 
@@ -73,7 +76,5 @@ public:
 	// Attaches text indicating body's entry event index, leave event index to info.
 	void get_info(const Body& body, DebugInfo& info) const override;
 
-	// Detects and returns a vector of all collision events.
-	std::vector<Collision> get_collisions() override;
 
 };

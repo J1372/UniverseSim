@@ -19,6 +19,9 @@ class Grid : public SpatialPartitioning
 	const float node_size; // Size of each node in the grid.
 	const int nodes_per_row; // Number of nodes in a row of the grid.
 
+	// Detects and returns a vector of all collision events between bodies in this grid.
+	std::vector<Collision> get_collisions_impl() override;
+
 	// Returns the x or y grid node index of a given coordinate position.
 	int get_index(int pos) const;
 
@@ -57,6 +60,4 @@ public:
 	// Attaches grid-specific debug information about the body to info.
 	void get_info(const Body& body, DebugInfo& info) const override;
 
-	// Detects and returns a vector of all collision events between bodies in this grid.
-	std::vector<Collision> get_collisions() override;
 };

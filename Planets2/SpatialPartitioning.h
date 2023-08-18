@@ -14,6 +14,9 @@ class DebugInfo;
 // Supports implementations that rebuild on tick as well as those that update theirselves.
 class SpatialPartitioning
 {
+
+	virtual std::vector<Collision> get_collisions_impl() = 0;
+
 protected:
 
 	// Number of collision checks that were performed last tick.
@@ -49,7 +52,7 @@ public:
 	virtual void get_info(const Body& body, DebugInfo& info) const = 0;
 
 	// Scans for and returns a vector of Collision events.
-	virtual std::vector<Collision> get_collisions() = 0;
+	std::vector<Collision> get_collisions();
 
 	// Returns the number of collision checks performed after previous call to get_collisions.
 	int get_collision_checks_this_tick() const { return num_collision_checks_tick; }

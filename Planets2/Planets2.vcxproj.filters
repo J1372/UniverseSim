@@ -95,6 +95,9 @@
     <ClCompile Include="FloatValidator.cpp">
       <Filter>UI\Validators</Filter>
     </ClCompile>
+    <ClCompile Include="SpatialPartitioning.cpp">
+      <Filter>Partitioning</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyRandom.h" />
@@ -217,6 +220,7 @@
     <ClInclude Include="FloatValidator.h">
       <Filter>UI\Validators</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadPool.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

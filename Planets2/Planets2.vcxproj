@@ -192,6 +192,7 @@
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="Removal.h" />
     <ClInclude Include="TextValidator.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="MyRandom.h" />
@@ -228,6 +229,7 @@
     <ClCompile Include="AdvCamera.cpp" />
     <ClCompile Include="SimulationScene.cpp" />
     <ClCompile Include="Slider.cpp" />
+    <ClCompile Include="SpatialPartitioning.cpp" />
     <ClCompile Include="SystemCreation.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="QuadTree.cpp" />

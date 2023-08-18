@@ -71,7 +71,7 @@ int QuadTree::get_collisions(std::vector<Collision>& collisions) const
 	return checks;
 }
 
-std::vector<Collision> QuadTree::get_collisions()
+std::vector<Collision> QuadTree::get_collisions_impl()
 {
 	std::vector<Collision> collisions;
 	num_collision_checks_tick = get_collisions(collisions);

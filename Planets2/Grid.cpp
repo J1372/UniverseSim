@@ -152,10 +152,8 @@ void Grid::get_info(const Body& body, DebugInfo& info) const
     // No general grid debug text to attach. Just node-specific.
 }
 
-std::vector<Collision> Grid::get_collisions()
+std::vector<Collision> Grid::get_collisions_impl()
 {
-    num_collision_checks_tick = 0;
-
     std::vector<Collision> collisions;
 
     for (const GridNode& node : nodes) {

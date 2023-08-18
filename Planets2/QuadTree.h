@@ -46,11 +46,12 @@ public:
 	// Attaches text related to the quadtree node which contains the body to info.  
 	void get_info(const Body& body, DebugInfo& info) const;
 
-	// Performs a collision check, and returns all collision events.
-	std::vector<Collision> get_collisions();
 
 
 private:
+
+	// Performs a collision check, and returns all collision events.
+	std::vector<Collision> get_collisions_impl() override;
 
 	// When number of bodies in a quad reaches this number, try to subdivide.
 	// Actual number of bodies may be higher than this, if subdividing would exceed max_depth.

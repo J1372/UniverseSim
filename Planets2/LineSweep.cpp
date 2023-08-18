@@ -126,10 +126,8 @@ void LineSweep::get_info(const Body& body, DebugInfo& info) const
     info.add("Leave event index: " + std::to_string(leave_index));
 }
 
-std::vector<Collision> LineSweep::get_collisions()
+std::vector<Collision> LineSweep::get_collisions_impl()
 {
-    num_collision_checks_tick = 0;
-
     std::vector<Collision> collisions;
     collisions.reserve(entry_events.size());
 
