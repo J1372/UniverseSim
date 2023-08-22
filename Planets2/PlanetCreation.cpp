@@ -13,10 +13,9 @@ Body PlanetCreation::create_default_body(Vector2 pos) const
 	return { pos.x, pos.y, mass };
 }
 
-void PlanetCreation::enter(Vector2 mouse_pos) // universe point of mouse param
-{
-	creating = create_default_body(mouse_pos);
-}
+PlanetCreation::PlanetCreation(Vector2 mouse_pos) // universe point of mouse param
+	: creating(create_default_body(mouse_pos))
+{}
 
 InteractionState* PlanetCreation::process_input(const CameraState& camera_state, Universe& universe)
 {
@@ -36,11 +35,8 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 		}
 		else if (IsKeyDown(KEY_LEFT_SHIFT)) {
 			// Shift-click = add current creation, start new user body creation.
-
 			universe.add_body(std::move(creating));
-
 			creating = create_default_body(universe_point);
-
 		}
 		else {
 			Vector2 creating_pos = creating.pos();
@@ -93,17 +89,13 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 	else if (IsKeyPressed(KEY_ENTER)) {
 		// Add user body to universe, and end creation mode. 
 		universe.add_body(std::move(creating));
-		DefaultInteraction& ret_state = InteractionState::default_interaction;
-		return &ret_state;
+		return new DefaultInteraction;
 	}
 	else if (IsKeyPressed(KEY_ONE)) {
-		DefaultInteraction& ret_state = InteractionState::default_interaction;
-		return &ret_state;
+		return new DefaultInteraction;
 	}
 	else if (IsKeyPressed(KEY_THREE)) {
-		SystemCreation& ret_state = InteractionState::system_interaction;
-		ret_state.enter(universe_point, universe);
-		return &ret_state;
+		return new SystemCreation{ universe_point, universe };
 	}
 
 	return this;

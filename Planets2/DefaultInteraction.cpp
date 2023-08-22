@@ -25,9 +25,7 @@ InteractionState* DefaultInteraction::process_input(const CameraState& camera_st
 		}
 		else if (IsKeyDown(KEY_LEFT_SHIFT)) {
 			// Shift-click = start user body creation.
-			PlanetCreation& ret_state = InteractionState::planet_interaction;
-			ret_state.enter(universe_point);
-			return &ret_state;
+			return new PlanetCreation{ universe_point };
 		}
 	}
 	else if (IsKeyPressed(KEY_TWO)) {
@@ -35,18 +33,14 @@ InteractionState* DefaultInteraction::process_input(const CameraState& camera_st
 		Vector2 screen_point = GetMousePosition();
 		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
 
-		PlanetCreation& ret_state = InteractionState::planet_interaction;
-		ret_state.enter(universe_point);
-		return &ret_state;
+		return new PlanetCreation{ universe_point };
 	}
 	else if (IsKeyPressed(KEY_THREE)) {
 		// Start system generation.
 		Vector2 screen_point = GetMousePosition();
 		Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
 
-		SystemCreation& ret_state = InteractionState::system_interaction;
-		ret_state.enter(universe_point, universe);
-		return &ret_state;
+		return new SystemCreation{ universe_point, universe };
 	}
 
 	return this;

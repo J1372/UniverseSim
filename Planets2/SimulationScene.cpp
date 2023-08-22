@@ -17,9 +17,7 @@ SimulationScene::SimulationScene(UniverseSettings settings, std::unique_ptr<Spat
 	: universe(settings, std::move(partitioning))
 {
 	camera_state = std::make_unique<FreeCamera>(starting_config);
-
-	interaction_state = &InteractionState::default_interaction;
-	InteractionState::init_states(); // Set all states back to default. could just .exit() current state.
+	interaction_state = std::make_unique<DefaultInteraction>();
 
 	on_screen_bodies.reserve(universe.get_settings().universe_capacity);
 
@@ -44,8 +42,8 @@ void SimulationScene::process_input()
 	InteractionState* next_interaction_state = interaction_state->process_input(*camera_state, universe);
 
 	// State change.
-	if (next_interaction_state != interaction_state) {
-		interaction_state = next_interaction_state;
+	if (next_interaction_state != interaction_state.get()) {
+		interaction_state.reset(next_interaction_state);
 
 		// Update ui elements to show interaction state specific text.
 		current_help_text = default_help_text + interaction_state->get_help_text();

@@ -27,11 +27,10 @@ public:
 
 	// Enters the state by creating a planet at the given position,
 	// which the user can modify.
-	void enter(Vector2 mouse_pos);
+	PlanetCreation(Vector2 mouse_pos);
 
 	// Processes all relevant state input for creating a body and returns the next interaction state.
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;
-
 
 	std::string get_name() const override;
 

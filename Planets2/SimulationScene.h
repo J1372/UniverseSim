@@ -29,7 +29,7 @@ class SimulationScene : public Scene
 	std::unique_ptr<CameraState> camera_state;
 
 	// The current user interaction state.
-	InteractionState* interaction_state;
+	std::unique_ptr<InteractionState> interaction_state;
 
 	// User-toggleable variables.
 	

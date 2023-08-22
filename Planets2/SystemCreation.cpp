@@ -7,11 +7,9 @@
 #include "DefaultInteraction.h"
 #include "PlanetCreation.h"
 
-void SystemCreation::enter(Vector2 mouse_pos, Universe& universe)
-{
-	// Use universe's system generator to get a planetary system at the given position.
-    system = universe.generate_rand_system(mouse_pos.x, mouse_pos.y);
-}
+SystemCreation::SystemCreation(Vector2 mouse_pos, Universe& universe)
+	: system(universe.generate_rand_system(mouse_pos.x, mouse_pos.y))
+{}
 
 InteractionState* SystemCreation::process_input(const CameraState& camera_state, Universe& universe)
 {
@@ -28,31 +26,19 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 	else if (IsKeyPressed(KEY_ENTER)) {
 		// Add the current planetary system to the universe and goto default interaction.
 		universe.add_bodies(std::move(system));
-		system.clear();
-
-		DefaultInteraction& ret_state = InteractionState::default_interaction;
-		return &ret_state;
+		return new DefaultInteraction;
 	}
-	else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) or IsKeyPressed(KEY_ONE)) { // if anchored and right click, camera will unanchor.
-		// Switch to default interaction.
-		system.clear();
-
-		DefaultInteraction& ret_state = InteractionState::default_interaction;
-		return &ret_state;
+	else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) or IsKeyPressed(KEY_ONE)) {
+		// Side effect - if anchored and right click, camera will unanchor.
+		return new DefaultInteraction;
 	}
 	else if (IsKeyPressed(KEY_TWO)) {
 		// Switch to planet generation.
-		system.clear();
-
-		PlanetCreation& ret_state = InteractionState::planet_interaction;
-		ret_state.enter(universe_point);
-		return &ret_state;
+		return new PlanetCreation { universe_point };
 	}
 	else if (IsKeyPressed(KEY_THREE)) {
 		// Generate a new system, but don't add the current one to the universe.
-		system.clear();
 		system = universe.generate_rand_system(universe_point.x, universe_point.y);
-
 		return this;
 	}
 	else {

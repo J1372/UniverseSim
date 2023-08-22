@@ -57,9 +57,6 @@
     <ClCompile Include="LineSweep.cpp">
       <Filter>Partitioning</Filter>
     </ClCompile>
-    <ClCompile Include="InteractionState.cpp">
-      <Filter>Scenes\SimScene\InteractionStates</Filter>
-    </ClCompile>
     <ClCompile Include="DefaultInteraction.cpp">
       <Filter>Scenes\SimScene\InteractionStates</Filter>
     </ClCompile>

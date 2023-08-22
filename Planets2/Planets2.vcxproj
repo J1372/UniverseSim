@@ -218,7 +218,6 @@
     <ClCompile Include="GridNode.cpp" />
     <ClCompile Include="GuiComponentList.cpp" />
     <ClCompile Include="GuiScene.cpp" />
-    <ClCompile Include="InteractionState.cpp" />
     <ClCompile Include="IntValidator.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="LineSweep.cpp" />

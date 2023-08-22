@@ -13,7 +13,7 @@ class SystemCreation : public InteractionState
 public:
 
 	// Enters system generation state by generating a system at the current mouse position.
-	void enter(Vector2 mouse_pos, Universe& universe);
+	SystemCreation(Vector2 mouse_pos, Universe& universe);
 
 	// Handles user input related to generating a system.
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;

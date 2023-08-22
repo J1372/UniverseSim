@@ -7,6 +7,8 @@ class DefaultInteraction : public InteractionState
 
 public:
 
+	DefaultInteraction() = default;
+
 	// Handles user deleting a body and state transitions.
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;
 
