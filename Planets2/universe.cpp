@@ -144,21 +144,13 @@ void Universe::set_partitioning(std::unique_ptr<SpatialPartitioning>&& partition
 
 void Universe::handle_gravity()
 {
-	if (active_bodies.empty()) {
-		return;
-	}
-
-	// Changing this loop to use iterators had a big performance decrease,
-	// which probably only affects the debug build, but is still annoying.
-	for (int i = 0; i < active_bodies.size() - 1; i++) {
-		Body& body1 = active_bodies[i];
-
-		for (int j = i + 1; j < active_bodies.size(); j++) {
-			Body& body2 = active_bodies[j];
-			body1.grav_pull_reciprocal(body2, settings.grav_const);
-
+	std::for_each(std::execution::par_unseq, active_bodies.begin(), active_bodies.end(), [this](Body& body1)
+	{
+		for (const Body& body2 : active_bodies)
+		{
+			body1.grav_pull_by(body2, settings.grav_const);
 		}
-	}
+	});
 }
 
 void Universe::handle_gravity_approximation()
