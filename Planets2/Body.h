@@ -126,8 +126,8 @@ public:
 	// Updates the body's position, using its current velocity, and resets its acceleration to 0.
 	void pos_update();
 
-	// Using the given forces, adjusts this body's acceleration.
-	void grav_pull(Vector2 pull);
+	// Applies a force to the body.
+	void apply_force(Vector2 to_apply);
 
 	// Returns this body's momentum vector.
 	Vector2 get_momentum() const;
@@ -170,6 +170,14 @@ public:
 
 	// Returns the body's mass moment vector (x * mass, y * mass).
 	Vector2 get_mass_moment() const;
+
+	void grav_pull_by(const Body& other, float grav_const);
+	void grav_pull_by(Vector2 point, long point_mass, float grav_const);
+	void grav_pull_reciprocal(Body& other, float grav_const);
+
+	bool collided_with(const Body& other) const;
+	bool in_rect(Rectangle rect) const;
+	bool intersects_rect(Rectangle rect) const;
 
 	// Returns true if this body's id is equal to the other body's id, else false.
 	bool operator==(const Body& other) const;

@@ -155,8 +155,7 @@ void Universe::handle_gravity()
 
 		for (int j = i + 1; j < active_bodies.size(); j++) {
 			Body& body2 = active_bodies[j];
-
-			Physics::grav_pull(body1, body2, settings.grav_const);
+			body1.grav_pull_reciprocal(body2, settings.grav_const);
 
 		}
 	}
@@ -246,7 +245,7 @@ std::vector<Collision> Universe::get_collisions_no_partitioning()
 
 			num_collision_checks_tick++;
 
-			if (Physics::have_collided(body1, body2)) {
+			if (body1.collided_with(body2)) {
 				collisions.emplace_back(Body::get_sorted_pair(body1, body2));
 			}
 

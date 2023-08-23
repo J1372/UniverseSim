@@ -2,8 +2,10 @@
 #include "Removal.h"
 #include "Physics.h"
 #include <raymath.h>
+#include <cmath>
 
 #include "Orbit.h"
+#include "Circle.h"
 
 Body::Body(float x, float y, long mass) : position{ x, y }, mass(std::max(1l, mass))
 {
@@ -197,9 +199,9 @@ void Body::reset_forces()
 	force = { 0,0 };
 }
 
-void Body::grav_pull(Vector2 pull)
+void Body::apply_force(Vector2 to_apply)
 {
-	force = Vector2Add(force, pull);
+	force = Vector2Add(force, to_apply);
 }
 
 Vector2 Body::get_momentum() const
@@ -227,6 +229,40 @@ Rectangle Body::get_bounding_box() const
 Vector2 Body::get_mass_moment() const
 {
 	return Physics::moment(position, mass);
+}
+
+void Body::grav_pull_by(const Body& other, float grav_const)
+{
+	grav_pull_by(other.position, other.mass, grav_const);
+}
+
+void Body::grav_pull_by(Vector2 point, long point_mass, float grav_const)
+{
+	apply_force(Physics::grav_force(position, mass, point, point_mass, grav_const));
+}
+
+void Body::grav_pull_reciprocal(Body& other, float grav_const)
+{
+	Vector2 grav_force = Physics::grav_force(position, mass, other.position, other.mass, grav_const);
+	apply_force(grav_force);
+	other.apply_force(Vector2Negate(grav_force)); // equal, opposite force to other.
+}
+
+bool Body::collided_with(const Body& other) const
+{
+	return Physics::circles_intersect(
+		Circle{ position, radius },
+		Circle{ other.position, other.radius });
+}
+
+bool Body::in_rect(Rectangle rect) const
+{
+	return Physics::circle_inside_rect(Circle{ position, radius }, rect);
+}
+
+bool Body::intersects_rect(Rectangle rect) const
+{
+	return Physics::circle_intersects_rect(Circle{ position, radius }, rect);
 }
 
 bool Body::operator==(const Body& other) const

@@ -219,16 +219,15 @@ void BarnesHut::concatenate()
 
 void BarnesHut::handle_gravity(Body& body, float grav_const) const
 {
-
 	if (is_leaf()) {
 		// Use center of mass and mass sum as an approximate grav pull.
 		// This is an approximation of a grav pull on the body by the group of bodies in child nodes.
 		if (!is_empty()) {
-			Physics::grav_pull(body, center_of_mass, mass_sum, grav_const);
+			body.grav_pull_by(center_of_mass, mass_sum, grav_const);
 		}
 	}
 	else if (sufficiently_far(body)) {
-		Physics::grav_pull(body, center_of_mass, mass_sum, grav_const);
+		body.grav_pull_by(center_of_mass, mass_sum, grav_const);
 	}
 	else {
 		// Not a leaf, and not sufficiently far away from this body.

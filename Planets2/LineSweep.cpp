@@ -6,6 +6,7 @@
 
 #include "Physics.h"
 #include "DebugInfo.h"
+#include <algorithm>
 
 LineSweep::LineSweep::SweepEvent LineSweep::get_next_event(int entries_processed, int leaves_processed) const
 {
@@ -183,7 +184,7 @@ std::vector<Collision> LineSweep::get_collisions_impl()
 int LineSweep::get_collisions(Body& entry, std::span<Body*> currently_active, std::vector<Collision>& collisions) const
 {
     for (Body* body : currently_active) {
-        if (Physics::have_collided(entry, *body)) {
+        if (entry.collided_with(*body)) {
             collisions.emplace_back(Body::get_sorted_pair(entry, *body));
         }
     }

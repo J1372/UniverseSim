@@ -3,6 +3,7 @@
 #include "Physics.h"
 #include "Collision.h"
 #include "DebugInfo.h"
+#include <algorithm>
 
 GridNode::GridNode(float x, float y, float node_size, int id) : dimensions{ x, y, node_size, node_size }, id(id)
 {}
@@ -67,7 +68,7 @@ int GridNode::get_collisions(std::vector<Collision>& collisions) const
 
             checks++;
 
-            if (Physics::have_collided(body1, body2)) {
+            if (body1.collided_with(body2)) {
                 Collision collision { Body::get_sorted_pair(body1, body2) };
 
                 auto is_same_collision = [collision](Collision other) {

@@ -136,7 +136,7 @@ int QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const_
 
 		checks++;
 
-		if (Physics::have_collided(checking, body2)) {
+		if (checking.collided_with(body2)) {
 			collisions.emplace_back(Body::get_sorted_pair(checking, body2));
 		}
 
@@ -359,12 +359,12 @@ bool QuadTree::contains_point(Vector2 point) const
 
 bool QuadTree::contains_fully(const Body& body) const
 {
-	return Physics::body_inside_rect(body, dimensions);
+	return body.in_rect(dimensions);
 }
 
 bool QuadTree::contains_partially(const Body& body) const
 {
-	return Physics::body_intersects_rect(body, dimensions);
+	return body.intersects_rect(dimensions);
 }
 
 void QuadTree::notify_child_removed()
