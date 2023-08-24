@@ -2,6 +2,7 @@
 #include "Body.h"
 
 #include "Collision.h"
+#include <algorithm>
 
 Grid::Grid(float grid_size, int nodes_per_row) : grid_size(grid_size), node_size(grid_size / nodes_per_row), nodes_per_row(nodes_per_row)
 {
@@ -33,7 +34,7 @@ void Grid::notify_move(const Body* from, Body* to)
 
 int Grid::get_index(int pos) const
 {
-    return (pos + grid_size / 2) / node_size;
+    return std::clamp(static_cast<int>((pos + grid_size / 2) / node_size), 0, nodes_per_row - 1);
 }
 
 GridNode& Grid::get_node(Vector2 pos)
@@ -61,32 +62,22 @@ std::vector<GridNode*> Grid::get_all_nodes(const Body& body)
 {
     std::vector<GridNode*> in_nodes;
 
-    Rectangle dimensions = body.get_bounding_box();
+    int first_row = get_index(body.top());
+    int first_col = get_index(body.left());
 
+    int last_row = get_index(body.bottom());
+    int last_col = get_index(body.right());
 
-    int first_row = get_index(dimensions.y);
-    int first_col = get_index(dimensions.x);
-
-    int last_row = get_index(dimensions.y + dimensions.height);
-    int last_col = get_index(dimensions.x + dimensions.width);
-
-    first_row = std::max(0, first_row);
-    first_col = std::max(0, first_col);
-
-    last_row = std::min(nodes_per_row-1, last_row);
-    last_col = std::min(nodes_per_row-1, last_col);
-
-    for (int i = first_row; i <= last_row; i++) {
-        for (int j = first_col; j <= last_col; j++) {
-
+    for (int i = first_row; i <= last_row; i++)
+    {
+        for (int j = first_col; j <= last_col; j++)
+        {
             int grid_num = i * nodes_per_row + j;
             in_nodes.push_back(&nodes[grid_num]);
         }
     }
 
-
     return in_nodes;
-
 }
 
 void Grid::add_body(Body& body)
