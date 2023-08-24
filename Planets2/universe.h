@@ -68,17 +68,14 @@ class Universe {
 	// Returns true if a point is within the universe's area, else false.
 	bool in_bounds(Vector2 point) const;
 
+	void rem_from_partitioning(Body& to_remove);
+
 	// Observers to notify when this body is being removed.
 	Event<Removal> on_removal_observers;
 
 public:
 
-	Universe();
-
 	Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning);
-
-	void set_settings(const UniverseSettings& to_set);
-	void set_partitioning(std::unique_ptr<SpatialPartitioning>&& partitioning);
 
 	// Returns true if the universe is not already at capacity, else false.
 	bool can_create_body() const;
@@ -107,8 +104,6 @@ public:
 	// Returns a pointer to the partitioning method.
 	const SpatialPartitioning* get_partitioning() const;
 
-	void rem_from_partitioning(Body& to_remove);
-
 	// Returns the universe's current settings.
 	UniverseSettings& get_settings();
 
@@ -120,7 +115,6 @@ public:
 
 	// Returns the body whose id matches the given id, or nullptr if invalid id.
 	Body* get_body(int search_id);
-
 
 	// Returns a reference to all bodies in the universe
 	std::span<const Body> get_bodies() const;

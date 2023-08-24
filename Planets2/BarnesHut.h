@@ -43,6 +43,29 @@ class BarnesHut
 	// Handles calculations for updating this node's mass sum and center of mass when a new point mass is added.
 	void update_mass_add(Vector2 center, long mass);
 
+	// Will add a point mass to the most appropriate quad node.
+	// Potentially splits that node if it reached its capacity.
+	void add_body(Vector2 center, long mass);
+
+	// Adds the point mass to the correct child quad.
+	void add_to_child(Vector2 center, long mass);
+
+	// Returns true if this is a leaf node.
+	bool is_leaf() const;
+
+	// Returns true if a point is inside the quad's dimensions.
+	bool contains(Vector2 point) const;
+
+	// Returns true if the node has no body in it.
+	bool is_empty() const;
+
+	// Creates 4 new child nodes.
+	// The current point mass is moved into the child node that contains it.
+	void split();
+
+	// Frees 4 child nodes.
+	void concatenate();
+
 
 public:
 
@@ -56,43 +79,10 @@ public:
 	// internal constructor. still needs to be public for make_unique.
 	BarnesHut(float x, float y, float size);
 
-	// Resizes this node's dimensions.
-	void set_size(float size);
-
-	// Will add a body to the most appropriate quad node.
-	// Potentially splits that node if it reached its capacity.
-	void add_body(const Body& to_add);
-
-	// Will add a point mass to the most appropriate quad node.
-	// Potentially splits that node if it reached its capacity.
-	void add_body(Vector2 center, long mass);
-
-	// Adds the point mass to the correct child quad.
-	void add_to_child(Vector2 center, long mass);
-
-	// Returns true if this is a leaf node.
-	bool is_leaf() const;
-	
 	// Uses Barnes-Hut approximation to calculate net gravitational force applied to the body.
 	void handle_gravity(Body& body, float grav_const) const;
 
 	// Rebuilds the quadtree used for Barnes-Hut approximation.
 	void update(std::span<const Body> bodies);
-
-	// Returns true if a point is inside the quad's dimensions.
-	bool contains(Vector2 point) const;
-
-	// Returns true if the node has no body in it.
-	bool is_empty() const;
-
-	// Returns true if the node has a body in it.
-	bool is_full() const;
-
-	// Creates 4 new child nodes.
-	// The current point mass is moved into the child node that contains it.
-	void split();
-
-	// Frees 4 child nodes.
-	void concatenate();
 
 };

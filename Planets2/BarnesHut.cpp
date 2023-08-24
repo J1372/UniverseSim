@@ -17,11 +17,6 @@ BarnesHut::BarnesHut(float size, float set_approximation) :
 	approximation_value = set_approximation;
 }
 
-void BarnesHut::set_size(float size)
-{
-	dimensions = { -size / 2.0f, -size / 2.0f, size, size };
-}
-
 BarnesHut::BarnesHut(float x, float y, float size) :
 	dimensions{ x, y, size, size }
 {}
@@ -106,11 +101,6 @@ void BarnesHut::update_mass_add(Vector2 center, long mass)
 
 }
 
-void BarnesHut::add_body(const Body& to_add)
-{
-	add_body(to_add.pos(), to_add.get_mass());
-}
-
 void BarnesHut::add_body(Vector2 center, long mass)
 {
 	if (is_leaf()) {
@@ -181,11 +171,6 @@ bool BarnesHut::is_empty() const
 	return mass_sum == 0l;
 }
 
-bool BarnesHut::is_full() const
-{
-	return mass_sum != 0l;
-}
-
 void BarnesHut::update(std::span<const Body> bodies)
 {
 	concatenate();
@@ -193,7 +178,7 @@ void BarnesHut::update(std::span<const Body> bodies)
 	mass_sum = 0l;
 
 	for (const Body& body : bodies) {
-		add_body(body);
+		add_body(body.pos(), body.get_mass());
 	}
 
 }

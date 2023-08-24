@@ -10,17 +10,10 @@
 
 #include "Orbit.h"
 
-Universe::Universe() : barnes_quad { settings.universe_size_max, .5f },
-dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max }
-{
-	partitioning_method = nullptr;
-	//std::cout << std::thread::hardware_concurrency();
-}
-
-Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning) : settings(to_set),
-partitioning_method(std::move(partitioning)),
-dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
-barnes_quad{ settings.universe_size_max, 10.0f }
+Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning)
+	: settings(to_set), partitioning_method(std::move(partitioning)),
+		dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
+		barnes_quad{ settings.universe_size_max, settings.grav_approximation_value }
 {
 	create_universe();
 }
@@ -93,9 +86,6 @@ void Universe::create_universe()
 	num_collision_checks = 0;
 	num_collision_checks_tick = 0;
 
-	barnes_quad.set_size(settings.universe_size_max);
-	BarnesHut::set_approximation(settings.grav_approximation_value);
-
 	active_bodies.clear();
 	active_bodies.reserve(settings.universe_capacity);
 
@@ -107,11 +97,6 @@ void Universe::create_universe()
 bool Universe::can_create_body() const
 {
 	return active_bodies.size() < settings.universe_capacity;
-}
-
-void Universe::set_settings(const UniverseSettings& to_set)
-{
-	settings = to_set;
 }
 
 void Universe::handle_wraparound(Body& body)
@@ -135,11 +120,6 @@ void Universe::handle_wraparound(Body& body)
 	}
 
 	body.set_pos(pos);
-}
-
-void Universe::set_partitioning(std::unique_ptr<SpatialPartitioning>&& partitioning)
-{
-	partitioning_method = std::move(partitioning);
 }
 
 void Universe::handle_gravity()
