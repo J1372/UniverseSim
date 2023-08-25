@@ -55,9 +55,7 @@ void SimulationScene::process_input()
 
 	// Toggles
 	if (IsKeyPressed(KEY_B)) {
-		if (universe.has_partitioning()) {
-			should_render_partitioning = !should_render_partitioning;
-		}
+		should_render_partitioning = !should_render_partitioning;
 	}
 
 	if (IsKeyPressed(KEY_N))
@@ -128,8 +126,7 @@ void SimulationScene::attach_debug_info()
 	};
 
 	if (should_render_partitioning) {
-		// Safe to dereference since should_render_partitioning is only true if the universe has a partitioning method.
-		const SpatialPartitioning& partitioning = *universe.get_partitioning();
+		const SpatialPartitioning& partitioning = universe.get_partitioning();
 
 		for (int i = 0; i < on_screen_bodies.size(); ++i) {
 			const Body& body = *on_screen_bodies[i];
@@ -200,8 +197,7 @@ void SimulationScene::render_screen_info()
 
 void SimulationScene::render_partitioning() const
 {
-	// Safe to dereference this since if should_render_partitioning == true then universe has partitioning.
-	const SpatialPartitioning& partitioning = *universe.get_partitioning();
+	const SpatialPartitioning& partitioning = universe.get_partitioning();
 	std::vector<Rectangle> rep = partitioning.get_representation();
 
 	// When zoomed out, there is often a visual glitch, especially when line thickness is lowered.

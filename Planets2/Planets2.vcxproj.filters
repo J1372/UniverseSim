@@ -95,6 +95,9 @@
     <ClCompile Include="SpatialPartitioning.cpp">
       <Filter>Partitioning</Filter>
     </ClCompile>
+    <ClCompile Include="NullPartitioning.cpp">
+      <Filter>Partitioning</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyRandom.h" />
@@ -218,6 +221,9 @@
       <Filter>UI\Validators</Filter>
     </ClInclude>
     <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="NullPartitioning.h">
+      <Filter>Partitioning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

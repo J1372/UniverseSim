@@ -9,6 +9,7 @@
 #include "QuadTree.h"
 #include "Grid.h"
 #include "LineSweep.h"
+#include "NullPartitioning.h"
 #include "IntValidator.h"
 #include "FloatValidator.h"
 
@@ -226,26 +227,27 @@ void SettingsScene::read_settings_to_gui()
 
 std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
 {
-	if (!partitioning_dropdown.has_selected()) {
-		// return null partitioning object
-		return nullptr;
-	}
-
 	std::string name_method = partitioning_dropdown.get_selected();
 
-	if (name_method == "Quad tree") {
+	if (name_method == "Quad tree")
+	{
 		int bodies_per_quad = std::stoi(quad_max_bodies_input.get_text());
 		int max_depth = std::stoi(quadtree_max_depth_input.get_text());
 
 		return std::make_unique<QuadTree>(settings.universe_size_max, bodies_per_quad, max_depth);
 	}
-	else if (name_method == "Grid") {
+	else if (name_method == "Grid")
+	{
 		int nodes_per_row = std::stoi(grid_nodes_per_row_input.get_text());
 		return std::make_unique<Grid>(settings.universe_size_max, nodes_per_row);
 	}
-	else if (name_method == "Line sweep") {
+	else if (name_method == "Line sweep")
+	{
 		return std::make_unique<LineSweep>();
 	}
+	else
+	{
+		return std::make_unique<NullPartitioning>();
+	}
 
-	return nullptr;
 }

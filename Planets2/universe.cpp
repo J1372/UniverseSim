@@ -29,12 +29,7 @@ void Universe::add_body(Body&& body)
 	}
 
 	active_bodies.add(std::move(body));
-
-	if (has_partitioning()) {
-		partitioning_method->add_body(active_bodies.back());
-	}
-
-
+	partitioning_method->add_body(active_bodies.back());
 }
 
 void Universe::add_bodies(std::vector<Body>&& bodies)
@@ -84,7 +79,6 @@ void Universe::create_universe()
 
 	tick = 0;
 	num_collision_checks = 0;
-	num_collision_checks_tick = 0;
 
 	active_bodies.clear();
 	active_bodies.reserve(settings.universe_capacity);
@@ -149,22 +143,15 @@ void Universe::handle_removal(Removal removal)
 	if (removal.was_absorbed()) {
 		Body& absorbed = active_bodies[active_bodies.get_index(removal.absorbed_by)];
 
-		if (has_partitioning()) {
-			// Remove the body before absorption. Re-add after to deal with radius change.
-			// A more efficient notify_radius_changed(Body, future_radius) can be a part of SpatialPartitioning,
-			// but it would be messier. we would need to use its future radius, not previous radius.
-			partitioning_method->rem_body(absorbed);
-			absorbed.absorb(removed);
-			partitioning_method->add_body(absorbed);
-		}
-		else {
-			absorbed.absorb(removed);
-		}
+		// Remove the body before absorption. Re-add after to deal with radius change.
+		// A more efficient notify_radius_changed(Body, future_radius) can be a part of SpatialPartitioning,
+		// but it would be messier. we would need to use its future radius, not previous radius.
+		partitioning_method->rem_body(absorbed);
+		absorbed.absorb(removed);
+		partitioning_method->add_body(absorbed);
 	}
 
-	if (has_partitioning()) {
-		rem_from_partitioning(removed);
-	}
+	rem_from_partitioning(removed);
 
 	active_bodies.rem(removed);
 }
@@ -196,35 +183,6 @@ std::vector<float> Universe::gen_rand_portions(int num_slots) const
 	}
 
 	return slots;
-}
-
-std::vector<Collision> Universe::get_collisions_no_partitioning()
-{
-	num_collision_checks_tick = 0;
-
-	std::vector<Collision> collisions;
-
-	if (active_bodies.empty()) {
-		return collisions;
-	}
-
-	collisions.reserve(active_bodies.size()); // could reserve on start, and on create_body resize it (after done handling).
-
-	for (auto it1 = active_bodies.begin(); it1 != active_bodies.end() - 1; it1++) {
-		Body& body1 = *it1;
-		for (auto it2 = it1 + 1; it2 != active_bodies.end(); it2++) {
-			Body& body2 = *it2;
-
-			num_collision_checks_tick++;
-
-			if (body1.collided_with(body2)) {
-				collisions.emplace_back(Body::get_sorted_pair(body1, body2));
-			}
-
-		}
-	}
-
-	return collisions;
 }
 
 bool Universe::in_bounds(Vector2 point) const
@@ -294,18 +252,9 @@ void Universe::update()
 
 	update_pos(); // update velocities and positions
 
-	std::vector<Collision> collisions;
-
-	if (has_partitioning()) {
-		partitioning_method->update();
-		collisions = partitioning_method->get_collisions();
-		num_collision_checks_tick = partitioning_method->get_collision_checks_this_tick();
-	}
-	else {
-		collisions = get_collisions_no_partitioning();
-	}
-
-	num_collision_checks += num_collision_checks_tick;
+	partitioning_method->update();
+	std::vector<Collision> collisions = partitioning_method->get_collisions();
+	num_collision_checks += partitioning_method->get_collision_checks_this_tick();
 
 	handle_collisions(collisions);
 
@@ -366,27 +315,12 @@ std::vector<Body> Universe::generate_rand_system(float x, float y)
 
 Body* Universe::get_body(Vector2 point)
 {
-	if (!in_bounds(point)) {
+	if (!in_bounds(point))
+	{
 		return nullptr;
 	}
 
-	if (has_partitioning()) {
-		// Try to find the body using our partitioning method.
-		return partitioning_method->find_body(point);
-	}
-	else {
-		// Try to find the body by looping through all bodies.
-		// Could use a template method or std::function in BodyList.
-		auto it = std::find_if(active_bodies.begin(), active_bodies.end(), [point](const Body& body) {return body.contains_point(point); });
-		if (it != active_bodies.end()) {
-			Body& body = *it;
-			return &body;
-		}
-		else {
-			return nullptr;
-		}
-	}
-	return nullptr;
+	return partitioning_method->find_body(point);
 }
 
 Body* Universe::get_body(int search_id)
@@ -420,9 +354,7 @@ Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter) const
 
 void Universe::rem_body(Body& body)
 {
-	if (has_partitioning()) {
-		rem_from_partitioning(body);
-	}
+	rem_from_partitioning(body);
 
 	on_removal_observers.notify_all({ body.get_id() });
 
@@ -430,14 +362,9 @@ void Universe::rem_body(Body& body)
 	active_bodies.rem(body);
 }
 
-bool Universe::has_partitioning() const
+const SpatialPartitioning& Universe::get_partitioning() const
 {
-	return partitioning_method.get() != nullptr;
-}
-
-const SpatialPartitioning* Universe::get_partitioning() const
-{
-	return partitioning_method.get();
+	return *partitioning_method;
 }
 
 UniverseSettings& Universe::get_settings()
@@ -467,7 +394,7 @@ int Universe::get_num_collision_checks() const
 
 int Universe::get_num_collision_checks_tick() const
 {
-	return num_collision_checks_tick;
+	return partitioning_method->get_collision_checks_this_tick();
 }
 
 int Universe::get_tick() const

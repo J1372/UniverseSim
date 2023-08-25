@@ -35,9 +35,6 @@ class Universe {
 	// Number of collision checks that have occurred.
 	int num_collision_checks = 0;
 
-	// Number of collision checks that occurred last tick.
-	int num_collision_checks_tick = 0;
-
 	// Handles all collision events.
 	void handle_collisions(std::span<const Collision> collisions);
 
@@ -61,9 +58,6 @@ class Universe {
 	
 	// Generates random portions [0, 1] between num_slots objects. Sum of all portions == 1.
 	std::vector<float> gen_rand_portions(int num_slots) const;
-
-	// Detects and returns all collision events by comparing each body to every other body.
-	std::vector<Collision> get_collisions_no_partitioning();
 
 	// Returns true if a point is within the universe's area, else false.
 	bool in_bounds(Vector2 point) const;
@@ -98,11 +92,8 @@ public:
 	// Creates a random system and adds it to the universe.
 	void create_rand_system();
 
-	// Returns true if there is a partitioning method that can be used.
-	bool has_partitioning() const;
-
 	// Returns a pointer to the partitioning method.
-	const SpatialPartitioning* get_partitioning() const;
+	const SpatialPartitioning& get_partitioning() const;
 
 	// Returns the universe's current settings.
 	UniverseSettings& get_settings();
