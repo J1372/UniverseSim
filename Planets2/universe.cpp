@@ -15,7 +15,12 @@ Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartit
 		dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
 		barnes_quad{ settings.universe_size_max, settings.grav_approximation_value }
 {
-	create_universe();
+	active_bodies.reserve(settings.universe_capacity);
+
+	for (int i = 0; i < settings.num_rand_systems; ++i)
+	{
+		create_rand_system();
+	}
 }
 
 void Universe::add_body(Body&& body)
@@ -63,28 +68,6 @@ void Universe::rem_from_partitioning(Body& to_remove)
 		// This means any pointer in partitioning to the last Body in the vector needs to 
 		// be updated to point to the now removed body.
 		partitioning_method->notify_move(&moving, &to_remove);
-	}
-}
-
-
-
-void Universe::create_universe()
-{
-	// TODO make physics settings changeable while running. Keep universe settings const while running.
-	//		->move reserve/make unique out into constructor / run-once-at-start method.
-	dimensions = { -settings.universe_size_max / 2.0f,
-		-settings.universe_size_max / 2.0f,
-		settings.universe_size_max ,
-		settings.universe_size_max };
-
-	tick = 0;
-	num_collision_checks = 0;
-
-	active_bodies.clear();
-	active_bodies.reserve(settings.universe_capacity);
-
-	for (int i = 0; i < settings.num_rand_systems; ++i) {
-		create_rand_system();
 	}
 }
 

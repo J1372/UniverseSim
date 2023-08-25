@@ -83,9 +83,6 @@ public:
 	// Transfers all bodies from the vector and then clears the vector.
 	void add_bodies(std::vector<Body>&& bodies);
 
-	// Creates a new universe, using the current settings.
-	void create_universe();
-
 	// Returns a random orbit
 	Orbit gen_rand_orbit(const Body& orbited, const Body& orbiter) const;
 
