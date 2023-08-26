@@ -11,6 +11,7 @@
 
 struct Collision;
 struct Vector2;
+struct Removal;
 
 class Universe {
 

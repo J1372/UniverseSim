@@ -1,5 +1,4 @@
 #include "Body.h"
-#include "Removal.h"
 #include "Physics.h"
 #include <raymath.h>
 #include <cmath>

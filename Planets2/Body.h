@@ -5,37 +5,22 @@
 #include "PlanetType.h"
 
 struct Orbit;
-struct Removal;
 
 // A body in the universe.
 class Body {
 
-	/*
-	* Planetary type definitions.
-	* 
-	* Min mass progressions (from prev type)
-	*
-	* 1,
-	* 1000,
-	* 6,
-	* 15
-	*
-	*/
-
-	static constexpr PlanetType MIN_TYPE { RAYWHITE, 1, -1};
-	static constexpr PlanetType ASTEROID_TYPE = { RAYWHITE, 10, 0 };
-	static constexpr PlanetType PLANET_TYPE = { SKYBLUE, 15, 1000};
-	static constexpr PlanetType SUN_TYPE = { GOLD, 100, 6000 };
-	static constexpr PlanetType BLACK_HOLE_TYPE = { DARKGRAY, 1200, 120000 };
-	static constexpr PlanetType MAX_TYPE = { SKYBLUE, 1, std::numeric_limits<long>::max()};
 	static constexpr PlanetType TYPES[] =
 	{
-		MIN_TYPE,
-		ASTEROID_TYPE,
-		PLANET_TYPE,
-		SUN_TYPE,
-		BLACK_HOLE_TYPE,
-		MAX_TYPE
+		{ RAYWHITE, 1, -1},
+		{ RAYWHITE, 10, 0 },
+		{ LIGHTGRAY, 20, 1000 },
+		{ SKYBLUE, 40, 2000 },
+		{ BLUE, 70, 4000 },
+		{ DARKBLUE, 100, 6000 },
+		{ GOLD, 300, 9000 },
+		{ ORANGE, 600, 70000 },
+		{ DARKGRAY, 1500, 150000 },
+		{ SKYBLUE, 1, std::numeric_limits<long>::max() }
 	};
 
 	// Body's unique id.
