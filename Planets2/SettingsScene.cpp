@@ -23,11 +23,9 @@ void SettingsScene::setup()
 			return;
 		}
 
-		generate_settings();
-
 		if (return_scene == this)
 		{
-			return_scene = new SimulationScene(settings, gen_partitioning());
+			return_scene = new SimulationScene(generate_settings(), gen_partitioning());
 		}
 	});
 
@@ -132,18 +130,18 @@ void SettingsScene::setup()
 	quadtree_max_depth_input.set_validator(std::make_unique<IntValidator>(0));
 	grid_nodes_per_row_input.set_validator(std::make_unique<IntValidator>(1));
 
-	read_settings_to_gui();
 }
 
 SettingsScene::SettingsScene()
 {
 	setup();
+	read_settings_to_gui({});
 }
 
-SettingsScene::SettingsScene(const UniverseSettings& settings)
-	: settings(settings)
+SettingsScene::SettingsScene(const SettingsState& settings)
 {
 	setup();
+	read_settings_to_gui(settings);
 }
 
 
@@ -177,52 +175,64 @@ std::string SettingsScene::scan_semantic_errors() const
 	return "";
 }
 
-void SettingsScene::generate_settings()
+SettingsState SettingsScene::generate_settings() const
 {
-	settings.universe_capacity = capacity_input.get_int();
-	settings.universe_size_start = start_size_input.get_float();
-	settings.universe_size_max = max_size_input.get_float();
-	settings.num_rand_planets = num_planets_input.get_int();
-	settings.num_rand_systems = num_systems_input.get_int();
+	SettingsState settings;
+	settings.universe.universe_capacity = capacity_input.get_int();
+	settings.universe.universe_size_start = start_size_input.get_float();
+	settings.universe.universe_size_max = max_size_input.get_float();
+	settings.universe.num_rand_planets = num_planets_input.get_int();
+	settings.universe.num_rand_systems = num_systems_input.get_int();
 
-	settings.grav_const = grav_const_input.get_double();
-	settings.use_gravity_approximation = approximate_gravity_checkbox.is_checked();
-	settings.grav_approximation_value = approximation_slider.get_val();
+	settings.universe.grav_const = grav_const_input.get_double();
+	settings.universe.use_gravity_approximation = approximate_gravity_checkbox.is_checked();
+	settings.universe.grav_approximation_value = approximation_slider.get_val();
 
-	settings.system_mass_ratio = sys_mass_ratio_input.get_float();
+	settings.universe.system_mass_ratio = sys_mass_ratio_input.get_float();
 
-	settings.system_min_planets = sys_min_planets_input.get_int();
-	settings.system_max_planets = sys_max_planets_input.get_int();
-	settings.satellite_min_dist = sys_min_dist_input.get_float();
-	settings.satellite_max_dist = sys_max_dist_input.get_float();
-	settings.moon_chance = sys_moon_chance_input.get_double();
-	settings.retrograde_chance = sys_retrograde_input.get_double();
+	settings.universe.system_min_planets = sys_min_planets_input.get_int();
+	settings.universe.system_max_planets = sys_max_planets_input.get_int();
+	settings.universe.satellite_min_dist = sys_min_dist_input.get_float();
+	settings.universe.satellite_max_dist = sys_max_dist_input.get_float();
+	settings.universe.moon_chance = sys_moon_chance_input.get_double();
+	settings.universe.retrograde_chance = sys_retrograde_input.get_double();
+
+	settings.partitioning_selected = partitioning_dropdown.get_selected();
+	settings.quadtree.max_bodies = quad_max_bodies_input.get_int();
+	settings.quadtree.max_depth = quadtree_max_depth_input.get_int();
+	settings.grid.nodes_per_row = grid_nodes_per_row_input.get_int();
+	return settings;
 }
 
-void SettingsScene::read_settings_to_gui()
+void SettingsScene::read_settings_to_gui(const SettingsState& settings)
 {
 	constexpr int rounding = 3; // round floating point digits.
-	capacity_input.set_text(std::to_string(settings.universe_capacity));
-	start_size_input.set_text(std::to_string(static_cast<int>(settings.universe_size_start)));
-	max_size_input.set_text(std::to_string(static_cast<int>(settings.universe_size_max)));
-	num_planets_input.set_text(std::to_string(settings.num_rand_planets));
-	num_systems_input.set_text(std::to_string(settings.num_rand_systems));
+	capacity_input.set_text(std::to_string(settings.universe.universe_capacity));
+	start_size_input.set_text(std::to_string(static_cast<int>(settings.universe.universe_size_start)));
+	max_size_input.set_text(std::to_string(static_cast<int>(settings.universe.universe_size_max)));
+	num_planets_input.set_text(std::to_string(settings.universe.num_rand_planets));
+	num_systems_input.set_text(std::to_string(settings.universe.num_rand_systems));
 
-	grav_const_input.set_text(std::to_string(settings.grav_const).substr(0, rounding + 1));
+	grav_const_input.set_text(std::to_string(settings.universe.grav_const).substr(0, rounding + 1));
 
-	sys_mass_ratio_input.set_text(std::to_string(settings.system_mass_ratio).substr(0, rounding + 1));
-	sys_min_planets_input.set_text(std::to_string(settings.system_min_planets));
-	sys_max_planets_input.set_text(std::to_string(settings.system_max_planets));
-	sys_min_dist_input.set_text(std::to_string(settings.satellite_min_dist).substr(0, rounding + 1));
-	sys_max_dist_input.set_text(std::to_string(settings.satellite_max_dist).substr(0, rounding + 1));
-	sys_moon_chance_input.set_text(std::to_string(settings.moon_chance).substr(0, rounding + 1));
-	sys_retrograde_input.set_text(std::to_string(settings.retrograde_chance).substr(0, rounding + 1));
+	sys_mass_ratio_input.set_text(std::to_string(settings.universe.system_mass_ratio).substr(0, rounding + 1));
+	sys_min_planets_input.set_text(std::to_string(settings.universe.system_min_planets));
+	sys_max_planets_input.set_text(std::to_string(settings.universe.system_max_planets));
+	sys_min_dist_input.set_text(std::to_string(settings.universe.satellite_min_dist).substr(0, rounding + 1));
+	sys_max_dist_input.set_text(std::to_string(settings.universe.satellite_max_dist).substr(0, rounding + 1));
+	sys_moon_chance_input.set_text(std::to_string(settings.universe.moon_chance).substr(0, rounding + 1));
+	sys_retrograde_input.set_text(std::to_string(settings.universe.retrograde_chance).substr(0, rounding + 1));
 
-	if (settings.use_gravity_approximation)
+	if (settings.universe.use_gravity_approximation)
 	{
 		approximate_gravity_checkbox.click();
-		approximation_slider.set_val(settings.grav_approximation_value);
+		approximation_slider.set_val(settings.universe.grav_approximation_value);
 	}
+
+	partitioning_dropdown.set_selected(settings.partitioning_selected);
+	quad_max_bodies_input.set_text(std::to_string(settings.quadtree.max_bodies));
+	quadtree_max_depth_input.set_text(std::to_string(settings.quadtree.max_depth));
+	grid_nodes_per_row_input.set_text(std::to_string(settings.grid.nodes_per_row));
 }
 
 std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
@@ -234,12 +244,12 @@ std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
 		int bodies_per_quad = std::stoi(quad_max_bodies_input.get_text());
 		int max_depth = std::stoi(quadtree_max_depth_input.get_text());
 
-		return std::make_unique<QuadTree>(settings.universe_size_max, bodies_per_quad, max_depth);
+		return std::make_unique<QuadTree>(max_size_input.get_float(), bodies_per_quad, max_depth);
 	}
 	else if (name_method == "Grid")
 	{
 		int nodes_per_row = std::stoi(grid_nodes_per_row_input.get_text());
-		return std::make_unique<Grid>(settings.universe_size_max, nodes_per_row);
+		return std::make_unique<Grid>(max_size_input.get_float(), nodes_per_row);
 	}
 	else if (name_method == "Line sweep")
 	{

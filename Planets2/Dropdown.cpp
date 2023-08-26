@@ -33,6 +33,17 @@ void Dropdown::set_selected(int number) {
 	}
 }
 
+
+void Dropdown::set_selected(std::string_view choice)
+{
+	auto it = std::find(choices.begin(), choices.end(), choice);
+
+	if (it != choices.end())
+	{
+		set_selected(std::distance(choices.begin(), it));
+	}
+}
+
 void Dropdown::deselect() {
 	selected = -1;
 

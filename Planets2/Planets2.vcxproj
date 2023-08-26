@@ -187,6 +187,7 @@
     <ClInclude Include="QuadChildren.h" />
     <ClInclude Include="SettingsScene.h" />
     <ClInclude Include="AdvCamera.h" />
+    <ClInclude Include="SettingsState.h" />
     <ClInclude Include="SimulationScene.h" />
     <ClInclude Include="Slider.h" />
     <ClInclude Include="SystemCreation.h" />

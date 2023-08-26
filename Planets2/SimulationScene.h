@@ -10,6 +10,7 @@
 #include "DebugInfo.h"
 
 #include "GuiComponentList.h"
+#include "SettingsState.h"
 
 class CameraState;
 class Body;
@@ -21,6 +22,9 @@ class SimulationScene : public Scene
 
 	// The universe being simulated.
 	Universe universe;
+
+	// Copy of settings state, to restore settings scene when transition.
+	SettingsState settings_state;
 
 	// A starting configuration for the cameras.
 	AdvCamera starting_config { Vector2{0,0}, Vector2{0,0} };
@@ -126,7 +130,7 @@ class SimulationScene : public Scene
 
 public:
 
-	SimulationScene(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning);
+	SimulationScene(const SettingsState& settings, std::unique_ptr<SpatialPartitioning>&& partitioning);
 
 	// Handles all user input, updates and renders the universe, and then renders any additional scene items.
 	Scene* update() override;

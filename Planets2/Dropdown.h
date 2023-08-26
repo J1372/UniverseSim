@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <string_view>
 
 class Dropdown : public UIElement
 {
@@ -41,6 +42,7 @@ public:
 	void add_choice(const std::string& choice);
 
 	void set_selected(int number);
+	void set_selected(std::string_view choice);
 	void deselect();
 
 	// Returns if any option has been selected.

@@ -13,8 +13,8 @@
 #include <raymath.h>
 
 
-SimulationScene::SimulationScene(UniverseSettings settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
-	: universe(settings, std::move(partitioning))
+SimulationScene::SimulationScene(const SettingsState& settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
+	: universe(settings.universe, std::move(partitioning)), settings_state(settings)
 {
 	camera_state = std::make_unique<FreeCamera>(starting_config);
 	interaction_state = std::make_unique<DefaultInteraction>();
@@ -91,7 +91,7 @@ void SimulationScene::process_input()
 	if (IsKeyPressed(KEY_ESCAPE)) {
 		if (return_scene == this)
 		{
-			return_scene = new SettingsScene(universe.get_settings());
+			return_scene = new SettingsScene(settings_state);
 		}
 	}
 	

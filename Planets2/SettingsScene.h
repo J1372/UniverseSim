@@ -15,15 +15,12 @@ class SpatialPartitioning;
 #include "Textbox.h"
 #include "Slider.h"
 #include "CheckBox.h"
+#include "SettingsState.h"
+
 
 // A settings scene where the user can define the parameters for the simulation universe.
 class SettingsScene : public GuiScene
 {
-
-	// Currently no GUI containers / composites, so some setup code looks redundant.
-
-	// The settings to be used in the simulation.
-	UniverseSettings settings;
 
 	// Start and exit buttons
 	static constexpr float BUTTON_X = 860.0f;
@@ -126,10 +123,10 @@ class SettingsScene : public GuiScene
 
 
 	// Generates settings from the gui elements.
-	void generate_settings();
+	SettingsState generate_settings() const;
 
 	// Set gui elements to reflect the current universe settings.
-	void read_settings_to_gui(); 
+	void read_settings_to_gui(const SettingsState& settings);
 
 	// Creates and returns the selected partitioning method.
 	std::unique_ptr<SpatialPartitioning> gen_partitioning();
@@ -146,6 +143,6 @@ class SettingsScene : public GuiScene
 public:
 
 	SettingsScene();
-	SettingsScene(const UniverseSettings& settings);
+	SettingsScene(const SettingsState& settings);
 
 };
