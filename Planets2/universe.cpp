@@ -21,6 +21,17 @@ Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartit
 	{
 		create_rand_system();
 	}
+
+	for (int i = 0; i < settings.num_rand_planets; ++i)
+	{
+		long planet_mass = Rand::num(1, settings.RAND_MASS * 50); // rand_mass is max mass of random planet
+
+		float x = Rand::real(-settings.universe_size_start, settings.universe_size_start);
+		float y = Rand::real(-settings.universe_size_start, settings.universe_size_start);
+
+		add_body(Body{ x, y, planet_mass });
+	}
+
 }
 
 void Universe::add_body(Body&& body)
