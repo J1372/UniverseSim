@@ -64,22 +64,32 @@ void TextBox::render() const {
 
 bool TextBox::send_keypress(int key_code)
 {
-	if (validator and !validator->on_press(entered_text, key_code, cursor_pos))
+	if (key_code == KEY_BACKSPACE)
 	{
-		return false;
-	}
-
-	if (key_code == KEY_BACKSPACE) {
-		if (cursor_pos > 0) {
+		if (cursor_pos > 0)
+		{
 			cursor_pos--;
 			entered_text.erase(cursor_pos, 1);
 		}
 
 		return true;
 	}
-
-	// if key is invalid.
-	if (key_code < 32 or key_code > 126) {
+	else if (key_code == KEY_LEFT)
+	{
+		cursor_pos = std::max(cursor_pos - 1, 0);
+		return true;
+	}
+	else if (key_code == KEY_RIGHT)
+	{
+		cursor_pos = std::min(cursor_pos + 1, static_cast<int>(entered_text.size()));
+		return true;
+	}
+	else if (key_code < 32 or key_code > 126)
+	{
+		return false;
+	}
+	else if (validator and !validator->on_press(entered_text, key_code, cursor_pos))
+	{
 		return false;
 	}
 
@@ -98,6 +108,8 @@ bool TextBox::send_keypress(int key_code)
 
 void TextBox::set_text(std::string_view to_set)
 {
+	entered_text.clear();
+	cursor_pos = 0;
 	for (char character : to_set)
 	{
 		send_keypress(character);
