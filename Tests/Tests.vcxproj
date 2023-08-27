@@ -36,6 +36,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BarnesHut_Test.cpp" />
     <ClCompile Include="Physics_Test.cpp" />
     <ClCompile Include="PlanetType_Test.cpp" />
     <ClCompile Include="pch.cpp">
@@ -90,7 +91,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)thirdparty\lib;$(SolutionDir)Planets2\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Physics.obj;SpatialPartitioning.obj;QuadTree.obj;Grid.obj;LineSweep.obj;GridNode.obj;Body.obj;Collision.obj;DebugInfo.obj;Orbit.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Physics.obj;SpatialPartitioning.obj;QuadTree.obj;Grid.obj;LineSweep.obj;GridNode.obj;Body.obj;Collision.obj;DebugInfo.obj;Orbit.obj;BarnesHut.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
