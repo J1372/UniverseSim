@@ -4,6 +4,7 @@
 
 std::vector<Collision> NullPartitioning::get_collisions_impl()
 {
+	if (bodies.empty()) return {};
 	std::vector<Collision> collisions;
 
 	collisions.reserve(bodies.size()); // could reserve on start, and on create_body resize it (after done handling).
