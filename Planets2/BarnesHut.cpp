@@ -202,23 +202,36 @@ void BarnesHut::concatenate()
 	children.reset();
 }
 
-void BarnesHut::handle_gravity(Body& body, float grav_const) const
+Vector2 BarnesHut::force_applied_to(const Body& body) const
 {
-	if (is_leaf()) {
+	if (is_leaf())
+	{
 		// Use center of mass and mass sum as an approximate grav pull.
 		// This is an approximation of a grav pull on the body by the group of bodies in child nodes.
-		if (!is_empty()) {
-			body.grav_pull_by(center_of_mass, mass_sum, grav_const);
+		if (!is_empty())
+		{
+			return body.force_applied_by(center_of_mass, mass_sum);
+		}
+		else
+		{
+			return { 0, 0 };
 		}
 	}
-	else if (sufficiently_far(body)) {
-		body.grav_pull_by(center_of_mass, mass_sum, grav_const);
+	else if (sufficiently_far(body))
+	{
+		return body.force_applied_by(center_of_mass, mass_sum);
 	}
-	else {
+	else
+	{
 		// Not a leaf, and not sufficiently far away from this body.
-		for (BarnesHut& child : *children) {
-			child.handle_gravity(body, grav_const);
+		Vector2 cur_force = { 0, 0 };
+
+		for (BarnesHut& child : *children)
+		{
+			cur_force = Vector2Add(cur_force, child.force_applied_to(body));
 		}
+
+		return cur_force;
 	}
 
 }

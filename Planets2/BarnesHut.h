@@ -79,8 +79,8 @@ public:
 	// internal constructor. still needs to be public for make_unique.
 	BarnesHut(float x, float y, float size);
 
-	// Uses Barnes-Hut approximation to calculate net gravitational force applied to the body.
-	void handle_gravity(Body& body, float grav_const) const;
+	// Uses Barnes-Hut approximation to calculate and return the gravitational force vector applied to the body.
+	Vector2 force_applied_to(const Body& body) const;
 
 	// Rebuilds the quadtree used for Barnes-Hut approximation.
 	void update(std::span<const Body> bodies);

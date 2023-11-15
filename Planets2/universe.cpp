@@ -9,6 +9,7 @@
 #include "Removal.h"
 
 #include "Orbit.h"
+#include <raymath.h>
 
 Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning)
 	: settings(to_set), partitioning_method(std::move(partitioning)),
@@ -114,10 +115,15 @@ void Universe::handle_gravity()
 {
 	std::for_each(std::execution::par_unseq, active_bodies.begin(), active_bodies.end(), [this](Body& body1)
 	{
+		Vector2 net_force = { 0, 0 };
+
 		for (const Body& body2 : active_bodies)
 		{
-			body1.grav_pull_by(body2, settings.grav_const);
+			net_force = Vector2Add(net_force, body1.force_applied_by(body2));
 		}
+
+		net_force = Vector2Scale(net_force, settings.grav_const);
+		body1.apply_force(net_force);
 	});
 }
 
@@ -125,8 +131,10 @@ void Universe::handle_gravity_approximation()
 {
 	std::for_each(std::execution::par_unseq, active_bodies.begin(), active_bodies.end(), [this](Body& body)
 	{
-		barnes_quad.handle_gravity(body, settings.grav_const);
+		Vector2 net_force = barnes_quad.force_applied_to(body);
+		body.apply_force(Vector2Scale(net_force, settings.grav_const));
 	});
+
 }
 
 void Universe::handle_removal(Removal removal)

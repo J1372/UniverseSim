@@ -189,9 +189,6 @@
     <ClInclude Include="Slider.h">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="BarnesHut.h">
-      <Filter>Sim_Model\GravityApproximations</Filter>
-    </ClInclude>
     <ClInclude Include="AdvCamera.h">
       <Filter>Scenes\SimScene\CameraStates</Filter>
     </ClInclude>
@@ -226,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="SettingsState.h">
       <Filter>Scenes\SettingsScene</Filter>
+    </ClInclude>
+    <ClInclude Include="BarnesHut.h">
+      <Filter>Sim_Model\GravityApproximations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

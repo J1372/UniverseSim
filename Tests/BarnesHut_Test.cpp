@@ -8,8 +8,7 @@ TEST(BarnesHut, Empty)
 	barnes.update({});
 
 	Body b{ 0,0,100 };
-	barnes.handle_gravity(b, 1);
-	Vector2 forces = b.get_forces();
+	Vector2 forces = barnes.force_applied_to(b);
 	EXPECT_FLOAT_EQ(forces.x, 0.0f);
 	EXPECT_FLOAT_EQ(forces.y, 0.0f);
 }
@@ -20,9 +19,8 @@ TEST(BarnesHut, One)
 	Body b{ 0,0,100 };
 
 	barnes.update({ &b, 1 });
-	barnes.handle_gravity(b, 1);
+	Vector2 forces = barnes.force_applied_to(b);
 
-	Vector2 forces = b.get_forces();
 	EXPECT_FLOAT_EQ(forces.x, 0.0f);
 	EXPECT_FLOAT_EQ(forces.y, 0.0f);
 }
@@ -40,15 +38,12 @@ TEST(BarnesHut, TwoNoApprox)
 	constexpr float expected_force = 0.04f;
 
 	barnes.update(bodies);
-	barnes.handle_gravity(bodies[0], 1);
 
-
-	Vector2 forces1 = bodies[0].get_forces();
+	Vector2 forces1 = barnes.force_applied_to(bodies[0]);
 	EXPECT_FLOAT_EQ(forces1.x, expected_force);
 	EXPECT_FLOAT_EQ(forces1.y, 0.0f);
 
-	barnes.handle_gravity(bodies[1], 1);
-	Vector2 forces2 = bodies[1].get_forces();
+	Vector2 forces2 = barnes.force_applied_to(bodies[1]);
 	EXPECT_FLOAT_EQ(forces2.x, -expected_force);
 	EXPECT_FLOAT_EQ(forces2.y, 0.0f);
 }
@@ -69,12 +64,10 @@ TEST(BarnesHut, MultApprox)
 	constexpr float expected_force = (100 * 300) / dist_com_squared;
 
 	barnes.update(bodies);
-	barnes.handle_gravity(bodies[0], 1);
+	Vector2 forces = barnes.force_applied_to(bodies[0]);
 
-
-	Vector2 forces1 = bodies[0].get_forces();
-	EXPECT_FLOAT_EQ(forces1.x, expected_force);
-	EXPECT_FLOAT_EQ(forces1.y, 0.0f);
+	EXPECT_FLOAT_EQ(forces.x, expected_force);
+	EXPECT_FLOAT_EQ(forces.y, 0.0f);
 }
 
 TEST(BarnesHut, MultApproxSamePos)
@@ -100,11 +93,9 @@ TEST(BarnesHut, MultApproxSamePos)
 	constexpr float expected_force = (100 * 900) / dist_com_squared;
 
 	barnes.update(bodies);
-	barnes.handle_gravity(bodies[0], 1);
 
-
-	Vector2 forces1 = bodies[0].get_forces();
-	EXPECT_FLOAT_EQ(forces1.x, expected_force);
-	EXPECT_FLOAT_EQ(forces1.y, 0.0f);
+	Vector2 forces = barnes.force_applied_to(bodies[0]);
+	EXPECT_FLOAT_EQ(forces.x, expected_force);
+	EXPECT_FLOAT_EQ(forces.y, 0.0f);
 }
 

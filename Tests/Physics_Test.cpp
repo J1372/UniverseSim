@@ -212,7 +212,6 @@ TEST(Physics, DistvNegative)
 
 TEST(Physics, NetForce)
 {
-	float grav_const = 1.0f;
 
 	Vector2 p1{ 5, 5 };
 	long m1 = 25;
@@ -221,26 +220,20 @@ TEST(Physics, NetForce)
 
 	float force = 200.0f / 25;
 
-	EXPECT_EQ(force, Physics::net_force(p1, m1, p2, m2, grav_const));
-	EXPECT_EQ(5 * force, Physics::net_force(p1, m1, p2, m2, 5 * grav_const));
-
-	EXPECT_EQ(force, Physics::net_force(p2, m2, p1, m1, grav_const));
-	EXPECT_EQ(5 * force, Physics::net_force(p2, m2, p1, m1, 5 * grav_const));
+	EXPECT_EQ(force, Physics::net_force(p1, m1, p2, m2));
+	EXPECT_EQ(force, Physics::net_force(p2, m2, p1, m1));
 }
 
 TEST(Physics, NetForceSamePos)
 {
-	float grav_const = 1.0f;
-
 	Vector2 p1{ 5, 5 };
 	long m1 = 20;
 	long m2 = 500000;
-	EXPECT_EQ(0.0f, Physics::net_force(p1, m1, p1, m2, grav_const));
+	EXPECT_EQ(0.0f, Physics::net_force(p1, m1, p1, m2));
 }
 
 TEST(Physics, GravForceAligned)
 {
-	float grav_const = 1.0f;
 	Vector2 p1{ 5, 5 };
 	Vector2 p2{ 10, 5 };
 	long m1 = 25;
@@ -251,18 +244,17 @@ TEST(Physics, GravForceAligned)
 	Vector2 force_on_first{ force,0.0f };
 	Vector2 force_on_second{ -force,0.0f };
 
-	EXPECT_TRUE(Vector2Eq(force_on_first, Physics::grav_force(p1, m1, p2, m2, grav_const), 0.01f));
-	EXPECT_TRUE(Vector2Eq(force_on_second, Physics::grav_force(p2, m2, p1, m1, grav_const), 0.01f));
+	EXPECT_TRUE(Vector2Eq(force_on_first, Physics::grav_force(p1, m1, p2, m2), 0.01f));
+	EXPECT_TRUE(Vector2Eq(force_on_second, Physics::grav_force(p2, m2, p1, m1), 0.01f));
 }
 
 TEST(Physics, GravForceSamePos)
 {
-	float grav_const = 1.0f;
 	Vector2 p1{ 5, 5 };
 	long m1 = 25;
 	long m2 = 8;
 
-	EXPECT_TRUE(Vector2Eq(Vector2Zero(), Physics::grav_force(p1, m1, p1, m2, grav_const), 0.01f));
+	EXPECT_TRUE(Vector2Eq(Vector2Zero(), Physics::grav_force(p1, m1, p1, m2), 0.01f));
 }
 
 TEST(Physics, Moment)

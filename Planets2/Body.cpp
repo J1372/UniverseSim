@@ -230,21 +230,14 @@ Vector2 Body::get_mass_moment() const
 	return Physics::moment(position, mass);
 }
 
-void Body::grav_pull_by(const Body& other, float grav_const)
+Vector2 Body::force_applied_by(const Body& other) const
 {
-	grav_pull_by(other.position, other.mass, grav_const);
+	return force_applied_by(other.position, other.mass);
 }
 
-void Body::grav_pull_by(Vector2 point, long point_mass, float grav_const)
+Vector2 Body::force_applied_by(Vector2 point, long point_mass) const
 {
-	apply_force(Physics::grav_force(position, mass, point, point_mass, grav_const));
-}
-
-void Body::grav_pull_reciprocal(Body& other, float grav_const)
-{
-	Vector2 grav_force = Physics::grav_force(position, mass, other.position, other.mass, grav_const);
-	apply_force(grav_force);
-	other.apply_force(Vector2Negate(grav_force)); // equal, opposite force to other.
+	return Physics::grav_force(position, mass, point, point_mass);
 }
 
 bool Body::collided_with(const Body& other) const

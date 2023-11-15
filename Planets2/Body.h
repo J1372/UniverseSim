@@ -156,9 +156,8 @@ public:
 	// Returns the body's mass moment vector (x * mass, y * mass).
 	Vector2 get_mass_moment() const;
 
-	void grav_pull_by(const Body& other, float grav_const);
-	void grav_pull_by(Vector2 point, long point_mass, float grav_const);
-	void grav_pull_reciprocal(Body& other, float grav_const);
+	Vector2 force_applied_by(const Body& other) const;
+	Vector2 force_applied_by(Vector2 point, long point_mass) const;
 
 	bool collided_with(const Body& other) const;
 	bool in_rect(Rectangle rect) const;

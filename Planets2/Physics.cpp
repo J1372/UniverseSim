@@ -66,7 +66,7 @@ Vector2 Physics::distv(Vector2 point1, Vector2 point2)
 	return Vector2Subtract(point2, point1);
 }
 
-float Physics::net_force(Vector2 p1, long m1, Vector2 p2, long m2, float grav_const)
+float Physics::net_force(Vector2 p1, long m1, Vector2 p2, long m2)
 {
 	float dist = Physics::dist_squared(p1, p2);
 
@@ -77,12 +77,12 @@ float Physics::net_force(Vector2 p1, long m1, Vector2 p2, long m2, float grav_co
 		return 0.0f;
 	}
 
-	return (grav_const * m1 * m2) / dist;
+	return (static_cast<float>(m1) * m2) / dist;
 }
 
-Vector2 Physics::grav_force(Vector2 p1, long m1, Vector2 p2, long m2, float grav_const)
+Vector2 Physics::grav_force(Vector2 p1, long m1, Vector2 p2, long m2)
 {
-	float force = Physics::net_force(p1, m1, p2, m2, grav_const);
+	float force = Physics::net_force(p1, m1, p2, m2);
 
 	Vector2 dist = Physics::distv(p1, p2);
 	float theta = atan2(dist.y, dist.x); // radians
