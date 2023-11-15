@@ -66,6 +66,7 @@ bool TextBox::send_keypress(int key_code)
 {
 	if (key_code == KEY_BACKSPACE)
 	{
+		validator->on_press(entered_text, key_code, cursor_pos);
 		if (cursor_pos > 0)
 		{
 			cursor_pos--;
