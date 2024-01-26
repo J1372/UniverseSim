@@ -369,7 +369,7 @@ const SpatialPartitioning& Universe::get_partitioning() const
 	return *partitioning_method;
 }
 
-UniverseSettings& Universe::get_settings()
+const UniverseSettings& Universe::get_settings() const
 {
 	return settings;
 }

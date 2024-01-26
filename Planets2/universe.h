@@ -94,7 +94,7 @@ public:
 	const SpatialPartitioning& get_partitioning() const;
 
 	// Returns the universe's current settings.
-	UniverseSettings& get_settings();
+	const UniverseSettings& get_settings() const;
 
 	// Removes a body from the universe.
 	void rem_body(Body& body);
