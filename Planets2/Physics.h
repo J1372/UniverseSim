@@ -34,9 +34,11 @@ namespace Physics {
 	Vector2 distv(Vector2 point1, Vector2 point2);
 
 	// Returns the scalar net force applied by the second point mass to the first point mass.
+	// Assumes grav const = 1. Can be scaled by grav const.
 	float net_force(Vector2 p1, long m1, Vector2 p2, long m2);
 
 	// Returns the force vector applied by the second point mass to the first point mass.
+	// Assumes grav const = 1. Can be scaled by grav const.
 	Vector2 grav_force(Vector2 p1, long m1, Vector2 p2, long m2);
 
 	// Returns the moment of a vector and a given quantity.
