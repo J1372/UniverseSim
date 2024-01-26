@@ -166,7 +166,7 @@ void SimulationScene::render_screen_info()
 	DrawFPS(50, 50);
 
 	// Draw number of bodies in the universe below fps display.
-	std::string num_bodies_str = "Number bodies: " + std::to_string(universe.get_num_bodies());
+	std::string num_bodies_str = "Bodies: " + std::to_string(universe.get_num_bodies());
 	num_bodies_label.set_text(num_bodies_str);
 
 	// Render the tick and collision statistics below the number bodies display.
@@ -298,19 +298,10 @@ void SimulationScene::render_forces() const
 {
 	for (const Body* body : on_screen_bodies)
 	{
-		Vector2 dir = Vector2Normalize(body->get_forces());
-		Vector2 start_pos = Vector2Add(body->pos(), Vector2Scale(dir, body->get_radius()));
-		Vector2 end_pos = Vector2Add(start_pos, Vector2Scale(dir, 50));
-		DrawLineEx(start_pos, end_pos, 5.0, RED);
+		float dist_scale = 50.0f;
+		float thick_scale = std::max(3.0f, body->diameter() / 20);
+		render_body_vector(*body, body->get_forces(), dist_scale, thick_scale, RED);
 	}
-}
-
-void SimulationScene::render_velocity(const Body& body) const
-{
-	Vector2 dir = Vector2Normalize(body.vel());
-	Vector2 start_pos = Vector2Add(body.pos(), Vector2Scale(dir, body.get_radius()));
-	Vector2 end_pos = Vector2Add(start_pos, Vector2Scale(dir, 50));
-	DrawLineEx(start_pos, end_pos, 5.0, SKYBLUE);
 }
 
 void SimulationScene::render_velocities() const
@@ -319,6 +310,21 @@ void SimulationScene::render_velocities() const
 	{
 		render_velocity(*body);
 	}
+}
+
+void SimulationScene::render_velocity(const Body& body) const
+{
+	float dist_scale = 50.0f;
+	float thick_scale = std::max(3.0f, body.diameter() / 20);
+	render_body_vector(body, body.vel(), dist_scale, thick_scale, SKYBLUE);
+}
+
+void SimulationScene::render_body_vector(const Body& body, Vector2 vec, float dist_scale, float thick_scale, Color color) const
+{
+	Vector2 dir = Vector2Normalize(vec);
+	Vector2 start_pos = Vector2Add(body.pos(), Vector2Scale(dir, (body.get_radius() - 0.5f)));
+	Vector2 end_pos = Vector2Add(start_pos, Vector2Scale(dir, dist_scale));
+	DrawLineEx(start_pos, end_pos, thick_scale, color);
 }
 
 Scene* SimulationScene::update()

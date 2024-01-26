@@ -121,6 +121,7 @@ class SimulationScene : public Scene
 	void render_forces() const;
 	void render_velocities() const;
 	void render_velocity(const Body& body) const;
+	void render_body_vector(const Body& body, Vector2 vec, float dist_scale, float thick_scale, Color color) const;
 
 	// Moves text elements that adjust to screen size to new positions.
 	void reposition_elements(int screen_width, int screen_height);
