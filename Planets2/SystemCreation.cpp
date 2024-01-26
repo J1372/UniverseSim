@@ -7,6 +7,18 @@
 #include "DefaultInteraction.h"
 #include "PlanetCreation.h"
 
+void SystemCreation::add_system_to_universe(Universe& universe)
+{
+	// Convert the relative velocities of all satellites to absolute velocities.
+	Vector2 star_vel = system[0].vel();
+	for (auto it = system.begin() + 1; it != system.end(); ++it)
+	{
+		it->change_vel(star_vel);
+	}
+
+	universe.add_bodies(std::move(system));
+}
+
 SystemCreation::SystemCreation(Vector2 mouse_pos, Universe& universe)
 	: system(universe.generate_rand_system(mouse_pos.x, mouse_pos.y))
 {}
@@ -16,54 +28,87 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 	Vector2 screen_point = GetMousePosition();
 	Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
 
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		// Add the current planetary system to the universe and generate a new one.
-		universe.add_bodies(std::move(system));
-		system = universe.generate_rand_system(universe_point.x, universe_point.y);
+	if (user_clicked)
+	{
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+		{
+			// Mouse is being dragged
+			// User is altering star's velocity.
 
-		return this;
+			Vector2 movement = GetMouseDelta();
+
+			// Increase velocity in opposite direction of the mouse drag.
+			constexpr float scale_down = 10.0f;
+			system[0].change_vel({ -movement.x / scale_down , -movement.y / scale_down });
+		}
+		else
+		{
+			// User not dragging -> has finished velocity customization.
+			add_system_to_universe(universe);
+			system = universe.generate_rand_system(universe_point.x, universe_point.y);
+
+			// System added and new one generated = click processed.
+			// Reset click state.
+			user_clicked = false;
+		}
 	}
-	else if (IsKeyPressed(KEY_ENTER)) {
-		// Add the current planetary system to the universe and goto default interaction.
-		universe.add_bodies(std::move(system));
-		return new DefaultInteraction;
+	else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+	{
+		// Set to process user click.
+		// User may be clicking to add to universe or dragging mouse to customize velocity.
+		user_clicked = true;
 	}
-	else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) or IsKeyPressed(KEY_ONE)) {
-		// Side effect - if anchored and right click, camera will unanchor.
-		return new DefaultInteraction;
-	}
-	else if (IsKeyPressed(KEY_TWO)) {
-		// Switch to planet generation.
-		return new PlanetCreation { universe_point };
-	}
-	else if (IsKeyPressed(KEY_THREE)) {
-		// Generate a new system, but don't add the current one to the universe.
-		system = universe.generate_rand_system(universe_point.x, universe_point.y);
-		return this;
-	}
-	else {
-		// Potentially snap the system position to mouse position.
+	else
+	{
+		// Snap the system position to mouse position.
 
 		Body& central_body = system[0];
 		Vector2 central_pos = central_body.pos();
 
 		// Check if mouse is still centered on the system's central body.
-		if (universe_point.x != central_pos.x or universe_point.y != central_pos.y) {
+		if (universe_point.x != central_pos.x or universe_point.y != central_pos.y)
+		{
 			// Mouse's position in universe has changed, so update the system.
 			// Keep central body of new system centered on the mouse.
 			// By extension, keep entire system centered on the mouse.
-			
+
 
 			// The central body was previously centered on the mouse.
 			Vector2 movement = { universe_point.x - central_pos.x,
 										universe_point.y - central_pos.y };
 
 			// Update system positions to be centered around the mouse.
-			for (Body& body : system) {
+			for (Body& body : system)
+			{
 				body.change_pos(movement);
 			}
 		}
+	}
 
+	// Keys - mostly state transitions.
+
+	if (IsKeyPressed(KEY_ENTER))
+	{
+		// Add the current planetary system to the universe and goto default interaction.
+		add_system_to_universe(universe);
+		return new DefaultInteraction;
+	}
+	else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) or IsKeyPressed(KEY_ONE))
+	{
+		// Side effect - if anchored and right click, camera will unanchor.
+		return new DefaultInteraction;
+	}
+	else if (IsKeyPressed(KEY_TWO))
+	{
+		// Switch to planet generation.
+		return new PlanetCreation { universe_point };
+	}
+	else if (IsKeyPressed(KEY_THREE))
+	{
+		// Generate a new system, but don't add the current one to the universe.
+		system = universe.generate_rand_system(universe_point.x, universe_point.y);
+		user_clicked = false;
+		return this;
 	}
 
 	return this;

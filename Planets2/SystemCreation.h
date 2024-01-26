@@ -10,6 +10,12 @@ class SystemCreation : public InteractionState
 	// The currently generated system.
 	std::vector<Body> system;
 
+	bool user_clicked = false;
+
+	// Converts satellite velocities to absolute velocities.
+	// Then adds all bodies in the system to the universe.
+	void add_system_to_universe(Universe& universe);
+
 public:
 
 	// Enters system generation state by generating a system at the current mouse position.
