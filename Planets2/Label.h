@@ -20,17 +20,17 @@ class Label : public UIElement
 
 public:
 
-	Label(const std::string& text, float x, float y, int font_size);
-	Label(const std::string& text, float x, float y, int font_size, Color color);
+	Label(std::string_view text, float x, float y, int font_size);
+	Label(std::string_view text, float x, float y, int font_size, Color color);
 
 	// Sets the label's position.
 	void set_pos(Vector2 pos);
 
 	// Sets the label's text.
-	void set_text(const std::string& to_set);
+	void set_text(std::string_view to_set);
 
 	// Gets the label's text.
-	const std::string& get_text() const;
+	std::string_view get_text() const;
 
 	// Sets color of the label's text.
 	void set_color(Color to_set);
@@ -39,6 +39,6 @@ public:
 	void center_on(int center_x);
 
 	// Draws the label.
-	void render() const;
+	void render() const override;
 };
 

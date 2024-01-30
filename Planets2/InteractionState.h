@@ -17,10 +17,10 @@ public:
 	virtual InteractionState* process_input(const CameraState& camera_state, Universe& universe) = 0;
 
 	// Returns the state's title.
-	virtual std::string get_name() const = 0;
+	virtual std::string_view get_name() const = 0;
 
 	// Returns state-specific help text.
-	virtual std::string get_help_text() const = 0;
+	virtual std::string_view get_help_text() const = 0;
 
 	// Returns a collection of bodies that are being created by the user.
 	// Not all states use this, so it's probably better to append render commands to the Sim scene instead in 

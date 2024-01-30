@@ -98,6 +98,7 @@
     <ClCompile Include="NullPartitioning.cpp">
       <Filter>Partitioning</Filter>
     </ClCompile>
+    <ClCompile Include="SimUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyRandom.h" />
@@ -227,6 +228,7 @@
     <ClInclude Include="BarnesHut.h">
       <Filter>Sim_Model\GravityApproximations</Filter>
     </ClInclude>
+    <ClInclude Include="SimUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

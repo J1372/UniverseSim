@@ -32,10 +32,10 @@ public:
 	// Processes all relevant state input for creating a body and returns the next interaction state.
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;
 
-	std::string get_name() const override;
+	std::string_view get_name() const override;
 
 	// Returns help text specific to the planet creation state.
-	std::string get_help_text() const override;
+	std::string_view get_help_text() const override;
 
 	// Returns the body being created.
 	std::span<const Body> get_creating_bodies() const override;

@@ -12,6 +12,8 @@
 #include "DefaultInteraction.h"
 #include <raymath.h>
 
+// enables using suffixes for seconds, milliseconds, etc.
+using namespace std::chrono_literals;
 
 SimulationScene::SimulationScene(const SettingsState& settings, std::unique_ptr<SpatialPartitioning>&& partitioning)
 	: universe(settings.universe, std::move(partitioning)), settings_state(settings)
@@ -24,8 +26,7 @@ SimulationScene::SimulationScene(const SettingsState& settings, std::unique_ptr<
 	gui.hide(help_message);
 	gui.hide(tick_info_label);
 
-	current_help_text = default_help_text + interaction_state->get_help_text();
-	help_message.set_text(current_help_text);
+	help_message.set_text(default_help_text + std::string{ interaction_state->get_help_text() });
 	interaction_title.set_text(interaction_state->get_name());
 	reposition_elements(GetScreenWidth(), GetScreenHeight());
 
@@ -46,10 +47,7 @@ void SimulationScene::process_input()
 		interaction_state.reset(next_interaction_state);
 
 		// Update ui elements to show interaction state specific text.
-		current_help_text = default_help_text + interaction_state->get_help_text();
-		help_message.set_text(current_help_text);
-
-
+		help_message.set_text(default_help_text + std::string{ interaction_state->get_help_text() });
 		interaction_title.set_text(interaction_state->get_name());
 	}
 
@@ -143,7 +141,6 @@ void SimulationScene::attach_debug_info()
 			DebugInfo& info = body_info[i];
 
 			attach_body_info(body, info);
-
 		}
 	}
 }
@@ -154,7 +151,7 @@ void SimulationScene::render_debug_text() const {
 		const Body& body = *on_screen_bodies[i];
 		const DebugInfo& info = body_info[i];
 
-		render_near_body(body, info.get());
+		render_near_body(body, info.c_str());
 
 	}
 	
@@ -183,10 +180,10 @@ void SimulationScene::render_screen_info()
 	if (help_prompt.is_visible()) {
 		// Get time elapsed since prompt was first displayed.
 		auto cur_time = std::chrono::system_clock::now();
-		std::chrono::duration<double> elapsed_seconds = cur_time - prompt_time;
+		std::chrono::duration elapsed_seconds = cur_time - prompt_time;
 
 		// If more than a certain amount of seconds have passed, disable the prompt.
-		if (elapsed_seconds.count() > 5.0) {
+		if (elapsed_seconds > 5s) {
 			gui.hide(help_prompt);
 		}
 
@@ -272,13 +269,13 @@ void SimulationScene::render_creating_bodies(std::span<const Body> bodies) const
 			info.add("Vel(y): " + std::to_string(vel.y));
 			info.add("Mass: " + std::to_string(body.get_mass()));
 
-			render_near_body(body, info.get());
+			render_near_body(body, info.c_str());
 			render_velocity(body);
 		}
 	}
 }
 
-void SimulationScene::render_near_body(const Body& body, const std::string& text) const
+void SimulationScene::render_near_body(const Body& body, const char* text) const
 {
 	Vector2 pos = body.pos();
 	float radius = body.get_radius();
@@ -291,7 +288,7 @@ void SimulationScene::render_near_body(const Body& body, const std::string& text
 
 	int text_x = pos.x + radius + 20;
 	int text_y = pos.y + radius + 20;
-	DrawText(text.c_str(), text_x, text_y, font_size, body.color());
+	DrawText(text, text_x, text_y, font_size, body.color());
 }
 
 void SimulationScene::render_forces() const

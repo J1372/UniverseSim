@@ -46,7 +46,12 @@ InteractionState* DefaultInteraction::process_input(const CameraState& camera_st
 	return this;
 }
 
-std::string DefaultInteraction::get_help_text() const
+std::string_view DefaultInteraction::get_name() const
+{
+	return "Default interaction mode";
+}
+
+std::string_view DefaultInteraction::get_help_text() const
 {
 	return
 		"[B] to show partitioning representation\n"

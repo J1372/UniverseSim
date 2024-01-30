@@ -1,11 +1,10 @@
 #include "DebugInfo.h"
 
-DebugInfo::DebugInfo(const std::string& text)
-{
-	info = text;
-}
+DebugInfo::DebugInfo(std::string_view text)
+	: info(text)
+{}
 
-void DebugInfo::add(const std::string& to_add)
+void DebugInfo::add(std::string_view to_add)
 {
 	if (!info.empty())
 	{
@@ -15,7 +14,7 @@ void DebugInfo::add(const std::string& to_add)
 	info += to_add;
 }
 
-const std::string& DebugInfo::get() const
+std::string_view DebugInfo::get() const
 {
 	return info;
 }

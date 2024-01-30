@@ -1,6 +1,6 @@
 #include "CheckBox.h"
 
-CheckBox::CheckBox(const std::string& description, float x, float y, float size) :
+CheckBox::CheckBox(std::string_view description, float x, float y, float size) :
 	description(description), rect{x, y, size, size}
 {
 }

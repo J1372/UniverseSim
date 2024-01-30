@@ -26,9 +26,9 @@ class Button : public UIElement
 
 public:
 
-	Button(const std::string& text, float x, float y);
+	Button(std::string_view text, float x, float y);
 
-	Button(const std::string& text, float x, float y, int font_size);
+	Button(std::string_view text, float x, float y, int font_size);
 
 	// Sets width of background to be at least min_width.
 	void set_min_width(float min_width);
@@ -36,10 +36,10 @@ public:
 	// Sets function to call when button clicked.
 	void set_on_action(std::function<void(void)> on_action);
 
-	bool contains_point(Vector2 point) const;
+	bool contains_point(Vector2 point) const override;
 
-	void render() const;
+	void render() const override;
 
-	void click();
-	bool send_keypress(int key_code);
+	void click() override;
+	bool send_keypress(int key_code) override;
 };

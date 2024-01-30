@@ -24,14 +24,14 @@ class CheckBox : public UIElement
 
 public:
 
-	CheckBox(const std::string& description, float x, float y, float size);
+	CheckBox(std::string_view description, float x, float y, float size);
 
 
 	bool is_checked() const;
 
-	void click();
-	bool contains_point(Vector2 point) const;
-	void render() const;
+	void click() override;
+	bool contains_point(Vector2 point) const override;
+	void render() const override;
 
 	void set_desc_font_size(int to_set);
 	void set_on_click(std::function<void(bool)> action);

@@ -19,7 +19,7 @@ class Slider : public UIElement
 	float cur_val;
 	float min_val;
 	float max_val;
-	std::string cur_val_str;
+	std::string cur_val_str; // cached, updated on val change instead of recalc on render.
 
 
 	float range() const;

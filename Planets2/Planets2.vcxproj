@@ -189,6 +189,7 @@
     <ClInclude Include="AdvCamera.h" />
     <ClInclude Include="SettingsState.h" />
     <ClInclude Include="SimulationScene.h" />
+    <ClInclude Include="SimUtil.h" />
     <ClInclude Include="Slider.h" />
     <ClInclude Include="SystemCreation.h" />
     <ClInclude Include="TextBox.h" />
@@ -230,6 +231,7 @@
     <ClCompile Include="SettingsScene.cpp" />
     <ClCompile Include="AdvCamera.cpp" />
     <ClCompile Include="SimulationScene.cpp" />
+    <ClCompile Include="SimUtil.cpp" />
     <ClCompile Include="Slider.cpp" />
     <ClCompile Include="SpatialPartitioning.cpp" />
     <ClCompile Include="SystemCreation.cpp" />

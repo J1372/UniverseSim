@@ -114,12 +114,12 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 	return this;
 }
 
-std::string SystemCreation::get_name() const
+std::string_view SystemCreation::get_name() const
 {
 	return "System creation";
 }
 
-std::string SystemCreation::get_help_text() const
+std::string_view SystemCreation::get_help_text() const
 {
 	return
 		"Left click to add to universe\n"

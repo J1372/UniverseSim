@@ -5,15 +5,15 @@ float Button::get_default_width() const
 	return text_length_pixels * (1 + width_padding);
 }
 
-Button::Button(const std::string& text, float x, float y) :
-	text(text),
+Button::Button(std::string_view text_view, float x, float y) :
+	text(text_view),
 	font_size(12),
 	text_length_pixels(MeasureText(text.c_str(), font_size)),
 	rect{ x, y, get_default_width(), 50 }
 {}
 
-Button::Button(const std::string& text, float x, float y, int font_size) :
-	text(text),
+Button::Button(std::string_view text_view, float x, float y, int font_size) :
+	text(text_view),
 	font_size(font_size),
 	text_length_pixels(MeasureText(text.c_str(), font_size)),
 	rect{ x, y, get_default_width(), 50 }

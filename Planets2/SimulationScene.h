@@ -59,12 +59,8 @@ class SimulationScene : public Scene
 	// Default help text.
 	const std::string default_help_text = "[H] to close help text\n";
 
-	// The current help text to be shown if the user has toggled on its display.
-	// This is the default help text, along with any state specific help text.
-	std::string current_help_text = default_help_text;
-
 	// Time when help prompt text was first displayed.
-	std::chrono::system_clock::time_point prompt_time = std::chrono::system_clock::now();
+	std::chrono::system_clock::time_point prompt_time;
 
 	// A vector of pointers to all bodies that are currently on screen.
 	std::vector<Body*> on_screen_bodies;
@@ -77,7 +73,7 @@ class SimulationScene : public Scene
 	// If add other interactive gui elements to sim, should use a GuiComponentList to handle its update and render.
 	Label& help_prompt = gui.add<Label>( "Press [H] to open the help menu", 0.0f, 0.0f, 20, WHITE );
 	Label& interaction_title = gui.add<Label>( "_", 0.0f, 0.0f, 20, RAYWHITE );
-	Label& help_message = gui.add<Label>( current_help_text, 0.0f, 0.0f, 20, RAYWHITE);
+	Label& help_message = gui.add<Label>( default_help_text, 0.0f, 0.0f, 20, RAYWHITE);
 
 	// Handles all user input.
 	void process_input();
@@ -95,7 +91,7 @@ class SimulationScene : public Scene
 	void render_debug_text() const;
 
 	// Draws text near the given body.
-	void render_near_body(const Body& body, const std::string& text) const;
+	void render_near_body(const Body& body, const char* text) const;
 
 	// Returns true if a body is at least partially on screen, else false.
 	bool on_screen(const Body& body) const;

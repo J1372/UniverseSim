@@ -10,7 +10,7 @@ int TextBox::get_start_x_text() const
 TextBox::TextBox(float x, float y, float width) : rect{ x, y, width, 50 }
 {}
 
-TextBox::TextBox(const std::string& start_text, float x, float y, float width) : rect{x, y, width, 50}
+TextBox::TextBox(std::string_view start_text, float x, float y, float width) : rect{x, y, width, 50}
 {
 	set_text(start_text);
 }
@@ -117,7 +117,7 @@ void TextBox::set_text(std::string_view to_set)
 	}
 }
 
-const std::string& TextBox::get_text() const
+std::string_view TextBox::get_text() const
 {
 	return entered_text;
 }
@@ -137,7 +137,7 @@ double TextBox::get_double() const
 	return std::stod(entered_text);
 }
 
-void TextBox::set_prompt_text(const std::string& text)
+void TextBox::set_prompt_text(std::string_view text)
 {
 	prompt_text = text;
 }

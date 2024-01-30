@@ -12,6 +12,8 @@
 #include "NullPartitioning.h"
 #include "IntValidator.h"
 #include "FloatValidator.h"
+#include <optional>
+#include "SimUtil.h"
 
 void SettingsScene::setup()
 {
@@ -42,7 +44,7 @@ void SettingsScene::setup()
 	partitioning_dropdown.add_choice("Grid");
 	partitioning_dropdown.add_choice("Line sweep");
 
-	partitioning_dropdown.set_on_selection([this](const std::string& selection)
+	partitioning_dropdown.set_on_selection([this](std::string_view selection)
 	{
 		if (selection == "Quad tree")
 		{
@@ -108,8 +110,6 @@ void SettingsScene::setup()
 	});
 
 	background_color = SKYBLUE;
-
-	error_msg.set_color(RED);
 
 	// Setting input validators.
 	capacity_input.set_validator(std::make_unique<IntValidator>(1));
@@ -235,20 +235,22 @@ void SettingsScene::read_settings_to_gui(const SettingsState& settings)
 	grid_nodes_per_row_input.set_text(std::to_string(settings.grid.nodes_per_row));
 }
 
+
 std::unique_ptr<SpatialPartitioning> SettingsScene::gen_partitioning()
 {
-	std::string name_method = partitioning_dropdown.get_selected();
+	std::string_view name_method = partitioning_dropdown.get_selected();
 
 	if (name_method == "Quad tree")
 	{
-		int bodies_per_quad = std::stoi(quad_max_bodies_input.get_text());
-		int max_depth = std::stoi(quadtree_max_depth_input.get_text());
+		// validators already ensured these are ints.
+		int bodies_per_quad = *SimUtil::svtoi(quad_max_bodies_input.get_text());
+		int max_depth = *SimUtil::svtoi(quadtree_max_depth_input.get_text());
 
 		return std::make_unique<QuadTree>(max_size_input.get_float(), bodies_per_quad, max_depth);
 	}
 	else if (name_method == "Grid")
 	{
-		int nodes_per_row = std::stoi(grid_nodes_per_row_input.get_text());
+		int nodes_per_row = *SimUtil::svtoi(grid_nodes_per_row_input.get_text());
 		return std::make_unique<Grid>(max_size_input.get_float(), nodes_per_row);
 	}
 	else if (name_method == "Line sweep")

@@ -119,7 +119,7 @@ class SettingsScene : public GuiScene
 	TextBox& grid_nodes_per_row_input = gui.add<TextBox>("10", PARAM_X, PARTITIONING_Y, TEXTBOX_WIDTH);
 	Label& grid_label = gui.add<Label>("Nodes per row", PARAM_X, PARTITIONING_Y - 50, 12);
 
-	Label& error_msg = gui.add<Label>("", BUTTON_X, BUTTON_Y - 30, 20);
+	Label& error_msg = gui.add<Label>("", BUTTON_X, BUTTON_Y - 30, 20, RED);
 
 
 	// Generates settings from the gui elements.

@@ -101,12 +101,12 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 	return this;
 }
 
-std::string PlanetCreation::get_name() const
+std::string_view PlanetCreation::get_name() const
 {
 	return "Planet creation";
 }
 
-std::string PlanetCreation::get_help_text() const
+std::string_view PlanetCreation::get_help_text() const
 {
 	return
 		"Drag center of planet to change velocity\n"

@@ -24,10 +24,10 @@ public:
 	// Handles user input related to generating a system.
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;
 
-	std::string get_name() const override;
+	std::string_view get_name() const override;
 
 	// Returns help text specific to using the system generator.
-	std::string get_help_text() const override;
+	std::string_view get_help_text() const override;
 
 	// Returns the current planetary system that has been generated.
 	std::span<const Body> get_creating_bodies() const override;

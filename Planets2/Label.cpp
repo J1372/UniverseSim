@@ -1,9 +1,11 @@
 #include "Label.h"
 
-Label::Label(const std::string& text, float x, float y, int font_size) : text(text), pos{ x, y }, font_size(font_size)
+Label::Label(std::string_view text, float x, float y, int font_size)
+	: text(text), pos{ x, y }, font_size(font_size)
 {}
 
-Label::Label(const std::string& text, float x, float y, int font_size, Color color) : text(text), pos{ x, y }, font_size(font_size), color(color)
+Label::Label(std::string_view text, float x, float y, int font_size, Color color)
+	: text(text), pos{ x, y }, font_size(font_size), color(color)
 {}
 
 void Label::set_pos(Vector2 to_set)
@@ -11,12 +13,12 @@ void Label::set_pos(Vector2 to_set)
 	pos = to_set;
 }
 
-void Label::set_text(const std::string& to_set)
+void Label::set_text(std::string_view to_set)
 {
 	text = to_set;
 }
 
-const std::string& Label::get_text() const
+std::string_view Label::get_text() const
 {
 	return text;
 }

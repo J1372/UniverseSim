@@ -14,13 +14,13 @@ class DebugInfo
 public:
 
 	DebugInfo() = default;
-	DebugInfo(const std::string& text);
+	DebugInfo(std::string_view text);
 
 	// Adds the given text to info.
-	void add(const std::string& text);
+	void add(std::string_view text);
 
 	// Returns the currently built debug information.
-	const std::string& get() const;
+	std::string_view get() const;
 
 	// Clears this debug information.
 	void clear();

@@ -16,8 +16,20 @@ float Dropdown::get_render_height() const
 	}
 }
 
-void Dropdown::add_choice(const std::string& choice) {
-	choices.push_back(choice);
+const std::string& Dropdown::get_selected_ref() const
+{
+	if (has_selected())
+	{
+		return choices[selected];
+	}
+	else
+	{
+		return "";
+	}
+}
+
+void Dropdown::add_choice(std::string_view choice_view) {
+	const std::string& choice = choices.emplace_back(choice_view);
 	float length_choice = MeasureText(choice.c_str(), font_size) * (1 + width_padding) + 2 * edge_width;
 
 	if (length_choice > rect.width) {
@@ -79,7 +91,7 @@ bool Dropdown::has_selected() const
 	return selected >= 0 and selected < choices.size();
 }
 
-std::string Dropdown::get_selected() const
+std::string_view Dropdown::get_selected() const
 {
 	if (has_selected()) {
 		return choices[selected];
@@ -140,12 +152,12 @@ void Dropdown::render() const
 	}
 	
 	if (has_selected()) { // if selected an option, draw current choice in the base box.
-		DrawText(get_selected().c_str(), start_x, start_y, font_size, WHITE);
+		DrawText(get_selected_ref().c_str(), start_x, start_y, font_size, WHITE);
 	}
 	
 }
 
-void Dropdown::set_on_selection(std::function<void(const std::string& text)> to_set)
+void Dropdown::set_on_selection(std::function<void(std::string_view text)> to_set)
 {
 	callback = to_set;
 }

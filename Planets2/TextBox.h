@@ -49,27 +49,27 @@ class TextBox : public UIElement
 public:
 
 	TextBox(float x, float y, float width);
-	TextBox(const std::string& start_text, float x, float y, float width);
+	TextBox(std::string_view start_text, float x, float y, float width);
 
 	// Sets the textbox cursor position based on the mouse's current x-coordinate.
-	void click();
+	void click() override;
 
 	// Returns true if a point overlaps with the textbox, else false.
-	bool contains_point(Vector2 point) const;
+	bool contains_point(Vector2 point) const override;
 
 	// Renders the textbox.
-	void render() const;
+	void render() const override;
 
 	// Reacts to a keypress.
 	// Returns true if textbox consumed the input, else false.
-	bool send_keypress(int key_code);
+	bool send_keypress(int key_code) override;
 
 	// Sets the entered text.
 	// If a validator was set, this input will go through the validator.
 	void set_text(std::string_view to_set);
 
 	// Returns the currently entered text.
-	const std::string& get_text() const;
+	std::string_view get_text() const;
 
 	// Returns the currently entered text as an integer.
 	int get_int() const;
@@ -81,7 +81,7 @@ public:
 	double get_double() const;
 
 	// Sets the text to be shown when no text has been entered.
-	void set_prompt_text(const std::string& text);
+	void set_prompt_text(std::string_view text);
 
 	// Sets a validator for user input into this text box.
 	void set_validator(std::unique_ptr<TextValidator>&& to_set);
