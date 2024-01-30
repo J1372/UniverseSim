@@ -48,14 +48,12 @@ void Slider::click()
 {
 	float percent_point = get_percentage(GetMouseX());
 	set_val(translate_percent(percent_point));
-	move_slider();
 }
 
 void Slider::notify_drag()
 {
 	float percent_point = get_percentage(GetMouseX());
 	set_val(translate_percent(percent_point));
-	move_slider();
 }
 
 bool Slider::contains_point(Vector2 point) const

@@ -39,9 +39,9 @@ public:
 	float get_val() const;
 	void set_val(float val);
 
-	void click();
-	void notify_drag();
-	bool contains_point(Vector2 point) const;
+	void click() override;
+	void notify_drag() override;
+	bool contains_point(Vector2 point) const override;
 	void render() const override;
 
 };
