@@ -34,4 +34,6 @@ public:
 	bool in_view(const Body& body) { return camera.in_view(body); }
 	bool in_view(Rectangle rect) { return camera.in_view(rect); }
 
+	virtual ~CameraState() = default;
+
 };
