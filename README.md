@@ -43,9 +43,11 @@ Additional commands and toggles can be found in the help menu by pressing the H 
     - If planetary body information display also enabled, will also display alongside the body extra information related to the partitioning method.
 
 ## Video
-Here is a video of various clips showing the simulator and some of its features (with timestamps in the description):
+Here are videos of various clips showing the simulator and some of its features (with timestamps in the descriptions):
 
-[Video](https://youtu.be/eocuC2M2wu4)
+[Video](https://youtu.be/2cR1lyOtScI)
+
+[Older Video](https://youtu.be/eocuC2M2wu4)
 
 ## Releases
 Runnable binaries of the project for Windows 32 bit and 64 bit can be found under [releases](https://github.com/Xxthedarkmatterturtlepasta003xX/UniverseSim/releases/tag/v1.0.0).
