@@ -1,6 +1,8 @@
 #pragma once
 #include "InteractionState.h"
+
 #include <vector>
+#include "PlanetMouseModifier.h"
 
 struct Vector2;
 
@@ -11,6 +13,7 @@ class SystemCreation : public InteractionState
 	// The currently generated system.
 	std::vector<Body> system;
 
+	PlanetMouseModifier star_modifier;
 	bool user_clicked = false;
 
 	// Converts satellite velocities to absolute velocities.

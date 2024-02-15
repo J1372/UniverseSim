@@ -2,22 +2,14 @@
 #include "InteractionState.h"
 
 #include "Body.h"
+#include "PlanetMouseModifier.h"
 
 // State where user is creating a custom planet.
 class PlanetCreation : public InteractionState
 {
-	// When dragging mouse, determines whether to change the creation body's mass or velocity.
-	enum class Modifying {
-		NONE,
-		MASS,
-		VELOCITY
-	};
-
-	// The current modification being done by a drag.
-	Modifying modify_mode = Modifying::NONE;
-
 	// The body being modified, and potentially added to the universe.
 	Body creating;
+	PlanetMouseModifier creating_modifier;
 
 	// Creates a default body for the user to modify.
 	Body create_default_body(Vector2 pos) const;

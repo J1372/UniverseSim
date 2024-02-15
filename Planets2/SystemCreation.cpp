@@ -30,22 +30,16 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 	Vector2 screen_point = GetMousePosition();
 	Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
 
-	if (user_clicked)
+	if (star_modifier.process_input(system[0], camera_state.get_camera(), universe) or IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 	{
-		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+		// User started or is still altering star's velocity.
+		user_clicked = true;
+	}
+	else if (user_clicked)
+	{
+		if (!IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 		{
-			// Mouse is being dragged
-			// User is altering star's velocity.
-
-			Vector2 movement = GetMouseDelta();
-
-			// Increase velocity in opposite direction of the mouse drag.
-			constexpr float scale_down = 10.0f;
-			system[0].change_vel({ -movement.x / scale_down , -movement.y / scale_down });
-		}
-		else
-		{
-			// User not dragging -> has finished velocity customization.
+			// User has finished velocity customization.
 			add_system_to_universe(universe);
 			system = universe.generate_rand_system(universe_point.x, universe_point.y);
 
@@ -53,12 +47,6 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 			// Reset click state.
 			user_clicked = false;
 		}
-	}
-	else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-	{
-		// Set to process user click.
-		// User may be clicking to add to universe or dragging mouse to customize velocity.
-		user_clicked = true;
 	}
 	else
 	{

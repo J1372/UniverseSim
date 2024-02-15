@@ -8,11 +8,12 @@ struct Vector2;
 struct Orbit
 {
 
-	Orbit(const Body& orbited) : orbited(orbited)
-	{}
+	Orbit(const Body& orbited);
+	Orbit(const Body& orbited, const Body& orbiter, float grav_const);
 
 	// The body being orbited.
-	const Body& orbited;
+	// Never null.
+	const Body* orbited;
 
 	// Closest point of satellite to orbited body.
 	float periapsis = 0;

@@ -183,6 +183,7 @@
     <ClInclude Include="Orbit.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PlanetCreation.h" />
+    <ClInclude Include="PlanetMouseModifier.h" />
     <ClInclude Include="PlanetType.h" />
     <ClInclude Include="QuadChildren.h" />
     <ClInclude Include="RaylibVector2Util.h" />
@@ -231,6 +232,7 @@
     <ClCompile Include="Orbit.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PlanetCreation.cpp" />
+    <ClCompile Include="PlanetMouseModifier.cpp" />
     <ClCompile Include="RenderUtil.cpp" />
     <ClCompile Include="SatelliteCreation.cpp" />
     <ClCompile Include="SettingsScene.cpp" />
