@@ -6,6 +6,8 @@
 
 #include "SystemCreation.h"
 #include "DefaultInteraction.h"
+#include "RenderUtil.h"
+#include "DebugInfo.h"
 
 Body PlanetCreation::create_default_body(Vector2 pos) const
 {
@@ -77,13 +79,13 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 
 			// Increase mass if dragged towards, else decrease.
 			creating.change_mass(5 * -towards_body_delta);
-
 		}
 		else if (modify_mode == Modifying::VELOCITY) {
 			// User is altering body's velocity.
 
 			// Increase velocity in opposite direction of the mouse drag.
-			creating.change_vel({ -movement.x / 2 , -movement.y / 2 });
+			constexpr float scale_down = 10.0f;
+			creating.change_vel({ -movement.x / scale_down , -movement.y / scale_down });
 		}
 	}
 	else if (IsKeyPressed(KEY_ENTER)) {
@@ -117,8 +119,22 @@ std::string_view PlanetCreation::get_help_text() const
 		"[3] to go to system generator\n";
 
 }
-
-std::span<const Body> PlanetCreation::get_creating_bodies() const
+void PlanetCreation::render_world(const AdvCamera& camera, const Universe& universe)
 {
-	return { &creating, 1 };
+	if (camera.in_view(creating))
+	{
+		RenderUtil::render_body(creating);
+
+		Vector2 pos = creating.pos();
+		Vector2 vel = creating.vel();
+		DebugInfo info{ "Pos(x): " + std::to_string(pos.x) };
+
+		info.add("Pos(y): " + std::to_string(pos.y));
+		info.add("Vel(x): " + std::to_string(vel.x));
+		info.add("Vel(y): " + std::to_string(vel.y));
+		info.add("Mass: " + std::to_string(creating.get_mass()));
+
+		RenderUtil::render_near_body(creating, info.c_str());
+		RenderUtil::render_velocity(creating);
+	}
 }

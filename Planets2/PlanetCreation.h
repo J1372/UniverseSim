@@ -1,7 +1,6 @@
 #pragma once
 #include "InteractionState.h"
 
-// not sure why I need to include Body in header for a unique_ptr, but I get a compiler error if I don't.
 #include "Body.h"
 
 // State where user is creating a custom planet.
@@ -37,8 +36,7 @@ public:
 	// Returns help text specific to the planet creation state.
 	std::string_view get_help_text() const override;
 
-	// Returns the body being created.
-	std::span<const Body> get_creating_bodies() const override;
-
+	// Renders the current body.
+	void render_world(const AdvCamera& camera, const Universe& universe) override;
 };
 

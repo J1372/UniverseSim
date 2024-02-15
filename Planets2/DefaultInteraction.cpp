@@ -71,8 +71,3 @@ std::string_view DefaultInteraction::get_help_text() const
 		"[2] to go to planet creator\n"
 		"[3] to go to system generator\n";
 }
-
-std::span<const Body> DefaultInteraction::get_creating_bodies() const
-{
-	return {};
-}

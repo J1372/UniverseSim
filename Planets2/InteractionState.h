@@ -1,12 +1,10 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <memory>
-#include <span>
+#include <string_view>
 
 class CameraState;
 class Universe;
 class Body;
+class AdvCamera;
 
 class InteractionState
 {
@@ -22,10 +20,9 @@ public:
 	// Returns state-specific help text.
 	virtual std::string_view get_help_text() const = 0;
 
-	// Returns a collection of bodies that are being created by the user.
-	// Not all states use this, so it's probably better to append render commands to the Sim scene instead in 
-	// process_input method.
-	virtual std::span<const Body> get_creating_bodies() const = 0;
+	// State renders state-specific world-position elements.
+	virtual void render_world(const AdvCamera& camera, const Universe& universe)
+	{}
 
 	virtual ~InteractionState() = default;
 

@@ -6,6 +6,8 @@
 
 #include "DefaultInteraction.h"
 #include "PlanetCreation.h"
+#include "RenderUtil.h"
+#include "DebugInfo.h"
 
 void SystemCreation::add_system_to_universe(Universe& universe)
 {
@@ -131,7 +133,25 @@ std::string_view SystemCreation::get_help_text() const
 
 }
 
-std::span<const Body> SystemCreation::get_creating_bodies() const
+void SystemCreation::render_world(const AdvCamera& camera, const Universe& universe)
 {
-    return system;
-}        
+	for (const Body& body : system)
+	{
+		if (camera.in_view(body))
+		{
+			RenderUtil::render_body(body);
+
+			Vector2 pos = body.pos();
+			Vector2 vel = body.vel();
+			DebugInfo info{ "Pos(x): " + std::to_string(pos.x) };
+
+			info.add("Pos(y): " + std::to_string(pos.y));
+			info.add("Vel(x): " + std::to_string(vel.x));
+			info.add("Vel(y): " + std::to_string(vel.y));
+			info.add("Mass: " + std::to_string(body.get_mass()));
+
+			RenderUtil::render_near_body(body, info.c_str());
+			RenderUtil::render_velocity(body);
+		}
+	}
+}

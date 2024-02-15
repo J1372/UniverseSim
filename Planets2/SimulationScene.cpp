@@ -280,6 +280,8 @@ Scene* SimulationScene::update()
 					body_info.clear();
 				}
 
+				// Allow interaction state to render any state-specific world elements.
+				interaction_state->render_world(camera_state->get_camera(), universe);
 
 			EndMode2D();
 

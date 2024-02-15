@@ -17,7 +17,5 @@ public:
 	// Returns default help text.
 	std::string_view get_help_text() const override;
 
-	std::span<const Body> get_creating_bodies() const override;
-
 };
 

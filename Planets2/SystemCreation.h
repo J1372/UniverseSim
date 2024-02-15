@@ -1,5 +1,6 @@
 #pragma once
 #include "InteractionState.h"
+#include <vector>
 
 struct Vector2;
 
@@ -29,8 +30,8 @@ public:
 	// Returns help text specific to using the system generator.
 	std::string_view get_help_text() const override;
 
-	// Returns the current planetary system that has been generated.
-	std::span<const Body> get_creating_bodies() const override;
+	// Renders the currently generated system.
+	void render_world(const AdvCamera& camera_state, const Universe& universe) override;
 
 };
 
