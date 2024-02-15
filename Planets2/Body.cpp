@@ -29,6 +29,11 @@ void Body::set_pos(Vector2 to_set)
 	position = to_set;
 }
 
+void Body::set_vel(Vector2 to_set)
+{
+	velocity = to_set;
+}
+
 void Body::change_pos(Vector2 movement)
 {
 	position = Vector2Add(position, movement);
@@ -52,6 +57,16 @@ Vector2 Body::pos() const
 Vector2 Body::vel() const
 {
 	return velocity;
+}
+
+Vector2 Body::vel_relative(const Body& other) const
+{
+	return vel_relative(other.velocity);
+}
+
+Vector2 Body::vel_relative(Vector2 relative_to) const
+{
+	return Vector2Subtract(velocity, relative_to);
 }
 
 float Body::get_radius() const
@@ -135,13 +150,13 @@ void Body::set_orbit(const Orbit& orbit, float point)
 {
 	// Relative position of this satellite around the body it is orbiting.
 	Vector2 relative_pos = orbit.pos_at(point);
-	position = Vector2Add(orbit.orbited.position, relative_pos);
+	position = Vector2Add(orbit.orbited->position, relative_pos);
 
 	// Relative velocity of this satellite around the body it is orbiting.
 	Vector2 relative_velocity = orbit.vel_at(point);
 
 	// Final velocity of the body is its relative velocity added to the velocity of the body it is orbiting.
-	velocity = Vector2Add(orbit.orbited.velocity, relative_velocity);
+	velocity = Vector2Add(orbit.orbited->velocity, relative_velocity);
 
 }
 

@@ -62,6 +62,9 @@ public:
 	// Sets this body's position.
 	void set_pos(Vector2 to_set);
 
+	// Returns this body's velocity vector.
+	void set_vel(Vector2 to_set);
+
 	// Changes this body's position by the given vector.
 	void change_pos(Vector2 movement);
 
@@ -76,6 +79,12 @@ public:
 
 	// Returns this body's velocity vector.
 	Vector2 vel() const;
+
+	// Returns this body's velocity vector, relative to another body.
+	Vector2 vel_relative(const Body& other) const;
+
+	// Returns this body's velocity vector, relative to another velocity.
+	Vector2 vel_relative(Vector2 relative_to) const;
 
 	// Returns this body's radius.
 	float get_radius() const;
