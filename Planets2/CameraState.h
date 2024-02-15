@@ -31,4 +31,7 @@ public:
 	// Returns the underlying raylib Camera2D struct of this state's camera.
 	const Camera2D& get_raylib_camera() const { return camera.get_raylib_camera(); };
 
+	bool in_view(const Body& body) { return camera.in_view(body); }
+	bool in_view(Rectangle rect) { return camera.in_view(rect); }
+
 };

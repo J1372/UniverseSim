@@ -2,6 +2,8 @@
 
 #include "raylib.h"
 
+class Body;
+
 enum class Direction {
 	LEFT,
 	UP,
@@ -101,6 +103,11 @@ public:
 
 	// Returns the current zoom level.
 	float get_zoom() const;
+
+	// Return true if a body is at least viewable by camera.
+	bool in_view(const Body& body) const;
+	// Return true if a rectangle is at least viewable by camera.
+	bool in_view(Rectangle rect) const;
 
 	// Returns a reference to the underlying raylib Camera2D struct of this camera.
 	const Camera2D& get_raylib_camera() const;

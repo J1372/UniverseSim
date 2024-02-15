@@ -45,9 +45,6 @@
     <ClCompile Include="SettingsScene.cpp">
       <Filter>Scenes\SettingsScene</Filter>
     </ClCompile>
-    <ClCompile Include="SimulationScene.cpp">
-      <Filter>Scenes\SimScene</Filter>
-    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Sim_Model\Events</Filter>
     </ClCompile>
@@ -99,6 +96,13 @@
       <Filter>Partitioning</Filter>
     </ClCompile>
     <ClCompile Include="SimUtil.cpp" />
+    <ClCompile Include="SatelliteCreation.cpp">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationScene.cpp">
+      <Filter>Scenes\SimScene</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyRandom.h" />
@@ -153,9 +157,6 @@
     <ClInclude Include="SettingsScene.h">
       <Filter>Scenes\SettingsScene</Filter>
     </ClInclude>
-    <ClInclude Include="SimulationScene.h">
-      <Filter>Scenes\SimScene</Filter>
-    </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Sim_Model\Events</Filter>
     </ClInclude>
@@ -176,9 +177,6 @@
       <Filter>Scenes\SimScene\InteractionStates</Filter>
     </ClInclude>
     <ClInclude Include="DefaultInteraction.h">
-      <Filter>Scenes\SimScene\InteractionStates</Filter>
-    </ClInclude>
-    <ClInclude Include="SystemCreation.h">
       <Filter>Scenes\SimScene\InteractionStates</Filter>
     </ClInclude>
     <ClInclude Include="PlanetCreation.h">
@@ -229,6 +227,17 @@
       <Filter>Sim_Model\GravityApproximations</Filter>
     </ClInclude>
     <ClInclude Include="SimUtil.h" />
+    <ClInclude Include="RaylibVector2Util.h" />
+    <ClInclude Include="SatelliteCreation.h">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderUtil.h" />
+    <ClInclude Include="SystemCreation.h">
+      <Filter>Scenes\SimScene\InteractionStates</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationScene.h">
+      <Filter>Scenes\SimScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

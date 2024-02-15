@@ -11,6 +11,7 @@
 #include "InteractionState.h"
 #include "DefaultInteraction.h"
 #include <raymath.h>
+#include "RenderUtil.h"
 
 // enables using suffixes for seconds, milliseconds, etc.
 using namespace std::chrono_literals;
@@ -102,7 +103,7 @@ void SimulationScene::update_on_screen_bodies()
 	std::span<Body> bodies = universe.get_bodies();
 
 	for (Body& body : bodies) {
-		if (on_screen(body)) {
+		if (camera_state->in_view(body)) {
 			on_screen_bodies.push_back(&body);
 		}
 	}
@@ -116,8 +117,8 @@ void SimulationScene::attach_debug_info()
 		Vector2 vel = body.vel();
 
 		info.add("ID: " + std::to_string(body.get_id()));
-		info.add("X: " + std::to_string(pos.x));
-		info.add("Y: " + std::to_string(pos.y));
+		info.add("Pos(x): " + std::to_string(pos.x));
+		info.add("Pos(y): " + std::to_string(pos.y));
 		info.add("Vel(x): " + std::to_string(vel.x));
 		info.add("Vel(y): " + std::to_string(vel.y));
 		info.add("Mass: " + std::to_string(body.get_mass()));
@@ -146,15 +147,12 @@ void SimulationScene::attach_debug_info()
 }
 
 void SimulationScene::render_debug_text() const {
-
 	for (int i = 0; i < on_screen_bodies.size(); ++i) {
 		const Body& body = *on_screen_bodies[i];
 		const DebugInfo& info = body_info[i];
 
-		render_near_body(body, info.c_str());
-
+		RenderUtil::render_near_body(body, info.c_str());
 	}
-	
 }
 
 void SimulationScene::render_screen_info()
@@ -200,7 +198,7 @@ void SimulationScene::render_partitioning() const
 	// When zoomed out, there is often a visual glitch, especially when line thickness is lowered.
 	// I'm not sure how to fix it.
 	for (Rectangle rect : rep) {
-		if (on_screen(rect)) {
+		if (camera_state->in_view(rect)) {
 			DrawRectangleLinesEx(rect, 30, WHITE);
 		}
 	}
@@ -210,94 +208,15 @@ void SimulationScene::render_universe() const
 {
 	// Render all bodies in the universe that are on screen.
 	for (const Body* body_ptr : on_screen_bodies) {
-		render_body(*body_ptr);
+		RenderUtil::render_body(*body_ptr);
 	}
-}
-
-bool SimulationScene::on_screen(const Body& body) const
-{
-	// Return true if a body is at least partially on screen.
-	
-	const Camera2D& camera = camera_state->get_raylib_camera();
-	Vector2 pos = body.pos();
-
-	Vector2 leftmost = GetWorldToScreen2D({ body.left(), pos.y}, camera);
-	Vector2 rightmost = GetWorldToScreen2D({ body.right(), pos.y }, camera);
-
-	Vector2 lowest = GetWorldToScreen2D({ pos.x, body.bottom() }, camera);
-	Vector2 highest = GetWorldToScreen2D({ pos.x, body.top() }, camera);
-
-	// can optimize : screen_pos.x >= -body.radius && screen_pos.y >= -body.radius
-
-	return rightmost.x >= 0 and lowest.y >= 0 and leftmost.x < GetScreenWidth() and highest.y < GetScreenHeight();
-}
-
-bool SimulationScene::on_screen(Rectangle rect) const
-{
-	const Camera2D& camera = camera_state->get_raylib_camera();
-	
-	Vector2 UL = GetWorldToScreen2D({ rect.x, rect.y }, camera);
-	Vector2 LR = GetWorldToScreen2D({ rect.x + rect.width, rect.y + rect.height }, camera);
-	float width = LR.x - UL.x;
-	float height = LR.y - UL.y;
-
-	return UL.x < GetScreenWidth() and UL.y < GetScreenHeight()
-		and LR.x >= 0 and LR.y >= 0;
-}
-
-void SimulationScene::render_body(const Body& body) const
-{
-	Vector2 pos = body.pos();
-	Color planet_color = body.color();
-
-	DrawCircle(pos.x, pos.y, body.get_radius(), planet_color);
-}
-
-void SimulationScene::render_creating_bodies(std::span<const Body> bodies) const
-{
-	for (const Body& body : bodies) {
-		if (on_screen(body))
-		{
-			render_body(body);
-
-			Vector2 pos = body.pos();
-			Vector2 vel = body.vel();
-			DebugInfo info{ "X: " + std::to_string(pos.x) };
-
-			info.add("Y: " + std::to_string(pos.y));
-			info.add("Vel(x): " + std::to_string(vel.x));
-			info.add("Vel(y): " + std::to_string(vel.y));
-			info.add("Mass: " + std::to_string(body.get_mass()));
-
-			render_near_body(body, info.c_str());
-			render_velocity(body);
-		}
-	}
-}
-
-void SimulationScene::render_near_body(const Body& body, const char* text) const
-{
-	Vector2 pos = body.pos();
-	float radius = body.get_radius();
-
-
-	// Calculate font size with minor scaling based on body's radius.
-	constexpr float FONT_START = 25;
-	constexpr float FONT_SCALE = 0.05;
-	int font_size = FONT_START + FONT_SCALE * radius;
-
-	int text_x = pos.x + radius + 20;
-	int text_y = pos.y + radius + 20;
-	DrawText(text, text_x, text_y, font_size, body.color());
 }
 
 void SimulationScene::render_forces() const
 {
 	for (const Body* body : on_screen_bodies)
 	{
-		float dist_scale = 50.0f;
-		float thick_scale = std::max(3.0f, body->diameter() / 20);
-		render_body_vector(*body, body->get_forces(), dist_scale, thick_scale, RED);
+		RenderUtil::render_force(*body);
 	}
 }
 
@@ -305,23 +224,8 @@ void SimulationScene::render_velocities() const
 {
 	for (const Body* body : on_screen_bodies)
 	{
-		render_velocity(*body);
+		RenderUtil::render_velocity(*body);
 	}
-}
-
-void SimulationScene::render_velocity(const Body& body) const
-{
-	float dist_scale = 50.0f;
-	float thick_scale = std::max(3.0f, body.diameter() / 20);
-	render_body_vector(body, body.vel(), dist_scale, thick_scale, SKYBLUE);
-}
-
-void SimulationScene::render_body_vector(const Body& body, Vector2 vec, float dist_scale, float thick_scale, Color color) const
-{
-	Vector2 dir = Vector2Normalize(vec);
-	Vector2 start_pos = Vector2Add(body.pos(), Vector2Scale(dir, (body.get_radius() - 0.5f)));
-	Vector2 end_pos = Vector2Add(start_pos, Vector2Scale(dir, dist_scale));
-	DrawLineEx(start_pos, end_pos, thick_scale, color);
 }
 
 Scene* SimulationScene::update()
@@ -362,16 +266,6 @@ Scene* SimulationScene::update()
 				{
 					render_velocities();
 				}
-				
-				// Need to render user creation bodies differently (always print their specs)
-				// Not relevant to every interaction state, and not every state wants their planets to have info rendered as well.
-				// In the future, can allow states to queue render commands to sim scene in their update maybe,
-				// instead of explicitly asking the state.
-				std::span<const Body> creating = interaction_state->get_creating_bodies();
-
-				// Render bodies that the user is creating.
-				render_creating_bodies(creating);
-				
 
 				// Render the actual bodies in the universe.
 				render_universe();

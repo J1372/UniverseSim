@@ -1,6 +1,7 @@
 #include "AdvCamera.h"
 #include <utility>
 #include <algorithm>
+#include "Body.h"
 
 
 void AdvCamera::recalculate_speed_target()
@@ -65,6 +66,32 @@ void AdvCamera::decrease_speed_offset()
 float AdvCamera::get_zoom() const
 {
 	return camera.zoom;
+}
+
+bool AdvCamera::in_view(const Body& body) const
+{
+	Vector2 pos = body.pos();
+
+	Vector2 leftmost = GetWorldToScreen2D({ body.left(), pos.y }, camera);
+	Vector2 rightmost = GetWorldToScreen2D({ body.right(), pos.y }, camera);
+
+	Vector2 lowest = GetWorldToScreen2D({ pos.x, body.bottom() }, camera);
+	Vector2 highest = GetWorldToScreen2D({ pos.x, body.top() }, camera);
+
+	// can optimize : screen_pos.x >= -body.radius && screen_pos.y >= -body.radius
+
+	return rightmost.x >= 0 and lowest.y >= 0 and leftmost.x < GetScreenWidth() and highest.y < GetScreenHeight();
+}
+
+bool AdvCamera::in_view(Rectangle rect) const
+{
+	Vector2 UL = GetWorldToScreen2D({ rect.x, rect.y }, camera);
+	Vector2 LR = GetWorldToScreen2D({ rect.x + rect.width, rect.y + rect.height }, camera);
+	float width = LR.x - UL.x;
+	float height = LR.y - UL.y;
+
+	return UL.x < GetScreenWidth() and UL.y < GetScreenHeight()
+		and LR.x >= 0 and LR.y >= 0;
 }
 
 const Camera2D& AdvCamera::get_raylib_camera() const

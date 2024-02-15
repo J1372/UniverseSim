@@ -84,23 +84,8 @@ class SimulationScene : public Scene
 	// Attaches standard debug info to bodies that are on screen.
 	void attach_debug_info();
 
-	// Renders the body.
-	void render_body(const Body& body) const;
-
 	// Draws debug text alongside every body.
 	void render_debug_text() const;
-
-	// Draws text near the given body.
-	void render_near_body(const Body& body, const char* text) const;
-
-	// Returns true if a body is at least partially on screen, else false.
-	bool on_screen(const Body& body) const;
-
-	// Returns true if a rectangle is at least partially on screen, else false.
-	bool on_screen(Rectangle rect) const;
-
-	// Renders all bodies that the user is creating.
-	void render_creating_bodies(std::span<const Body> bodies) const;
 
 	// Handles rendering of the universe.
 	void render_universe() const;
@@ -108,16 +93,11 @@ class SimulationScene : public Scene
 	// Handles rendering of universe's collision detection partitioning method.
 	void render_partitioning() const;
 
-	// Handles rendering of debug information.
-	void render_debug() const;
-
 	// Handles rendering of any information that has a simple screen position, as opposed to a place in the universe.
 	void render_screen_info();
 
 	void render_forces() const;
 	void render_velocities() const;
-	void render_velocity(const Body& body) const;
-	void render_body_vector(const Body& body, Vector2 vec, float dist_scale, float thick_scale, Color color) const;
 
 	// Moves text elements that adjust to screen size to new positions.
 	void reposition_elements(int screen_width, int screen_height);
