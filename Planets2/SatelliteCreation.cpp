@@ -103,7 +103,7 @@ InteractionState* SatelliteCreation::process_input(const CameraState& camera_sta
 		// Handle fine tuning inputs.
 		constexpr float change_magnitude = 0.01f;
 
-		float vel_scale = 0.0f;
+		float vel_scale = 1.0f;
 		if (IsKeyDown(KEY_LEFT_BRACKET))
 		{
 			vel_scale -= change_magnitude;
@@ -125,8 +125,9 @@ InteractionState* SatelliteCreation::process_input(const CameraState& camera_sta
 
 		if (vel_scale != 0.0f or vel_rot != 0.0f)
 		{
-			creating.change_vel(Vector2Scale(Vector2Normalize(creating.vel_relative(parent)), vel_scale));
-			creating.set_vel(Vector2Rotate(creating.vel(), vel_rot));
+			// Apply transformations to satellite's relative velocity.
+			Vector2 new_rel_vel = Vector2Rotate(Vector2Scale(creating.vel_relative(parent), vel_scale), vel_rot);
+			creating.set_vel(Vector2Add(parent.vel(), new_rel_vel));
 			update_orbit(grav_const, cur_tick);
 		}
 		else if (cur_tick != prev_projection_tick)
