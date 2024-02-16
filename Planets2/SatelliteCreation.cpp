@@ -10,20 +10,37 @@
 #include "RenderUtil.h"
 #include "DebugInfo.h"
 #include "PlanetMouseModifier.h"
+#include "Removal.h"
 
-SatelliteCreation::SatelliteCreation(const Body& parent, const Body& creating, double grav_const)
-	: parent(&parent), creating(creating), cur_orbit{ parent, creating, grav_const }
+SatelliteCreation::SatelliteCreation(const Body& parent, const Body& creating, Universe& universe)
+	: creating(creating), cur_orbit{ parent, creating, static_cast<float>(universe.get_settings().grav_const)}
 {
-	update_orbit(parent, static_cast<float>(grav_const), 0);
+	listener = universe.removal_event().add_observer([this, &universe](Removal e) 
+	{
+		if (e.removed == parent_id)
+		{
+			if (e.was_absorbed())
+			{
+				const Body* absorber = universe.get_body(e.absorbed_by);
+				update_orbit(*absorber, static_cast<float>(universe.get_settings().grav_const), universe.get_tick());
+			}
+			else
+			{
+				parent_id = -1;
+			}
+		}
+	});
+
+	update_orbit(parent, static_cast<float>(universe.get_settings().grav_const), 0);
 }
 
 void SatelliteCreation::update_orbit(float grav_const, int tick_stamp)
 {
-	cur_orbit = { *parent, creating, grav_const };
+	cur_orbit = { *cur_orbit.orbited, creating, grav_const };
 
 	for (int i = 0; i < samples; ++i)
 	{
-		orbit_samples[i] = Vector2Add(parent->pos(), cur_orbit.pos_at(sample_dist * i));
+		orbit_samples[i] = Vector2Add(cur_orbit.orbited->pos(), cur_orbit.pos_at(sample_dist * i));
 	}
 
 	prev_projection_tick = tick_stamp;
@@ -32,13 +49,19 @@ void SatelliteCreation::update_orbit(float grav_const, int tick_stamp)
 
 void SatelliteCreation::update_orbit(const Body& orbiting, float grav_const, int tick_stamp)
 {
-	parent = &orbiting;
-	creating.set_vel(parent->vel());
+	parent_id = orbiting.get_id();
+	cur_orbit.orbited = &orbiting;
+	creating.set_vel(orbiting.vel());
 	update_orbit(grav_const, tick_stamp);
 }
 
 InteractionState* SatelliteCreation::process_input(const CameraState& camera_state, Universe& universe)
 {
+	if (parent_id == -1) return new DefaultInteraction;
+
+	cur_orbit.orbited = universe.get_body(parent_id);
+	const Body& parent = *cur_orbit.orbited;
+
 	Vector2 screen_point = GetMousePosition();
 	Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
 	int cur_tick = universe.get_tick();
@@ -102,7 +125,7 @@ InteractionState* SatelliteCreation::process_input(const CameraState& camera_sta
 
 		if (vel_scale != 0.0f or vel_rot != 0.0f)
 		{
-			creating.change_vel(Vector2Scale(Vector2Normalize(creating.vel_relative(*parent)), vel_scale));
+			creating.change_vel(Vector2Scale(Vector2Normalize(creating.vel_relative(parent)), vel_scale));
 			creating.set_vel(Vector2Rotate(creating.vel(), vel_rot));
 			update_orbit(grav_const, cur_tick);
 		}
@@ -143,13 +166,14 @@ void SatelliteCreation::render_world(const AdvCamera& camera, const Universe& un
 	std::string per_rep = "Periapsis: " + std::to_string(cur_orbit.periapsis);
 	std::string apo_rep = "Apoapsis: " + std::to_string(cur_orbit.apoapsis());
 
+	const Body& orbiting = *cur_orbit.orbited;
 	float thickness = std::max(3.0f, creating.diameter() / 20.0f);
-	DrawLineEx(creating.pos(), parent->pos(), thickness, RED);
+	DrawLineEx(creating.pos(), orbiting.pos(), thickness, RED);
 
 	if (camera.in_view(creating))
 	{
-		Vector2 pos = parent->distv(creating);
-		Vector2 vel = creating.vel_relative(*parent);
+		Vector2 pos = orbiting.distv(creating);
+		Vector2 vel = creating.vel_relative(orbiting);
 
 		const std::string notice_suffix = " (relative)";
 		DebugInfo info{ "Pos(x): " + std::to_string(pos.x) + notice_suffix };
@@ -171,12 +195,12 @@ void SatelliteCreation::render_world(const AdvCamera& camera, const Universe& un
 	constexpr float text_offset = 20.0f;
 
 	constexpr Color per_color = BLUE;
-	Vector2 per_vec = Vector2Add(parent->pos(), cur_orbit.pos_at(0));
+	Vector2 per_vec = Vector2Add(orbiting.pos(), cur_orbit.pos_at(0));
 	DrawCircleV(per_vec, node_size, per_color);
 	DrawText(per_rep.c_str(), per_vec.x + text_offset, per_vec.y + text_offset, 12, per_color);
 
 	constexpr Color apo_color = RED;
-	Vector2 apo_vec = Vector2Add(parent->pos(), cur_orbit.pos_at(0.5f));
+	Vector2 apo_vec = Vector2Add(orbiting.pos(), cur_orbit.pos_at(0.5f));
 	DrawCircleV(apo_vec, node_size, apo_color);
 	DrawText(apo_rep.c_str(), apo_vec.x + text_offset, apo_vec.y + text_offset, 12, apo_color);
 }

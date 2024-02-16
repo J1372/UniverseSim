@@ -5,12 +5,16 @@
 #include "Orbit.h"
 #include "Body.h"
 #include "PlanetMouseModifier.h"
+#include "Event.h"
+
+struct Removal;
 
 class SatelliteCreation : public InteractionState
 {
-	const Body* parent;
+	int parent_id;
 	Body creating;
 	Orbit cur_orbit;
+	EventHandle<Removal> listener;
 
 	static constexpr int samples = 129;
 	static_assert(samples >= 3, "Number of samples must be more than 2 to at least sample periapsis, then apoapsis, then periapsis.");
@@ -30,7 +34,7 @@ class SatelliteCreation : public InteractionState
 
 public:
 
-	SatelliteCreation(const Body& parent, const Body& creating, double grav_const);
+	SatelliteCreation(const Body& parent, const Body& creating, Universe& universe);
 
 	// Processes all relevant state input for creating a body and returns the next interaction state.
 	InteractionState* process_input(const CameraState& camera_state, Universe& universe) override;

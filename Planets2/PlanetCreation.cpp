@@ -36,7 +36,7 @@ InteractionState* PlanetCreation::process_input(const CameraState& camera_state,
 
 		if (mouse_overlapped)
 		{
-			return new SatelliteCreation{ *mouse_overlapped, creating, universe.get_settings().grav_const };
+			return new SatelliteCreation{ *mouse_overlapped, creating, universe };
 		}
 	}
 	else if (IsKeyPressed(KEY_ENTER)) {
