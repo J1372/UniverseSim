@@ -7,7 +7,7 @@ AnchoredCamera::AnchoredCamera(const AdvCamera& starting_config, const Body& anc
 {
     camera = starting_config;
 
-    listener_id = universe.removal_event().add_observer(
+    listener = universe.removal_event().add_observer(
         [this](Removal remove_event)
         {
             if (anchored_to == remove_event.removed)
@@ -90,7 +90,6 @@ CameraState* AnchoredCamera::update(Universe& universe)
     // anchored_to == nullptr if user right clicked on nothing or body deleted and was not absorbed by another body.
     // in any case, no body to anchor to, so return to a free camera state.
     if (!is_anchored()) {
-        exit(universe);
         return new FreeCamera(camera);
     }
 
@@ -137,11 +136,6 @@ CameraState* AnchoredCamera::update(Universe& universe)
 
     // We are still in an anchored camera state, so return this.
     return this;
-}
-
-void AnchoredCamera::exit(Universe& universe)
-{
-    universe.removal_event().rem_observer(listener_id);
 }
 
 void AnchoredCamera::notify_resize(int width, int height)

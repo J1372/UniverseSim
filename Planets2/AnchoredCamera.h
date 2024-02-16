@@ -2,6 +2,7 @@
 #include "CameraState.h"
 #include <functional>
 #include "Removal.h"
+#include "Event.h"
 
 class FreeCamera;
 class Body;
@@ -15,8 +16,8 @@ class AnchoredCamera : public CameraState
 	// If nullptr, will switch to a different camera on update call.
 	int anchored_to = -1;
 	
-	// The listener id returned when adding camera as an observer to anchored_to's remove event observer list.
-	int listener_id;
+	// The listener returned when adding camera as an observer to anchored_to's remove event observer list.
+	EventHandle<Removal> listener;
 
 	// Moves the camera's target position to the center of the anchored body.
 	void snap_camera_to_target(const Body& target);
@@ -41,8 +42,6 @@ public:
 	// Snaps camera target to the currently anchored body's center.
 	// Processes input related to the camera, and updates and returns next camera state.
 	CameraState* update(Universe& universe) override;
-
-	void exit(Universe& universe);
 
 	// Notifies the camera that the screen has been resized
 	void notify_resize(int width, int height);
