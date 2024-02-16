@@ -31,8 +31,7 @@ Orbit::Orbit(const Body& orbited, const Body& orbiter, float grav_const)
         // a is semi-major axis
         // 
         // e = -std_grav_param / 2a
-        // 2a * e = -std_grav_param
-        // 2a = -std_grav_param / e
+        // a * e = -std_grav_param / 2
         // a = -std_grav_param / 2e
         float semi_major_axis = -std_grav_param / (2.0f * orb_energy);
 
