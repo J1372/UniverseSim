@@ -50,14 +50,17 @@ struct Orbit
 	// The farthest distance of the satellite from the orbited body in the orbit.
 	float apoapsis() const;
 	
-	// Returns the orbit's semi major axis.
+	// Calculates the orbit's semi major axis.
 	float semi_major_axis() const;
+
+	// Calculates the orbit's semi minor axis.
+	float semi_minor_axis() const;
 
 	// Methods for getting various parameters at 'points' in the orbit, from [0, 1].
 	// point = 0.0, periapsis.
-	// point > 0 < 0.5, moving towards apoapsis
+	// 0 > point < 0.5, moving towards apoapsis
 	// point = 0.5, apoapsis.
-	// point > 0.5 < 1.0, returning to periapsis
+	// 0.5 > point < 1.0, returning to periapsis
 	// point = 1.0, periapsis.
 
 	// Translates a point [0,1] of the satellite's orbit to a radian degree from orbited [0, 2pi]
@@ -68,6 +71,9 @@ struct Orbit
 
 	// Relative position of orbiter around orbited at a point in its orbit.
 	Vector2 pos_at(float point) const;
+
+	// Returns the relative position of the ellipse center that represents the orbit path.
+	Vector2 get_ellipse_center() const;
 
 	// Relative scalar speed of orbiter around orbited at a point in its orbit.
 	float speed_at(float point) const;
