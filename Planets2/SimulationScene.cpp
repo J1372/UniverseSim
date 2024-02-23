@@ -12,6 +12,8 @@
 #include "DefaultInteraction.h"
 #include <raymath.h>
 #include "RenderUtil.h"
+#include "Removal.h"
+#include "Orbit.h"
 
 // enables using suffixes for seconds, milliseconds, etc.
 using namespace std::chrono_literals;
@@ -32,6 +34,27 @@ SimulationScene::SimulationScene(const SettingsState& settings, std::unique_ptr<
 	reposition_elements(GetScreenWidth(), GetScreenHeight());
 
 	prompt_time = std::chrono::system_clock::now();
+
+	listener = universe.removal_event().add_observer([this](const Removal& e)
+	{
+		int removed_id = e.removed;
+		if (removed_id == orbit_central)
+		{
+			orbit_central = -1;
+			orbit_projections.clear();
+		}
+		else
+		{
+			auto it = std::ranges::find_if(orbit_projections, [removed_id](const auto& p) { return p.first == removed_id; });
+
+			if (it != orbit_projections.end())
+			{
+				std::swap(*it, orbit_projections.back());
+				orbit_projections.pop_back();
+			}
+		}
+	});
+
 }
 
 void SimulationScene::process_input()
@@ -52,6 +75,43 @@ void SimulationScene::process_input()
 		interaction_title.set_text(interaction_state->get_name());
 	}
 
+	if (IsKeyPressed(KEY_O))
+	{
+		Vector2 screen_pos = GetMousePosition();
+		Vector2 world_pos = GetScreenToWorld2D(screen_pos, camera_state->get_raylib_camera());
+
+		if (const Body* overlapped = universe.get_body(world_pos))
+		{
+			int overlapped_id = overlapped->get_id();
+			if (orbit_central == -1)
+			{
+				orbit_central = overlapped_id;
+			}
+			else if (overlapped_id == orbit_central)
+			{
+				orbit_central = -1;
+				orbit_projections.clear();
+			}
+			else
+			{
+				auto it = std::ranges::find_if(orbit_projections, [overlapped_id](const auto& p) { return p.first == overlapped_id; });
+				if (it == orbit_projections.end())
+				{
+					const Body& central = *universe.get_body(orbit_central);
+					constexpr int samples = 129;
+
+					orbit_projections.emplace_back(overlapped_id, OrbitProjection{ central, *overlapped,(float)universe.get_settings().grav_const, samples });
+				}
+				else
+				{
+					std::swap(*it, orbit_projections.back());
+					orbit_projections.pop_back();
+				}
+			}
+		}
+	}
+
+
 	// Toggles
 	if (IsKeyPressed(KEY_B)) {
 		should_render_partitioning = !should_render_partitioning;
@@ -71,15 +131,27 @@ void SimulationScene::process_input()
 		should_render_forces = !should_render_forces;
 	}
 
+	if (IsKeyPressed(KEY_E))
+	{
+		should_render_extended_orbits = !should_render_extended_orbits;
+	}
+
 	if (IsKeyPressed(KEY_V))
 	{
 		should_render_velocities = !should_render_velocities;
+		if (should_render_velocities)
+		{
+			orbit_rel_vel_color = GREEN;
+		}
+		else
+		{
+			orbit_rel_vel_color = SKYBLUE;
+		}
 	}
 
 	if (IsKeyPressed(KEY_H)) {
 		gui.toggle_visibility(help_message);
 	}
-
 
 	if (IsKeyPressed(KEY_SPACE)) {
 		running = !running;
@@ -106,6 +178,16 @@ void SimulationScene::update_on_screen_bodies()
 		if (camera_state->in_view(body)) {
 			on_screen_bodies.push_back(&body);
 		}
+	}
+}
+
+void SimulationScene::update_orbit_projections()
+{
+	const Body& central = *universe.get_body(orbit_central);
+	for (auto& [sat_id, op] : orbit_projections)
+	{
+		const Body& satellite = *universe.get_body(sat_id);
+		op.update(central, satellite, (float)universe.get_settings().grav_const);
 	}
 }
 
@@ -228,12 +310,42 @@ void SimulationScene::render_velocities() const
 	}
 }
 
+void SimulationScene::render_orbit_projections()
+{
+	for (auto& [_, op] : orbit_projections)
+	{
+		op.render_orbit(PURPLE);
+
+		if (should_render_extended_orbits)
+		{
+			constexpr Color connecting_line_color = BEIGE;
+			op.render_orbit_node_connected("Periapsis:", 0.0f, BLUE, connecting_line_color);
+			op.render_orbit_node_connected("Apoapsis:", 0.5f, RED, connecting_line_color);
+			op.render_orbit_node_connected("Asc:", 0.25f, GRAY, connecting_line_color);
+			op.render_orbit_node_connected("Desc:", 0.75f, GRAY, connecting_line_color);
+		}
+		else
+		{
+			op.render_orbit_node("Periapsis:", 0.0f, BLUE);
+			op.render_orbit_node("Apoapsis:", 0.5f, RED);
+		}
+
+		op.render_connecting_line(RED);
+		op.render_relative_velocity(orbit_rel_vel_color);
+	}
+}
+
 Scene* SimulationScene::update()
 {
 	process_input();
 
-	if (running) {
+	if (running)
+	{
 		universe.update();
+		if (orbit_central != -1)
+		{
+			update_orbit_projections();
+		}
 	}
 
 	// Handle input related to the camera.
@@ -253,7 +365,8 @@ Scene* SimulationScene::update()
 			BeginMode2D(camera_state->get_raylib_camera());
 				// Begin rendering anything that should take the camera, universe position, into account.
 				
-				if (should_render_partitioning) {
+				if (should_render_partitioning)
+				{
 					render_partitioning();
 				}
 
@@ -271,7 +384,8 @@ Scene* SimulationScene::update()
 				render_universe();
 
 				// Render all relevant debug text.
-				if (should_render_debug_text) {
+				if (should_render_debug_text)
+				{
 					body_info.resize(on_screen_bodies.size());
 
 					attach_debug_info();
@@ -280,12 +394,18 @@ Scene* SimulationScene::update()
 					body_info.clear();
 				}
 
+				if (orbit_central != -1)
+				{
+					render_orbit_projections();
+				}
+
 				// Allow interaction state to render any state-specific world elements.
 				interaction_state->render_world(camera_state->get_camera(), universe);
 
 			EndMode2D();
 
 		// Render any other information that should be overlaid onto the screen.
+		//   ( Anything that has a screen position, not a world position. )
 		render_screen_info();
 
 	EndDrawing();

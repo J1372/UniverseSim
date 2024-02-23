@@ -99,11 +99,14 @@
     <ClCompile Include="SatelliteCreation.cpp">
       <Filter>Scenes\SimScene\InteractionStates</Filter>
     </ClCompile>
+    <ClCompile Include="RenderUtil.cpp" />
+    <ClCompile Include="PlanetMouseModifier.cpp" />
     <ClCompile Include="SimulationScene.cpp">
       <Filter>Scenes\SimScene</Filter>
     </ClCompile>
-    <ClCompile Include="RenderUtil.cpp" />
-    <ClCompile Include="PlanetMouseModifier.cpp" />
+    <ClCompile Include="OrbitProjection.cpp">
+      <Filter>Scenes\SimScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyRandom.h" />
@@ -240,6 +243,9 @@
       <Filter>Scenes\SimScene</Filter>
     </ClInclude>
     <ClInclude Include="PlanetMouseModifier.h" />
+    <ClInclude Include="OrbitProjection.h">
+      <Filter>Scenes\SimScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UI">

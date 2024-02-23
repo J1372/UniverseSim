@@ -11,6 +11,10 @@
 
 #include "GuiComponentList.h"
 #include "SettingsState.h"
+#include "Event.h"
+#include "OrbitProjection.h"
+
+struct Removal;
 
 class CameraState;
 class Body;
@@ -59,6 +63,13 @@ class SimulationScene : public Scene
 	// Default help text.
 	const std::string default_help_text = "[H] to close help text\n";
 
+	EventHandle<Removal> listener;
+	int orbit_central = -1;
+
+	std::vector<std::pair<int, OrbitProjection>> orbit_projections;
+	bool should_render_extended_orbits = false;
+	Color orbit_rel_vel_color = SKYBLUE;
+
 	// Time when help prompt text was first displayed.
 	std::chrono::system_clock::time_point prompt_time;
 
@@ -81,6 +92,8 @@ class SimulationScene : public Scene
 	// Updates the list of bodies that are on screen
 	void update_on_screen_bodies();
 
+	void update_orbit_projections();
+
 	// Attaches standard debug info to bodies that are on screen.
 	void attach_debug_info();
 
@@ -98,6 +111,8 @@ class SimulationScene : public Scene
 
 	void render_forces() const;
 	void render_velocities() const;
+
+	void render_orbit_projections();
 
 	// Moves text elements that adjust to screen size to new positions.
 	void reposition_elements(int screen_width, int screen_height);

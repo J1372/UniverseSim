@@ -13,7 +13,7 @@
 #include "Removal.h"
 
 SatelliteCreation::SatelliteCreation(const Body& parent, const Body& creating, Universe& universe)
-	: creating(creating), cur_orbit{ parent, creating, static_cast<float>(universe.get_settings().grav_const)}
+	: creating(creating), orbit_projection{ parent, creating, static_cast<float>(universe.get_settings().grav_const), 129}
 {
 	listener = universe.removal_event().add_observer([this, &universe](Removal e) 
 	{
@@ -31,18 +31,12 @@ SatelliteCreation::SatelliteCreation(const Body& parent, const Body& creating, U
 		}
 	});
 
-	update_orbit(parent, static_cast<float>(universe.get_settings().grav_const), 0);
+	update_orbit(parent, static_cast<float>(universe.get_settings().grav_const), universe.get_tick());
 }
 
 void SatelliteCreation::update_orbit(float grav_const, int tick_stamp)
 {
-	cur_orbit = { *cur_orbit.orbited, creating, grav_const };
-
-	for (int i = 0; i < samples; ++i)
-	{
-		orbit_samples[i] = Vector2Add(cur_orbit.orbited->pos(), cur_orbit.pos_at(sample_dist * i));
-	}
-
+	orbit_projection.update(grav_const);
 	prev_projection_tick = tick_stamp;
 }
 
@@ -50,17 +44,16 @@ void SatelliteCreation::update_orbit(float grav_const, int tick_stamp)
 void SatelliteCreation::update_orbit(const Body& orbiting, float grav_const, int tick_stamp)
 {
 	parent_id = orbiting.get_id();
-	cur_orbit.orbited = &orbiting;
 	creating.set_vel(orbiting.vel());
-	update_orbit(grav_const, tick_stamp);
+	orbit_projection.update(orbiting, creating, grav_const);
+	prev_projection_tick = tick_stamp;
 }
 
 InteractionState* SatelliteCreation::process_input(const CameraState& camera_state, Universe& universe)
 {
 	if (parent_id == -1) return new DefaultInteraction;
 
-	cur_orbit.orbited = universe.get_body(parent_id);
-	const Body& parent = *cur_orbit.orbited;
+	const Body& parent = *universe.get_body(parent_id);
 
 	Vector2 screen_point = GetMousePosition();
 	Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
@@ -123,7 +116,7 @@ InteractionState* SatelliteCreation::process_input(const CameraState& camera_sta
 			vel_rot += change_magnitude;
 		}
 
-		if (vel_scale != 0.0f or vel_rot != 0.0f)
+		if (vel_scale != 1.0f or vel_rot != 0.0f)
 		{
 			// Apply transformations to satellite's relative velocity.
 			Vector2 new_rel_vel = Vector2Rotate(Vector2Scale(creating.vel_relative(parent), vel_scale), vel_rot);
@@ -135,7 +128,6 @@ InteractionState* SatelliteCreation::process_input(const CameraState& camera_sta
 			update_orbit(grav_const, cur_tick);
 		}
 	}
-
 
 	return this;
 }
@@ -163,18 +155,25 @@ std::string_view SatelliteCreation::get_help_text() const
 
 void SatelliteCreation::render_world(const AdvCamera& camera, const Universe& universe)
 {
-	DrawLineStrip(orbit_samples.data(), samples, WHITE);
-	std::string per_rep = "Periapsis: " + std::to_string(cur_orbit.periapsis);
-	std::string apo_rep = "Apoapsis: " + std::to_string(cur_orbit.apoapsis());
+	orbit_projection.render_orbit(PURPLE);
+	orbit_projection.render_connecting_line(RED);
 
-	const Body& orbiting = *cur_orbit.orbited;
-	float thickness = std::max(3.0f, creating.diameter() / 20.0f);
-	DrawLineEx(creating.pos(), orbiting.pos(), thickness, RED);
+	constexpr Color connecting_line_color = BEIGE;
+	const Orbit& orbit = orbit_projection.get_orbit();
+	const Body& central = *orbit.orbited;
+
+	std::string per_rep = "Periapsis: " + std::to_string(orbit.periapsis);
+	std::string apo_rep = "Apoapsis: " + std::to_string(orbit.apoapsis());
+	orbit_projection.render_orbit_node_connected(per_rep, 0.0f, BLUE, connecting_line_color);
+	orbit_projection.render_orbit_node_connected(apo_rep, 0.5f, RED, connecting_line_color);
+	orbit_projection.render_orbit_node_connected("Asc:", 0.25f, GRAY, connecting_line_color);
+	orbit_projection.render_orbit_node_connected("Desc:", 0.75f, GRAY, connecting_line_color);
+	orbit_projection.render_relative_velocity(GREEN);
 
 	if (camera.in_view(creating))
 	{
-		Vector2 pos = orbiting.distv(creating);
-		Vector2 vel = creating.vel_relative(orbiting);
+		Vector2 pos = central.distv(creating);
+		Vector2 vel = creating.vel_relative(central);
 
 		const std::string notice_suffix = " (relative)";
 		DebugInfo info{ "Pos(x): " + std::to_string(pos.x) + notice_suffix };
@@ -184,24 +183,10 @@ void SatelliteCreation::render_world(const AdvCamera& camera, const Universe& un
 		info.add("Mass: " + std::to_string(creating.get_mass()));
 		info.add(per_rep);
 		info.add(apo_rep);
-		info.add("Eccentricity: " + std::to_string(cur_orbit.eccentricity));
-
-		RenderUtil::render_near_body(creating, info.c_str());
-		RenderUtil::render_body_vector(creating, vel, 50.0f, thickness, SKYBLUE);
+		info.add("Eccentricity: " + std::to_string(orbit.eccentricity));
+		info.add("Periapsis angle:    " + std::to_string(orbit.periapsis_angle));
 
 		RenderUtil::render_body(creating);
+		RenderUtil::render_near_body(creating, info.c_str());
 	}
-
-	constexpr float node_size = 12.0f;
-	constexpr float text_offset = 20.0f;
-
-	constexpr Color per_color = BLUE;
-	Vector2 per_vec = Vector2Add(orbiting.pos(), cur_orbit.pos_at(0));
-	DrawCircleV(per_vec, node_size, per_color);
-	DrawText(per_rep.c_str(), per_vec.x + text_offset, per_vec.y + text_offset, 12, per_color);
-
-	constexpr Color apo_color = RED;
-	Vector2 apo_vec = Vector2Add(orbiting.pos(), cur_orbit.pos_at(0.5f));
-	DrawCircleV(apo_vec, node_size, apo_color);
-	DrawText(apo_rep.c_str(), apo_vec.x + text_offset, apo_vec.y + text_offset, 12, apo_color);
 }

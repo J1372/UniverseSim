@@ -6,6 +6,7 @@
 #include "Body.h"
 #include "PlanetMouseModifier.h"
 #include "Event.h"
+#include "OrbitProjection.h"
 
 struct Removal;
 
@@ -13,16 +14,9 @@ class SatelliteCreation : public InteractionState
 {
 	int parent_id;
 	Body creating;
-	Orbit cur_orbit;
 	EventHandle<Removal> listener;
-
-	static constexpr int samples = 129;
-	static_assert(samples >= 3, "Number of samples must be more than 2 to at least sample periapsis, then apoapsis, then periapsis.");
-	static_assert(samples % 2 == 1, "Number of samples must be odd so that the apoapsis is always sampled (without additional logic or multiple loops).");
-	static constexpr float sample_dist = 1.0f / (samples - 1);
-
-	// Cached samples to use for drawing orbit ellipse.
-	std::array<Vector2, samples> orbit_samples;
+	
+	OrbitProjection orbit_projection;
 
 	// Timestamp of tick #, when orbit projection was calculated.
 	int prev_projection_tick = -1;

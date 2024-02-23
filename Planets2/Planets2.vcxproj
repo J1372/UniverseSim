@@ -181,6 +181,7 @@
     <ClInclude Include="LineSweep.h" />
     <ClInclude Include="NullPartitioning.h" />
     <ClInclude Include="Orbit.h" />
+    <ClInclude Include="OrbitProjection.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PlanetCreation.h" />
     <ClInclude Include="PlanetMouseModifier.h" />
@@ -230,6 +231,7 @@
     <ClCompile Include="LineSweep.cpp" />
     <ClCompile Include="NullPartitioning.cpp" />
     <ClCompile Include="Orbit.cpp" />
+    <ClCompile Include="OrbitProjection.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PlanetCreation.cpp" />
     <ClCompile Include="PlanetMouseModifier.cpp" />
