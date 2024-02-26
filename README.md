@@ -14,12 +14,6 @@ Additional commands and toggles can be found in the help menu by pressing the H 
 During the simulation, different information displays can be toggled by the user and the user may interact with the simulator in various ways listed in the Features section.
 
 ### Features:
-- N-body physics simulation between planetary bodies.
-- Three different methods of spatial partitioning that can be selected at runtime for use in collision detection:
-  - Quadtree
-  - Grid
-  - Line sweep
-- Option to set value for gravitational accuracy to increase performance using the Barnes-Hut approximation algorithm.
 - Universe generation:
   - Customizable random system generator, which generates a functional planetary system with satellites of varying distances and orbital eccentricities. Parameterized by user-specified:
     - Ratio of central body mass to system mass
@@ -28,8 +22,16 @@ During the simulation, different information displays can be toggled by the user
     - Moon chance
     - Retrograde chance
   - Multiple different planetary types with varying densities.
-  - Generation of bodies with random masses and uniform random positions.
- 
+
+ - Display of simulation information:
+    - Real-time display of orbital trajectories.
+    - Toggleable display of planetary body information.
+    - Toggleable display of collision statistics
+      - Number of collision checks last tick.
+      - Number of collision checks since simulation started.
+    - Toggleable visual representation of partitioning methods during simulation.
+      - If planetary body information display also enabled, will also display alongside the body extra information related to the partitioning method.
+
 - Interaction during simulation:
   - Attaching the camera to follow a planet.
   - Creating custom planets, setting mass and velocity.
@@ -37,14 +39,14 @@ During the simulation, different information displays can be toggled by the user
   - Generating systems with initial velocities.
   - Deleting objects.
 
-- Display of simulation information:
-  - Real-time display of orbital trajectories.
-  - Toggleable display of planetary body information.
-  - Toggleable display of collision statistics
-    - Number of collision checks last tick.
-    - Number of collision checks since simulation started.
-  - Toggleable visual representation of partitioning methods during simulation.
-    - If planetary body information display also enabled, will also display alongside the body extra information related to the partitioning method.
+
+
+- Three different methods of spatial partitioning that can be selected at runtime for use in collision detection:
+  - Quadtree
+  - Grid
+  - Line sweep
+- Option to set value for gravitational accuracy to increase performance using the Barnes-Hut approximation algorithm.
+- N-body physics simulation between planetary bodies.
 
 ## Video
 Here are videos of various clips showing the simulator and some of its features (with timestamps in the descriptions):
