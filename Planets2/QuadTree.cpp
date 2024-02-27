@@ -6,36 +6,29 @@
 #include "Collision.h"
 #include "DebugInfo.h"
 
-DynamicPool<QuadChildren<QuadTree>> QuadTree::quad_pool{ 100 };
-int QuadTree::max_bodies_per_quad = 10;
-int QuadTree::max_depth = 5;
-int QuadTree::quads_generated = 0;
+DynamicPool<QuadChildren<QuadNode>> QuadNode::quad_pool { 100 };
 
-QuadTree::QuadTree(float size, int max_bodies_per_quad, int max_depth) :
-	dimensions{ -size / 2.0f, -size / 2.0f, size, size }, quad_id(quads_generated++), depth(0)
-{
-	QuadTree::max_bodies_per_quad = max_bodies_per_quad;
-	QuadTree::max_depth = max_depth;
-	QuadTree::quads_generated = 0;
-}
-
-QuadTree::QuadTree(float x, float y, float size, int depth) :
-	dimensions{ x, y, size, size }, quad_id(quads_generated++), depth(depth)
+QuadNode::QuadNode(float x, float y, float size, int depth) :
+	dimensions { x, y, size, size }, depth(depth)
 {}
 
-int QuadTree::get_collisions(std::vector<Collision>& collisions) const
+int QuadNode::get_collisions(std::vector<Collision>& collisions) const
 {
 	int checks = 0;
 
-	if (is_leaf()) {
-		if (!quad_bodies.empty()) {
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+	if (is_leaf())
+	{
+		if (!quad_bodies.empty())
+		{
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++)
+			{
 				Body& body = **it;
 				checks += get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
 			}
 		}
 	}
-	else {
+	else
+	{
 
 		/* Need to do a collision check on our bodies.
 		*
@@ -47,22 +40,26 @@ int QuadTree::get_collisions(std::vector<Collision>& collisions) const
 		*/
 
 
-		if (!quad_bodies.empty()) {
+		if (!quad_bodies.empty())
+		{
 			// First, collision check with our node's bodies.
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++) {
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++)
+			{
 				Body& body = **it;
 				checks += get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
 			}
 
 			// Now, do a collision check on each body with the bodies of relevant child nodes.
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++) {
+			for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++)
+			{
 				Body& body = **it;
 				checks += get_collisions_child(body, collisions);
 			}
 		}
 
 		// Can come before or after earlier checks.
-		for (QuadTree& node : *children) {
+		for (QuadNode& node : *children)
+		{
 			checks += node.get_collisions(collisions);
 		}
 
@@ -71,33 +68,28 @@ int QuadTree::get_collisions(std::vector<Collision>& collisions) const
 	return checks;
 }
 
-std::vector<Collision> QuadTree::get_collisions_impl()
+int QuadNode::get_collisions_child(Body& checking, std::vector<Collision>& collisions) const
 {
-	std::vector<Collision> collisions;
-	num_collision_checks_tick = get_collisions(collisions);
-	return collisions;
-}
-
-int QuadTree::get_collisions_child(Body& checking, std::vector<Collision>& collisions) const
-{
-	/* 
-	* 
+	/*
+	*
 	* For each child quad which contains partially the body:
 	*	handle_collision body with all in that node
-	* 
+	*
 	*/
 
 	int checks = 0;
 
 	// Get a list of all our child quads that at least partially contain the body.
-	std::vector<QuadTree*> to_check = children->get_quads<&QuadTree::contains_partially>(checking);
+	std::vector<QuadNode*> to_check = children->get_quads<&QuadNode::contains_partially>(checking);
 
 	// Check for collisions between the given body and the bodies of relevant child nodes.
-	for (QuadTree* quad : to_check) {
+	for (QuadNode* quad : to_check)
+	{
 		// get_collisions_internal can be static, and renamed.
 		checks += quad->get_collisions_internal(checking, quad->quad_bodies.begin(), quad->quad_bodies.end(), collisions);
 
-		if (!quad->is_leaf()) {
+		if (!quad->is_leaf())
+		{
 			checks += quad->get_collisions_child(checking, collisions);
 		}
 
@@ -107,36 +99,42 @@ int QuadTree::get_collisions_child(Body& checking, std::vector<Collision>& colli
 
 }
 
-QuadTree* QuadTree::add_internal(Body& body)
+QuadNode* QuadNode::add_internal(Body& body)
 {
 	cur_size++;
 
-	if (is_leaf()) {
+	if (is_leaf())
+	{
 		quad_bodies.push_back(&body);
 		return this;
 	}
-	else {
-		if (is_root() and !contains_fully(body)) {
+	else
+	{
+		if (is_root() and !contains_fully(body))
+		{
 			// Body is slightly out of bounds of the entire quad tree.
 			quad_bodies.push_back(&body);
 			return this;
 		}
-		else {
+		else
+		{
 			return selective_add(body);
 		}
 	}
 }
 
-int QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const
+int QuadNode::get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const
 {
 	int checks = 0;
 
-	while (it != end) {
+	while (it != end)
+	{
 		Body& body2 = **it;
 
 		checks++;
 
-		if (checking.collided_with(body2)) {
+		if (checking.collided_with(body2))
+		{
 			collisions.emplace_back(Body::get_sorted_pair(checking, body2));
 		}
 
@@ -146,195 +144,212 @@ int QuadTree::get_collisions_internal(Body& checking, std::vector<Body*>::const_
 	return checks;
 }
 
-bool QuadTree::in_more_than_one_child(const Body& body) const
+bool QuadNode::in_more_than_one_child(const Body& body) const
 {
 	// Get a list of our child quads that at least partially contain the body.
-	std::vector<QuadTree*> contained_in = children->get_quads<&QuadTree::contains_partially>(body);
+	std::vector<QuadNode*> contained_in = children->get_quads<&QuadNode::contains_partially>(body);
 
 	// if in more than one child quad, return true.
 	return contained_in.size() > 1;
 }
 
-QuadTree* QuadTree::selective_add(Body& new_body)
+QuadNode* QuadNode::selective_add(Body& new_body)
 {
 	// This = parent node.
 	// 
 	// Add to a child if body fully contained in it, else add to self.
 
-	if (in_more_than_one_child(new_body)) {
+	if (in_more_than_one_child(new_body))
+	{
 		quad_bodies.push_back(&new_body);
 		return this;
 	}
-	else { // is only in one child node.
+	else
+	{
+		// is only in one child node.
 		return add_to_child(new_body); // adds to the child that contains the body fully.
 	}
 }
 
-void QuadTree::add_body(Body& new_body)
+void QuadNode::add_body(Body& new_body, int max_bodies, int max_depth)
 {
-	QuadTree* added_to = add_internal(new_body);
+	QuadNode* added_to = add_internal(new_body);
 
 	// should never be nullptr.
-	added_to->split_check();
-	
+	added_to->split_check(max_bodies, max_depth);
+
 }
 
-void QuadTree::rem_body(const Body& body)
+void QuadNode::rem_body(const Body& body, int max_bodies)
 {
-	// Could be an outside command, so body could be in one of our child nodes.
-	QuadTree& quad = find_quad(body);
-	quad.rem_body_internal(body);
+	QuadNode& quad = find_quad(body);
+	quad.rem_body_internal(body, max_bodies);
 }
 
-void QuadTree::notify_move(const Body* from, Body* to)
+void QuadNode::notify_move(const Body* from, Body* to)
 {
-	if (is_leaf()) {
+	if (is_leaf())
+	{
 		auto it = std::find(quad_bodies.begin(), quad_bodies.end(), from);
 		*it = to;
 	}
-	else {
-		QuadTree* contained_in = children->get_quad<&QuadTree::contains_fully>(*from);
-		if (contained_in) {
+	else
+	{
+		QuadNode* contained_in = children->get_quad<&QuadNode::contains_fully>(*from);
+		if (contained_in)
+		{
 			contained_in->notify_move(from, to);
 		}
-		else {
+		else
+		{
 			auto it = std::find(quad_bodies.begin(), quad_bodies.end(), from);
 			*it = to;
 		}
 	}
-	
+
 }
 
-bool QuadTree::is_leaf() const
+bool QuadNode::is_leaf() const
 {
 	return children == nullptr;
 }
 
-bool QuadTree::is_root() const
+bool QuadNode::is_root() const
 {
 	return parent == nullptr;
 }
 
-bool QuadTree::is_empty() const
+bool QuadNode::is_empty() const
 {
 	return cur_size == 0;
 }
 
-bool QuadTree::has_room() const
+bool QuadNode::has_room(int max_bodies) const
 {
-	return cur_size < max_bodies_per_quad;
+	return cur_size < max_bodies;
 }
 
-bool QuadTree::is_full() const
+bool QuadNode::is_full(int max_bodies) const
 {
-	return cur_size >= max_bodies_per_quad;
+	return cur_size >= max_bodies;
 }
 
-bool QuadTree::should_concatenate() const
+bool QuadNode::should_concatenate(int max_bodies) const
 {
-	return cur_size <= max_bodies_per_quad;
+	return cur_size <= max_bodies;
 }
 
-bool QuadTree::should_split() const
+bool QuadNode::should_split(int max_bodies) const
 {
-	return cur_size > max_bodies_per_quad;
+	return cur_size > max_bodies;
 }
 
-bool QuadTree::reached_depth_limit() const
+bool QuadNode::reached_depth_limit(int max_depth) const
 {
 	return depth >= max_depth;
 }
 
-void QuadTree::rem_body_internal(const Body& body)
+void QuadNode::rem_body_internal(const Body& body, int max_bodies)
 {
 	auto it = std::find(quad_bodies.begin(), quad_bodies.end(), &body);
 	quad_bodies.erase(it);
 	notify_child_removed();
-	concat_check();
+	concat_check(max_bodies);
 }
 
-Body* QuadTree::find_body(Vector2 point) const
+Body* QuadNode::find_body(Vector2 point) const
 {
 	// Because bodies can be in branch nodes too, can't just go to the leaf node and search.
 	auto found = std::find_if(quad_bodies.begin(), quad_bodies.end(), [point](const Body* body) { return body->contains_point(point); });
 
-	if (found != quad_bodies.end()) {
+	if (found != quad_bodies.end())
+	{
 		return *found;
-	} else if (!is_leaf()) {
+	}
+	else if (!is_leaf())
+	{
 		// Find the quad that the (x,y) point should be in, then recurse into it.
-		QuadTree* quad = children->get_quad<&QuadTree::contains_point>(point);
+		QuadNode* quad = children->get_quad<&QuadNode::contains_point>(point);
 		return quad->find_body(point);
 	}
 
 	return nullptr;
 }
 
-std::span<const QuadTree, 4> QuadTree::get_quads() const
+void QuadNode::update(int max_bodies, int max_depth)
 {
-	return children->data();
+	update_internal(max_bodies, max_depth);
+	split_check(max_bodies, max_depth);
 }
 
-void QuadTree::update()
-{
-	update_internal();
-	split_check();
-}
-
-void QuadTree::update_internal()
+void QuadNode::update_internal(int max_bodies, int max_depth)
 {
 	// After body position update tick, update the quad with new positions.
-	if (is_leaf()) {
+	if (is_leaf())
+	{
 		auto it = quad_bodies.begin();
-		while (it != quad_bodies.end()) {
+		while (it != quad_bodies.end())
+		{
 			Body& body = **it;
 
-			if (contains_fully(body) or is_root()) { // still fully contains this body, no changes needed.
+			if (contains_fully(body) or is_root())
+			{ // still fully contains this body, no changes needed.
 				it++;
 			}
-			else { // body no longer completely inside this leaf node.
+			else
+			{ // body no longer completely inside this leaf node.
 				it = move_up(it);
 			}
 
 		}
 
 	}
-	else {
+	else
+	{
 		int to_check = quad_bodies.size();
 
-		for (QuadTree& node : *children) {
-			node.update_internal();
+		for (QuadNode& node : *children)
+		{
+			node.update_internal(max_bodies, max_depth);
 		}
 
 		// only check bodies which child nodes have not just reinserted upwards to this node.
 		auto it = quad_bodies.begin();
-		while (to_check != 0) {
+		while (to_check != 0)
+		{
 			Body& body = **it;
 
-			if (contains_fully(body)) {
+			if (contains_fully(body))
+			{
 				// move to child node if body is fully contained by it.
-				
+
 				// Get the child quad that fully contains the body, if any do.
-				QuadTree* contained_in = children->get_quad<&QuadTree::contains_fully>(body);
+				QuadNode* contained_in = children->get_quad<&QuadNode::contains_fully>(body);
 
 				// If the body is fully contained in a child quad, move it into that quad.
-				if (contained_in) {
+				if (contained_in)
+				{
 					// all child nodes have already been updated, safe to call add_body (possible split) on them.
 					// may want to add_internal though, since we will do a split check anyway.
-					contained_in->add_body(body); 
+					contained_in->add_body(body, max_bodies, max_depth);
 					it = quad_bodies.erase(it);
 				}
-				else { // No child quad fully contains the body, so keep it in this node.
+				else
+				{ // No child quad fully contains the body, so keep it in this node.
 					it++;
 				}
 
 
 			}
-			else { // body no longer completely inside this node.
+			else
+			{ // body no longer completely inside this node.
 
-				if (!is_root()) {
+				if (!is_root())
+				{
 					it = move_up(it);
 				}
-				else {
+				else
+				{
 					// wraparound or deletion is about to happen.
 					it++;
 				}
@@ -346,37 +361,39 @@ void QuadTree::update_internal()
 		}
 
 		// We may have reinserted upwards from our node or child nodes.
-		if (should_concatenate()) {
+		if (should_concatenate(max_bodies))
+		{
 			concatenate();
 		}
 	}
 }
 
-bool QuadTree::contains_point(Vector2 point) const
+bool QuadNode::contains_point(Vector2 point) const
 {
 	return Physics::point_in_rect(point, dimensions);
 }
 
-bool QuadTree::contains_fully(const Body& body) const
+bool QuadNode::contains_fully(const Body& body) const
 {
 	return body.in_rect(dimensions);
 }
 
-bool QuadTree::contains_partially(const Body& body) const
+bool QuadNode::contains_partially(const Body& body) const
 {
 	return body.intersects_rect(dimensions);
 }
 
-void QuadTree::notify_child_removed()
+void QuadNode::notify_child_removed()
 {
-	cur_size--;
+	--cur_size;
 
-	if (!is_root()) {
+	if (!is_root())
+	{
 		parent->notify_child_removed();
 	}
 }
 
-std::vector<Body*>::iterator QuadTree::move_to_child(std::vector<Body*>::iterator it)
+std::vector<Body*>::iterator QuadNode::move_to_child(std::vector<Body*>::iterator it)
 {
 	add_to_child(**it);
 	// Body moved to child node, so no need to decrease our size.
@@ -384,7 +401,7 @@ std::vector<Body*>::iterator QuadTree::move_to_child(std::vector<Body*>::iterato
 	return quad_bodies.erase(it);
 }
 
-std::vector<Body*>::iterator QuadTree::move_up(std::vector<Body*>::iterator it)
+std::vector<Body*>::iterator QuadNode::move_up(std::vector<Body*>::iterator it)
 {
 	// Body is leaving this quad entirely, so decrease size.
 	cur_size--;
@@ -394,41 +411,45 @@ std::vector<Body*>::iterator QuadTree::move_up(std::vector<Body*>::iterator it)
 
 }
 
-QuadTree* QuadTree::add_to_child(Body& new_body)
+QuadNode* QuadNode::add_to_child(Body& new_body)
 {
 	// Get the child quad that fully contains the body, if any do.
-	QuadTree* contained_in = children->get_quad<&QuadTree::contains_fully>(new_body);
+	QuadNode* contained_in = children->get_quad<&QuadNode::contains_fully>(new_body);
 	// if any child quad fully contains the body, add it to the quad.
-	if (contained_in) {
+	if (contained_in)
+	{
 		return contained_in->add_internal(new_body);
 	}
-	else {
+	else
+	{
 		return nullptr;
 	}
 }
 
-void QuadTree::concatenate()
+void QuadNode::concatenate()
 {
 	// If we are concatenating, then all of our child nodes are leaves.
 	// So we only have to move their quad bodies here, no need to recurse.
-	
+
 	// Calculating and reserving capacity shouldn't be necessary,
 	// since we only split because we reached max capacity.
 	// And we are only concatenating because we are below max capacity.
 
 	// copy all body pointers from a quad, without erasing them in that quad.
-	auto copy_bodies = [](const QuadTree& quad, std::vector<Body*>& copy_to) {
+	auto copy_bodies = [](const QuadNode& quad, std::vector<Body*>& copy_to)
+	{
 		copy_to.insert(copy_to.end(), quad.quad_bodies.begin(), quad.quad_bodies.end());
 	};
 
-	for (QuadTree& node : *children) {
+	for (QuadNode& node : *children)
+	{
 		copy_bodies(node, quad_bodies);
 	}
 
 	children.reset();
 }
 
-void QuadTree::split()
+void QuadNode::split(int max_depth)
 {
 	float x = dimensions.x;
 	float y = dimensions.y;
@@ -438,26 +459,32 @@ void QuadTree::split()
 
 	children = quad_pool.get(x, y, dimensions.width, next_depth);
 
-	for (QuadTree& node : *children) {
+	for (QuadNode& node : *children)
+	{
 		node.parent = this;
 	}
 
 	// add bodies to respective quads
 
 	auto it = quad_bodies.begin();
-	while (it < quad_bodies.end()) { //&& ref
+	while (it < quad_bodies.end())
+	{
 		Body& body = **it;
 
-		if (in_more_than_one_child(body)) {
+		if (in_more_than_one_child(body))
+		{
 			// stays in parent (here), since it is not unique to any child node.
 			it++;
 		}
-		else {
-			if (is_root() and !contains_fully(body)) {
+		else
+		{
+			if (is_root() and !contains_fully(body))
+			{
 				// Body is slightly out of bounds of the entire quad tree.
 				it++;
 			}
-			else {
+			else
+			{
 				// move body to the child node that contains it.
 				it = move_to_child(it);
 			}
@@ -465,7 +492,7 @@ void QuadTree::split()
 	}
 }
 
-void QuadTree::reinsert(Body& body)
+void QuadNode::reinsert(Body& body)
 {
 	// Reinserting body upwards from a child node (which may or may not be a leaf node).
 
@@ -474,23 +501,28 @@ void QuadTree::reinsert(Body& body)
 	// We want to keep moving up the chain if the body is not fully contained in this node.
 	// We want to add the body to the current node if it is fully contained in it.
 	//  If the body is fully contained in one of our children, add it to there instead.
-	if (contains_fully(body)) { // add to self. or add to child if fully fits in a child node.
+	if (contains_fully(body))
+	{
+		// add to self. or add to child if fully fits in a child node.
 		// No need to increment cur_size, since the body is already counted (was in child node).
 		selective_add(body);
 	}
-	else if (is_root()) {
+	else if (is_root())
+	{
 		// If body is not completely in the root quadtree, it is about to be wrapped around to the other side
 		//	since the quadtree root's size is the same size as the max universe size.
 		quad_bodies.push_back(&body);
 	}
-	else { // not fully contained in this node, and this node is not the root (parent != nullptr)
+	else
+	{
+		// not fully contained in this node, and this node is not the root (parent != nullptr)
 		// Not fully contained in this node, needs to continue moving upwards.
-		cur_size--; // was previously in a child node, and now is moving to our parent node.
+		--cur_size; // was previously in a child node, and now is moving to our parent node.
 		parent->reinsert(body);
 	}
 }
 
-void QuadTree::concat_check()
+void QuadNode::concat_check(int max_bodies)
 {
 
 	// After a body has been removed from the quad tree entirely,
@@ -499,8 +531,10 @@ void QuadTree::concat_check()
 	// A removal in a child node can result in a sequence of concatenations of its parents.
 	// If a node does not concatenate as a result of the removal, its parent wont concatenate either.
 
-	if (is_root()) {
-		if (!is_leaf() and should_concatenate()) {
+	if (is_root())
+	{
+		if (!is_leaf() and should_concatenate(max_bodies))
+		{
 			concatenate();
 		}
 		return;
@@ -508,72 +542,89 @@ void QuadTree::concat_check()
 
 	// not root.
 
-	if (is_leaf()) { // leaves cannot concatenate, but check parent.
-		parent->concat_check();
+	if (is_leaf())
+	{
+		// leaves cannot concatenate, but check parent.
+		parent->concat_check(max_bodies);
 	}
-	else if (should_concatenate()) { // parent, and not at max capacity.
+	else if (should_concatenate(max_bodies))
+	{
+		// parent, and not at max capacity.
 		// if we are a parent and we concatenate, we still need to tell our parent to check for concatenation.
 		concatenate();
-		parent->concat_check();
+		parent->concat_check(max_bodies);
 	}
-	else {
+	else
+	{
 		// parent and doesn't need to concatenate.
 		// do nothing and stop checking.
 		// if we are a parent that didn't concatenate, then none of our parents concatenated either.
 	}
 }
 
-void QuadTree::get_representation_internal(std::vector<Rectangle>& rep) const {
-	if (is_leaf()) {
+void QuadNode::get_representation_internal(std::vector<Rectangle>& rep) const
+{
+	if (is_leaf())
+	{
 		rep.push_back(dimensions);
 	}
-	else {
-		for (QuadTree& node : *children) {
+	else
+	{
+		for (QuadNode& node : *children)
+		{
 			node.get_representation_internal(rep);
 		}
 	}
 
 }
 
-void QuadTree::split_check()
+void QuadNode::split_check(int max_bodies, int max_depth)
 {
-	if (is_leaf()) {
-		if (should_split() and !reached_depth_limit()) {
-			split();
+	if (is_leaf())
+	{
+		if (should_split(max_bodies) and !reached_depth_limit(max_depth))
+		{
+			split(max_depth);
 
-			for (QuadTree& node : *children) {
-				node.split_check();
+			for (QuadNode& node : *children)
+			{
+				node.split_check(max_bodies, max_depth);
 			}
 		}
 	}
-	else {
-		for (QuadTree& node : *children) {
-			node.split_check();
+	else
+	{
+		for (QuadNode& node : *children)
+		{
+			node.split_check(max_bodies, max_depth);
 		}
 	}
 }
 
 
-std::vector<Rectangle> QuadTree::get_representation() const {
+std::vector<Rectangle> QuadNode::get_representation() const
+{
 	std::vector<Rectangle> rep;
 	get_representation_internal(rep);
 	return rep;
 }
 
-QuadTree& QuadTree::find_quad(const Body& body)
+QuadNode& QuadNode::find_quad(const Body& body)
 {
 	// Can't recurse any further, and all bodies are somewhere in the quadtree, so it must be in this one.
-	if (is_leaf()) {
+	if (is_leaf())
+	{
 		return *this;
 	}
 
 	// Is a parent node.
 
 	// Get the child quad that fully contains the body, if any do.
-	QuadTree* contained_in = children->get_quad<&QuadTree::contains_fully>(body);
+	QuadNode* contained_in = children->get_quad<&QuadNode::contains_fully>(body);
 
 	// If a child node fully contains the body we are looking for, then recurse into it.
-	if (contained_in) {
+	if (contained_in)
+	{
 		return contained_in->find_quad(body);
 	}
 
@@ -581,20 +632,22 @@ QuadTree& QuadTree::find_quad(const Body& body)
 	return *this;
 }
 
-const QuadTree& QuadTree::find_quad(const Body& body) const
+const QuadNode& QuadNode::find_quad(const Body& body) const
 {
 	// Can't recurse any further, and all bodies are somewhere in the quadtree, so it must be in this one.
-	if (is_leaf()) {
+	if (is_leaf())
+	{
 		return *this;
 	}
 
 	// Is a parent node.
 
 	// Get the child quad that fully contains the body, if any do.
-	QuadTree* contained_in = children->get_quad<&QuadTree::contains_fully>(body);
+	QuadNode* contained_in = children->get_quad<&QuadNode::contains_fully>(body);
 
 	// If a child node fully contains the body we are looking for, then recurse into it.
-	if (contained_in) {
+	if (contained_in)
+	{
 		return contained_in->find_quad(body);
 	}
 
@@ -602,11 +655,22 @@ const QuadTree& QuadTree::find_quad(const Body& body) const
 	return *this;
 }
 
-void QuadTree::get_info(const Body& body, DebugInfo& info) const
+void QuadNode::get_info(const Body& body, DebugInfo& info) const
 {
-	const QuadTree& quad = find_quad(body);
+	const QuadNode& quad = find_quad(body);
 
-	info.add("Quad ID: " + std::to_string(quad.quad_id));
 	info.add("Quad Bodies: " + std::to_string(quad.cur_size));
+	info.add("Quad Depth: " + std::to_string(quad.depth));
 
+}
+
+QuadTree::QuadTree(float size, int max_bodies_per_quad, int max_depth) :
+	root { -size / 2.0f, -size / 2.0f, size, 0 }, max_bodies_per_quad(max_bodies_per_quad), max_depth(max_depth)
+{}
+
+std::vector<Collision> QuadTree::get_collisions_impl()
+{
+	std::vector<Collision> collisions;
+	num_collision_checks_tick = root.get_collisions(collisions);
+	return collisions;
 }
