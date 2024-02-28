@@ -5,6 +5,7 @@
 
 #include "Collision.h"
 #include "DebugInfo.h"
+#include <algorithm>
 
 DynamicPool<QuadChildren<QuadNode>> QuadNode::quad_pool { 100 };
 
@@ -79,20 +80,19 @@ int QuadNode::get_collisions_child(Body& checking, std::vector<Collision>& colli
 
 	int checks = 0;
 
-	// Get a list of all our child quads that at least partially contain the body.
-	std::vector<QuadNode*> to_check = children->get_quads<&QuadNode::contains_partially>(checking);
-
 	// Check for collisions between the given body and the bodies of relevant child nodes.
-	for (QuadNode* quad : to_check)
+	for (QuadNode& quad : *children)
 	{
-		// get_collisions_internal can be static, and renamed.
-		checks += quad->get_collisions_internal(checking, quad->quad_bodies.begin(), quad->quad_bodies.end(), collisions);
-
-		if (!quad->is_leaf())
+		if (quad.contains_partially(checking))
 		{
-			checks += quad->get_collisions_child(checking, collisions);
-		}
+			// get_collisions_internal can be static, and renamed.
+			checks += quad.get_collisions_internal(checking, quad.quad_bodies.begin(), quad.quad_bodies.end(), collisions);
 
+			if (!quad.is_leaf())
+			{
+				checks += quad.get_collisions_child(checking, collisions);
+			}
+		}
 	}
 
 	return checks;
@@ -146,11 +146,7 @@ int QuadNode::get_collisions_internal(Body& checking, std::vector<Body*>::const_
 
 bool QuadNode::in_more_than_one_child(const Body& body) const
 {
-	// Get a list of our child quads that at least partially contain the body.
-	std::vector<QuadNode*> contained_in = children->get_quads<&QuadNode::contains_partially>(body);
-
-	// if in more than one child quad, return true.
-	return contained_in.size() > 1;
+	return std::ranges::count_if(*children, [&body](const QuadNode& n) { return n.contains_partially(body); }) > 1;
 }
 
 QuadNode* QuadNode::selective_add(Body& new_body)
@@ -182,15 +178,27 @@ void QuadNode::add_body(Body& new_body, int max_bodies, int max_depth)
 
 void QuadNode::rem_body(const Body& body, int max_bodies)
 {
-	QuadNode& quad = find_quad(body);
-	quad.rem_body_internal(body, max_bodies);
+	--cur_size;
+
+	QuadNode* contained_in = is_leaf() ? nullptr : children->get_quad<&QuadNode::contains_fully>(body);
+	// If a child node fully contains the body we are looking for, then recurse into it.
+	if (contained_in)
+	{
+		contained_in->rem_body(body, max_bodies);
+	}
+	else
+	{
+		auto it = std::ranges::find(quad_bodies, &body);
+		quad_bodies.erase(it);
+		concat_check(max_bodies);
+	}
 }
 
 void QuadNode::notify_move(const Body* from, Body* to)
 {
 	if (is_leaf())
 	{
-		auto it = std::find(quad_bodies.begin(), quad_bodies.end(), from);
+		auto it = std::ranges::find(quad_bodies, from);
 		*it = to;
 	}
 	else
@@ -202,7 +210,7 @@ void QuadNode::notify_move(const Body* from, Body* to)
 		}
 		else
 		{
-			auto it = std::find(quad_bodies.begin(), quad_bodies.end(), from);
+			auto it = std::ranges::find(quad_bodies, from);
 			*it = to;
 		}
 	}
@@ -249,18 +257,10 @@ bool QuadNode::reached_depth_limit(int max_depth) const
 	return depth >= max_depth;
 }
 
-void QuadNode::rem_body_internal(const Body& body, int max_bodies)
-{
-	auto it = std::find(quad_bodies.begin(), quad_bodies.end(), &body);
-	quad_bodies.erase(it);
-	notify_child_removed();
-	concat_check(max_bodies);
-}
-
 Body* QuadNode::find_body(Vector2 point) const
 {
 	// Because bodies can be in branch nodes too, can't just go to the leaf node and search.
-	auto found = std::find_if(quad_bodies.begin(), quad_bodies.end(), [point](const Body* body) { return body->contains_point(point); });
+	auto found = std::ranges::find_if(quad_bodies, [point](const Body* body) { return body->contains_point(point); });
 
 	if (found != quad_bodies.end())
 	{
@@ -381,16 +381,6 @@ bool QuadNode::contains_fully(const Body& body) const
 bool QuadNode::contains_partially(const Body& body) const
 {
 	return body.intersects_rect(dimensions);
-}
-
-void QuadNode::notify_child_removed()
-{
-	--cur_size;
-
-	if (!is_root())
-	{
-		parent->notify_child_removed();
-	}
 }
 
 std::vector<Body*>::iterator QuadNode::move_to_child(std::vector<Body*>::iterator it)

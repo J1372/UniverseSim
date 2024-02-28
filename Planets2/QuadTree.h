@@ -38,9 +38,6 @@ class QuadNode
 	// Checks all bodies and reinserts bodies into the most fitting node.
 	void update_internal(int max_bodies, int max_depth);
 
-	// Will assume body is in the quad that this method was called on.
-	void rem_body_internal(const Body& body, int max_bodies);
-
 	// Performs a collision check between the body and all bodies starting at the given iterator until the end iterator.
 	// If a collision is detected, adds a Collision event to the collision vector.
 	int get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const;
@@ -77,9 +74,6 @@ class QuadNode
 
 	// Returns true if at least part of the body is inside the quad's dimensions.
 	bool contains_partially(const Body& body) const;
-
-	// If a body is removed from a child node (due to collision), notifies all relevant parent nodes to update their sizes.
-	void notify_child_removed();
 
 	// Moves body referenced by iterator to child node without increasing the current node's size.
 	// Returns the next iterator.
