@@ -30,11 +30,6 @@ class QuadNode
 	// The node's 4 potential children.
 	PoolPtr<QuadChildren<QuadNode>> children { quad_pool };
 
-
-	// Adds the body to the appropriate quad, updating node sizes along the way.
-	// Returns a pointer to the node the body was added to.
-	QuadNode* add_internal(Body& body);
-
 	// Checks all bodies and reinserts bodies into the most fitting node.
 	void update_internal(int max_bodies, int max_depth);
 
@@ -60,12 +55,6 @@ class QuadNode
 	// Returns true if the quad is not over capacity.
 	bool should_concatenate(int max_bodies) const;
 
-	// Returns true if the quad is over capacity.
-	bool should_split(int max_bodies) const;
-
-	// Returns true if quad's depth is the maximum depth limit, else false.
-	bool reached_depth_limit(int max_depth) const;
-
 	// Returns true if the point is inside the quad's dimensions.
 	bool contains_point(Vector2 point) const;
 
@@ -75,24 +64,12 @@ class QuadNode
 	// Returns true if at least part of the body is inside the quad's dimensions.
 	bool contains_partially(const Body& body) const;
 
-	// Moves body referenced by iterator to child node without increasing the current node's size.
-	// Returns the next iterator.
-	std::vector<Body*>::iterator move_to_child(std::vector<Body*>::iterator it);
-
 	// Moves body referenced by iterator upwards.
 	// Returns the next iterator.
 	std::vector<Body*>::iterator move_up(std::vector<Body*>::iterator it);
 
-	// Returns true if a body overlaps over more than one child nodes.
-	bool in_more_than_one_child(const Body& body) const;
-
-	// Chooses whether to add body to current quad or a child quad.
-	// Returns a pointer to the actual node the body was added to.
-	QuadNode* selective_add(Body& new_body);
-
-	// Finds a child node that can contain the body, and adds the body somewhere in that node.
-	// Returns a pointer to the actual node the body was added to.
-	QuadNode* add_to_child(Body& body);
+	// Handles recursive splitting of a leaf.
+	void leaf_split_check(int max_bodies, int max_depth);
 
 	// Handles possible concatenation in this quad and all relevant parent quads.
 	void concat_check(int max_bodies);
@@ -100,8 +77,12 @@ class QuadNode
 	// Moves all child nodes' bodies into this node, then resets their pointers to nullptr.
 	void concatenate();
 
-	// Creates 4 new child nodes. Moves all bodies that can completely fit inside a child node, into their respective child nodes.
-	void split(int max_depth);
+	// Creates 4 new child nodes.
+	// Moves all bodies that can completely fit inside a child node, into their respective child nodes.
+	// May split child nodes as well, if any reached max capacity.
+	void split(int max_bodies, int max_depth);
+
+	void add_no_split(Body& body);
 
 	// Reinserts a body from one node upwards into the smallest node that fully contains it.
 	void reinsert(Body& body);
@@ -125,7 +106,7 @@ public:
 
 	QuadNode() = default;
 	// internal constructor. still needs to be public for make_unique.
-	QuadNode(float x, float y, float size, int depth);
+	QuadNode(float x, float y, float size, QuadNode* parent, int depth, int max_bodies);
 
 	// Will add a body to the most appropriate quad node. Potentially splits that node if it reached its capacity.
 	void add_body(Body& body, int max_bodies_per_quad, int max_depth);
