@@ -1,5 +1,7 @@
 # UniverseSim
 
+![Image: orbit trajectories](https://github.com/J1372/UniverseSim/assets/95717261/e9613a2d-fd17-459d-b7eb-d4cbed3f2741)
+
 A customizable and interactive n-body planetary physics simulator written in C++. Made using the C [Raylib](https://github.com/raysan5/raylib) library for window creation, graphics, and keyboard and mouse input.
 
 
