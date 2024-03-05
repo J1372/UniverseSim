@@ -4,16 +4,12 @@
 
 A customizable and interactive n-body planetary physics simulator written in C++. Made using the C [Raylib](https://github.com/raysan5/raylib) library for window creation, graphics, and keyboard and mouse input.
 
-
-### What it does
-Simulates n-body physics between a number of planetary bodies. This means that every body is exerting gravitational forces on every other body, as opposed to moving on a predefined orbit or only simulating forces between a main body and its satellites individually.
+This program simulates n-body physics between planetary bodies. This means that every body is exerting gravitational forces on every other body, as opposed to moving on a predefined orbit or only simulating forces between a main body and its satellites.
 
 Settings for universe generation, physics, and partitioning methods can be customized at runtime using a gui.
-A universe is generated according to these settings.
-
 The simulation is paused on startup, but this can be toggled with the spacebar.
+Different information displays can be toggled by the user and the user may interact with the simulator in various ways listed in the Features section.
 Additional commands and toggles can be found in the help menu by pressing the H key.
-During the simulation, different information displays can be toggled by the user and the user may interact with the simulator in various ways listed in the Features section.
 
 ### Features:
 - Universe generation:
@@ -58,7 +54,7 @@ Here are videos of various clips showing the simulator and some of its features 
 [Older Video](https://youtu.be/eocuC2M2wu4)
 
 ## Releases
-Runnable binaries of the project for Windows 32 bit and 64 bit can be found under [releases](https://github.com/Xxthedarkmatterturtlepasta003xX/UniverseSim/releases/tag/v1.0.0).
+Runnable binaries of the project for Windows 32 bit and 64 bit can be found under [releases](https://github.com/J1372/UniverseSim/releases).
 
 ## Building the project
 The project uses C++20 features.
