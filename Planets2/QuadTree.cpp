@@ -15,49 +15,23 @@ QuadNode::QuadNode(float x, float y, float size, QuadNode* parent, int depth, in
 	quad_bodies.reserve(max_bodies);
 }
 
-int QuadNode::get_collisions(std::vector<Collision>& collisions) const
+int QuadNode::get_collisions(std::vector<Collision>& collisions)
 {
 	int checks = 0;
 
-	if (is_leaf())
+	Body** end = quad_bodies.data() + quad_bodies.size();
+	for (Body** it = quad_bodies.data(); it < end - 1; ++it)
 	{
-		if (!quad_bodies.empty())
-		{
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++)
-			{
-				Body& body = **it;
-				checks += get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
-			}
-		}
+		Body& body = **it;
+		checks += get_collisions_internal(body, it + 1, end, collisions);
 	}
-	else
+
+	if (!is_leaf())
 	{
-
-		/* Need to do a collision check on our bodies.
-		*
-		* This is different from a collision check in a leaf node.
-		* Our bodies can collide with each other, and with bodies in our child nodes.
-		*
-		* Specifically the child nodes that contains_partially(our_body)
-		* This involves recursion downwards.
-		*/
-
-
-		if (!quad_bodies.empty())
+		// Need to do a collision check with bodies in child nodes.
+		for (Body* body : quad_bodies)
 		{
-			// First, collision check with our node's bodies.
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end() - 1; it++)
-			{
-				Body& body = **it;
-				checks += get_collisions_internal(body, it + 1, quad_bodies.end(), collisions);
-			}
-
-			// Now, do a collision check on each body with the bodies of relevant child nodes.
-			for (auto it = quad_bodies.begin(); it != quad_bodies.end(); it++)
-			{
-				Body& body = **it;
-				checks += get_collisions_child(body, collisions);
-			}
+			checks += get_collisions_child(*body, collisions);
 		}
 
 		// Can come before or after earlier checks.
@@ -65,13 +39,12 @@ int QuadNode::get_collisions(std::vector<Collision>& collisions) const
 		{
 			checks += node.get_collisions(collisions);
 		}
-
 	}
 
 	return checks;
 }
 
-int QuadNode::get_collisions_child(Body& checking, std::vector<Collision>& collisions) const
+int QuadNode::get_collisions_child(Body& checking, std::vector<Collision>& collisions)
 {
 	/*
 	*
@@ -88,7 +61,7 @@ int QuadNode::get_collisions_child(Body& checking, std::vector<Collision>& colli
 		if (quad.contains_partially(checking))
 		{
 			// get_collisions_internal can be static, and renamed.
-			checks += quad.get_collisions_internal(checking, quad.quad_bodies.begin(), quad.quad_bodies.end(), collisions);
+			checks += quad.get_collisions_internal(checking, quad.quad_bodies.data(), quad.quad_bodies.data() + quad.quad_bodies.size(), collisions);
 
 			if (!quad.is_leaf())
 			{
@@ -101,25 +74,19 @@ int QuadNode::get_collisions_child(Body& checking, std::vector<Collision>& colli
 
 }
 
-int QuadNode::get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const
+int QuadNode::get_collisions_internal(Body& checking, Body** start, Body** end, std::vector<Collision>& collisions)
 {
-	int checks = 0;
-
-	while (it != end)
+	for (Body** it = start; it < end; ++it)
 	{
-		Body& body2 = **it;
+		Body& body = **it;
 
-		checks++;
-
-		if (checking.collided_with(body2))
+		if (checking.collided_with(body))
 		{
-			collisions.emplace_back(Body::get_sorted_pair(checking, body2));
+			collisions.emplace_back(Body::get_sorted_pair(checking, body));
 		}
-
-		it++;
 	}
 
-	return checks;
+	return end - start;
 }
 
 void QuadNode::add_body(Body& new_body, int max_bodies, int max_depth)

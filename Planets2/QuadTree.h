@@ -35,10 +35,10 @@ class QuadNode
 
 	// Performs a collision check between the body and all bodies starting at the given iterator until the end iterator.
 	// If a collision is detected, adds a Collision event to the collision vector.
-	int get_collisions_internal(Body& checking, std::vector<Body*>::const_iterator it, std::vector<Body*>::const_iterator end, std::vector<Collision>& collisions) const;
+	int get_collisions_internal(Body& checking, Body** it, Body** end, std::vector<Collision>& collisions);
 
 	// Get collisions between a body and all bodies in relevant child nodes.
-	int get_collisions_child(Body& checking, std::vector<Collision>& collisions) const;
+	int get_collisions_child(Body& checking, std::vector<Collision>& collisions);
 
 	// Returns whether the quad is the root.
 	bool is_root() const;
@@ -124,7 +124,7 @@ public:
 	void update(int max_bodies, int max_depth);
 
 	// Adds all detected collisions to collisions vector.
-	int get_collisions(std::vector<Collision>& collisions) const;
+	int get_collisions(std::vector<Collision>& collisions);
 
 	// Returns a representation of the boundaries of the quad tree and all of its child nodes.
 	std::vector<Rectangle> get_representation() const;
