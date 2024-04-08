@@ -94,6 +94,16 @@ bool AdvCamera::in_view(Rectangle rect) const
 		and LR.x >= 0 and LR.y >= 0;
 }
 
+Rectangle AdvCamera::get_view() const
+{
+	Vector2 UL = GetScreenToWorld2D({ 0, 0 }, camera);
+	Vector2 LR = GetScreenToWorld2D({ (float)GetScreenWidth(), (float)GetScreenHeight() }, camera);
+	float width = LR.x - UL.x;
+	float height = LR.y - UL.y;
+
+	return { UL.x, UL.y, width, height };
+}
+
 const Camera2D& AdvCamera::get_raylib_camera() const
 {
 	return camera;

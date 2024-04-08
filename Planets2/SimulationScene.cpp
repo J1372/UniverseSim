@@ -168,19 +168,6 @@ void SimulationScene::process_input()
 	
 }
 
-void SimulationScene::update_on_screen_bodies()
-{
-	on_screen_bodies.clear();
-
-	std::span<Body> bodies = universe.get_bodies();
-
-	for (Body& body : bodies) {
-		if (camera_state->in_view(body)) {
-			on_screen_bodies.push_back(&body);
-		}
-	}
-}
-
 void SimulationScene::update_orbit_projections()
 {
 	const Body& central = *universe.get_body(orbit_central);
@@ -357,7 +344,7 @@ Scene* SimulationScene::update()
 
 	// Camera may have moved, or universe updated.
 	// Need to get a new list of bodies that are on screen.
-	update_on_screen_bodies();
+	on_screen_bodies = universe.get_bodies_in(camera_state->get_view());
 
 	BeginDrawing();
 		ClearBackground(BLACK);

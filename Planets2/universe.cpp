@@ -384,6 +384,23 @@ std::span<Body> Universe::get_bodies()
 	return active_bodies;
 }
 
+std::vector<Body*> Universe::get_bodies_in(Rectangle area)
+{
+	// Todo: optimize by asking partitioning method.
+	std::vector<Body*> in_area;
+	in_area.reserve(active_bodies.size() / 2);
+
+	for (Body& b : active_bodies)
+	{
+		if (b.intersects_rect(area))
+		{
+			in_area.push_back(&b);
+		}
+	}
+
+	return in_area;
+}
+
 int Universe::get_num_bodies() const
 {
 	return active_bodies.size();

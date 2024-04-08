@@ -111,6 +111,9 @@ public:
 	// Returns a reference to all bodies in the universe
 	std::span<Body> get_bodies();
 
+	// Returns all bodies in area.
+	std::vector<Body*> get_bodies_in(Rectangle area);
+
 	// Returns number of bodies currently in the universe.
 	int get_num_bodies() const;
 

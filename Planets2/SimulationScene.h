@@ -89,9 +89,6 @@ class SimulationScene : public Scene
 	// Handles all user input.
 	void process_input();
 
-	// Updates the list of bodies that are on screen
-	void update_on_screen_bodies();
-
 	void update_orbit_projections();
 
 	// Attaches standard debug info to bodies that are on screen.
