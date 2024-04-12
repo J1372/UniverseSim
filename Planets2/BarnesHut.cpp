@@ -9,14 +9,14 @@ BarnesHutNode::BarnesHutNode(float x, float y, float size) :
 	dimensions { x, y, size, size }
 {}
 
-float BarnesHutNode::dist_ratio(const Body& body, float approximation_value) const
+float BarnesHutNode::dist_ratio_sq(const Body& body) const
 {
-	return dimensions.width / Physics::dist(center_of_mass, body.pos());
+	return (dimensions.width * dimensions.width) / Physics::dist_squared(center_of_mass, body.pos());
 }
 
-bool BarnesHutNode::sufficiently_far(const Body& body, float approximation_value) const
+bool BarnesHutNode::sufficiently_far(const Body& body, float approximation_value_sq) const
 {
-	return dist_ratio(body, approximation_value) < approximation_value;
+	return dist_ratio_sq(body) < approximation_value_sq;
 }
 
 void BarnesHutNode::update_mass_add(Vector2 center, long mass)
@@ -234,5 +234,7 @@ Vector2 BarnesHutNode::force_applied_to(const Body& body, float approximation_va
 }
 
 BarnesHut::BarnesHut(float size, float approximation_value) :
-	root { -size / 2.0f, -size / 2.0f, size }, approximation_value(approximation_value)
+	root { -size / 2.0f, -size / 2.0f, size },
+	approximation_value(approximation_value),
+	approximation_value_squared(std::pow(approximation_value, 2))
 {}
