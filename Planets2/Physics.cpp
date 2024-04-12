@@ -57,7 +57,7 @@ float Physics::dist(Vector2 point1, Vector2 point2)
 float Physics::dist_squared(Vector2 point1, Vector2 point2)
 {
 	Vector2 vector = Physics::distv(point1, point2);
-	float c_squared = std::pow(vector.x, 2) + std::pow(vector.y, 2);
+	float c_squared = vector.x * vector.x + vector.y * vector.y;
 	return c_squared;
 }
 
