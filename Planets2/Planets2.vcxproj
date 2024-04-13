@@ -167,7 +167,6 @@
     <ClInclude Include="DebugInfo.h" />
     <ClInclude Include="DefaultInteraction.h" />
     <ClInclude Include="Dropdown.h" />
-    <ClInclude Include="DynamicPool.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="FloatValidator.h" />
     <ClInclude Include="FreeCamera.h" />
@@ -200,7 +199,6 @@
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="Removal.h" />
     <ClInclude Include="TextValidator.h" />
-    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="MyRandom.h" />

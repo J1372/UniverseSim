@@ -205,7 +205,6 @@
       <Filter>Scenes\SimScene\CameraStates</Filter>
     </ClInclude>
     <ClInclude Include="QuadChildren.h" />
-    <ClInclude Include="DynamicPool.h" />
     <ClInclude Include="DebugInfo.h" />
     <ClInclude Include="BodyList.h" />
     <ClInclude Include="PlanetType.h">
@@ -220,7 +219,6 @@
     <ClInclude Include="FloatValidator.h">
       <Filter>UI\Validators</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="NullPartitioning.h">
       <Filter>Partitioning</Filter>
     </ClInclude>

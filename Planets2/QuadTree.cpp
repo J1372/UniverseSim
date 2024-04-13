@@ -7,8 +7,6 @@
 #include "DebugInfo.h"
 #include <algorithm>
 
-DynamicPool<QuadChildren<QuadNode>> QuadNode::quad_pool { 100 };
-
 QuadNode::QuadNode(float x, float y, float size, QuadNode* parent, int depth, int max_bodies) :
 	dimensions { x, y, size, size }, depth(depth), parent(parent)
 {
@@ -351,7 +349,7 @@ void QuadNode::split(int max_bodies, int max_depth)
 	// Depth level of the child nodes.
 	int next_depth = depth + 1;
 
-	children = quad_pool.get(x, y, dimensions.width, this, next_depth, max_bodies);
+	children = std::make_unique<QuadChildren<QuadNode>>(x, y, dimensions.width, this, next_depth, max_bodies);
 
 	// add bodies to respective quads
 

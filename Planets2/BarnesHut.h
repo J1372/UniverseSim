@@ -3,14 +3,11 @@
 #include "raylib.h"
 #include <span>
 #include "QuadChildren.h"
-#include "DynamicPool.h"
 
 class Body;
 
 class BarnesHutNode
 {
-	static DynamicPool<QuadChildren<BarnesHutNode>> quad_pool;
-
 	// A quad can only have 0 or 1 body.
 	// If a quad has a body, it cannot be a parent.
 	// Each non-empty quad is a leaf.
@@ -25,7 +22,7 @@ class BarnesHutNode
 	Rectangle dimensions {};
 
 	// The node's 4 potential children.
-	PoolPtr<QuadChildren<BarnesHutNode>> children { quad_pool };
+	std::unique_ptr<QuadChildren<BarnesHutNode>> children;
 
 	// Returns the width of this quad divided by the distance from its center of mass to the body.
 	float dist_ratio_sq(const Body& body) const;

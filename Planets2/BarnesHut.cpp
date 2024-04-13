@@ -3,8 +3,6 @@
 #include "Physics.h"
 #include <raymath.h>
 
-DynamicPool<QuadChildren<BarnesHutNode>> BarnesHutNode::quad_pool { 1000 };
-
 BarnesHutNode::BarnesHutNode(float x, float y, float size) :
 	dimensions { x, y, size, size }
 {}
@@ -185,7 +183,7 @@ void BarnesHutNode::split()
 	float x = dimensions.x;
 	float y = dimensions.y;
 
-	children = quad_pool.get(x, y, dimensions.width);
+	children = std::make_unique<QuadChildren<BarnesHutNode>>(x, y, dimensions.width);
 
 	// add current body to correct quad
 	// We are a leaf, and leaves can only have 1 body.

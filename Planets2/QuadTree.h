@@ -3,14 +3,11 @@
 #include "SpatialPartitioning.h"
 #include "raylib.h"
 #include "QuadChildren.h"
-#include "DynamicPool.h"
 
 class Body;
 
 class QuadNode
 {
-	static DynamicPool<QuadChildren<QuadNode>> quad_pool;
-
 	// The current quad's depth from the root.
 	int depth = 0;
 
@@ -28,7 +25,7 @@ class QuadNode
 	QuadNode* parent = nullptr;
 
 	// The node's 4 potential children.
-	PoolPtr<QuadChildren<QuadNode>> children { quad_pool };
+	std::unique_ptr<QuadChildren<QuadNode>> children;
 
 	// Checks all bodies and reinserts bodies into the most fitting node.
 	void update_internal(int max_bodies, int max_depth);
