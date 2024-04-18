@@ -82,10 +82,16 @@ float Physics::net_force(Vector2 p1, long m1, Vector2 p2, long m2)
 
 Vector2 Physics::grav_force(Vector2 p1, long m1, Vector2 p2, long m2)
 {
-	float force = Physics::net_force(p1, m1, p2, m2);
-
 	Vector2 dist = Physics::distv(p1, p2);
-	float theta = atan2(dist.y, dist.x); // radians
+	float dist_scalar_sq = dist.x * dist.x + dist.y * dist.y;
+	if (dist_scalar_sq == 0.0f) return Vector2Zero();
 
-	return { (float)(force * cos(theta)), (float)(force * sin(theta)) };
+	float force = (static_cast<float>(m1) * m2) / dist_scalar_sq;
+
+	float dist_scalar = std::sqrt(dist_scalar_sq);
+
+	float opp_over_hyp = dist.y / dist_scalar;
+	float adj_over_hyp = dist.x / dist_scalar;
+
+	return { force * adj_over_hyp, force * opp_over_hyp };
 }
