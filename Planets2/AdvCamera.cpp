@@ -75,8 +75,11 @@ bool AdvCamera::in_view(const Body& body) const
 	Vector2 leftmost = GetWorldToScreen2D({ body.left(), pos.y }, camera);
 	Vector2 rightmost = GetWorldToScreen2D({ body.right(), pos.y }, camera);
 
-	Vector2 lowest = GetWorldToScreen2D({ pos.x, body.bottom() }, camera);
-	Vector2 highest = GetWorldToScreen2D({ pos.x, body.top() }, camera);
+	float screen_radius = (rightmost.x - leftmost.x) / 2.0f;
+	float center_x = leftmost.x + screen_radius;
+
+	Vector2 lowest { center_x, leftmost.y + screen_radius };
+	Vector2 highest { center_x, leftmost.y - screen_radius };
 
 	// can optimize : screen_pos.x >= -body.radius && screen_pos.y >= -body.radius
 
