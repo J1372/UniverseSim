@@ -7,14 +7,14 @@ BarnesHutNode::BarnesHutNode(float x, float y, float size) :
 	dimensions { x, y, size, size }
 {}
 
-float BarnesHutNode::dist_ratio_sq(const Body& body) const
+float BarnesHutNode::dist_ratio_sq(Vector2 point) const
 {
-	return (dimensions.width * dimensions.width) / Physics::dist_squared(center_of_mass, body.pos());
+	return (dimensions.width * dimensions.width) / Physics::dist_squared(center_of_mass, point);
 }
 
-bool BarnesHutNode::sufficiently_far(const Body& body, float approximation_value_sq) const
+bool BarnesHutNode::sufficiently_far(Vector2 point, float approximation_value_sq) const
 {
-	return dist_ratio_sq(body) < approximation_value_sq;
+	return dist_ratio_sq(point) < approximation_value_sq;
 }
 
 void BarnesHutNode::update_mass_add(Vector2 center, long mass)
@@ -197,7 +197,7 @@ void BarnesHutNode::concatenate()
 	children.reset();
 }
 
-Vector2 BarnesHutNode::force_applied_to(const Body& body, float approximation_value) const
+Vector2 BarnesHutNode::force_applied_to(Vector2 point, long mass, float approximation_value) const
 {
 	if (is_leaf())
 	{
@@ -205,25 +205,27 @@ Vector2 BarnesHutNode::force_applied_to(const Body& body, float approximation_va
 		// This is an approximation of a grav pull on the body by the group of bodies in child nodes.
 		if (!is_empty())
 		{
-			return body.force_applied_by(center_of_mass, mass_sum);
+
+			return Physics::grav_force(point, mass, center_of_mass, mass_sum);
 		}
 		else
 		{
 			return { 0, 0 };
 		}
 	}
-	else if (sufficiently_far(body, approximation_value))
+	else if (sufficiently_far(point, approximation_value))
 	{
-		return body.force_applied_by(center_of_mass, mass_sum);
+		return Physics::grav_force(point, mass, center_of_mass, mass_sum);
 	}
 	else
 	{
 		// Not a leaf, and not sufficiently far away from this body.
 		Vector2 cur_force = { 0, 0 };
 
-		for (BarnesHutNode& child : *children)
+		for (const BarnesHutNode& child : *children)
 		{
-			cur_force = Vector2Add(cur_force, child.force_applied_to(body, approximation_value));
+			Vector2 to_add = child.force_applied_to(point, mass, approximation_value);
+			cur_force = Vector2Add(cur_force, to_add);
 		}
 
 		return cur_force;
@@ -236,3 +238,8 @@ BarnesHut::BarnesHut(float size, float approximation_value) :
 	approximation_value(approximation_value),
 	approximation_value_squared(std::pow(approximation_value, 2))
 {}
+
+Vector2 BarnesHut::force_applied_to(const Body& body) const
+{
+	return root.force_applied_to(body.pos(), body.get_mass(), approximation_value_squared);
+}
