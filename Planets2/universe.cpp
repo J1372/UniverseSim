@@ -379,6 +379,24 @@ std::span<const Body> Universe::get_bodies() const
 	return active_bodies.span();
 }
 
+std::vector<Body*> Universe::get_bodies_in_area(Rectangle area)
+{
+	std::vector<Body*> bodies;
+	bodies.reserve(active_bodies.size());
+
+	// todo use partitioning method.
+
+	for (Body& body : active_bodies)
+	{
+		if (body.intersects_rect(area))
+		{
+			bodies.push_back(&body);
+		}
+	}
+
+	return bodies;
+}
+
 std::span<Body> Universe::get_bodies()
 {
 	return active_bodies;

@@ -108,6 +108,9 @@ public:
 	// Returns a reference to all bodies in the universe
 	std::span<const Body> get_bodies() const;
 
+	// Returns all bodies at least partially in the given area.
+	std::vector<Body*> get_bodies_in_area(Rectangle area);
+
 	// Returns a reference to all bodies in the universe
 	std::span<Body> get_bodies();
 

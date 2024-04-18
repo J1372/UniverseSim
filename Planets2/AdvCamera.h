@@ -109,6 +109,9 @@ public:
 	// Return true if a rectangle is at least viewable by camera.
 	bool in_view(Rectangle rect) const;
 
+	// Return world area that is visible to camera.
+	Rectangle get_view() const;
+
 	// Returns a reference to the underlying raylib Camera2D struct of this camera.
 	const Camera2D& get_raylib_camera() const;
 
