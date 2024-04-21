@@ -13,10 +13,11 @@ struct Collision;
 struct Vector2;
 struct Removal;
 
-class Universe {
+class Universe
+{
 
 	// Settings that define universe generation, physics, system generation, etc.
-	UniverseSettings settings{};
+	UniverseSettings settings {};
 
 	// A possible partitioning method to be used in collision detection.
 	std::unique_ptr<SpatialPartitioning> partitioning_method;
@@ -56,7 +57,7 @@ class Universe {
 
 	// Handles body wraparound if body has gone out of bounds.
 	void handle_wraparound(Body& body);
-	
+
 	// Generates random portions [0, 1] between num_slots objects. Sum of all portions == 1.
 	std::vector<float> gen_rand_portions(int num_slots) const;
 

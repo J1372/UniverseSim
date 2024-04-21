@@ -10,11 +10,12 @@
 
 #include "Orbit.h"
 #include <raymath.h>
+#include <numbers>
 
 Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning)
 	: settings(to_set), partitioning_method(std::move(partitioning)),
-		dimensions{ -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
-		barnes_quad{ settings.universe_size_max, settings.grav_approximation_value }
+	dimensions { -settings.universe_size_max / 2.0f, -settings.universe_size_max / 2.0f, settings.universe_size_max , settings.universe_size_max },
+	barnes_quad { settings.universe_size_max, settings.grav_approximation_value }
 {
 	active_bodies.reserve(settings.universe_capacity);
 
@@ -30,18 +31,20 @@ Universe::Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartit
 		float x = Rand::real(-settings.universe_size_start, settings.universe_size_start);
 		float y = Rand::real(-settings.universe_size_start, settings.universe_size_start);
 
-		add_body(Body{ x, y, planet_mass });
+		add_body(Body { x, y, planet_mass });
 	}
 
 }
 
 void Universe::add_body(Body&& body)
 {
-	if (!can_create_body()) {
+	if (!can_create_body())
+	{
 		return;
 	}
 
-	if (!in_bounds(body.pos())) {
+	if (!in_bounds(body.pos()))
+	{
 		return;
 	}
 
@@ -60,7 +63,8 @@ void Universe::add_bodies(std::vector<Body>&& bodies)
 
 	auto it = bodies.begin();
 	auto end_it = bodies.begin() + adding;
-	while (it != end_it and can_create_body()) {
+	while (it != end_it)
+	{
 		Body& body = *it;
 		add_body(std::move(body));
 		it++;
@@ -75,7 +79,8 @@ void Universe::rem_from_partitioning(Body& to_remove)
 	partitioning_method->rem_body(to_remove);
 
 	const Body& moving = active_bodies.back();
-	if (moving != to_remove) {
+	if (moving != to_remove)
+	{
 		// Bodies are removed by swapping with last element, then popping from the vector.
 		// This means any pointer in partitioning to the last Body in the vector needs to 
 		// be updated to point to the now removed body.
@@ -94,17 +99,21 @@ void Universe::handle_wraparound(Body& body)
 	float wraparound_val = settings.universe_size_max / 2;
 	float reset_val = 2 * wraparound_val;
 
-	if (pos.x > wraparound_val) {
+	if (pos.x > wraparound_val)
+	{
 		pos.x = -reset_val + pos.x;
 	}
-	else if (pos.x < -wraparound_val) {
+	else if (pos.x < -wraparound_val)
+	{
 		pos.x = reset_val + pos.x;
 	}
 
-	if (pos.y > wraparound_val) {
+	if (pos.y > wraparound_val)
+	{
 		pos.y = -reset_val + pos.y;
 	}
-	else if (pos.y < -wraparound_val) {
+	else if (pos.y < -wraparound_val)
+	{
 		pos.y = reset_val + pos.y;
 	}
 
@@ -142,7 +151,8 @@ void Universe::handle_removal(Removal removal)
 	on_removal_observers.notify_all(removal);
 	Body& removed = active_bodies[active_bodies.get_index(removal.removed)];
 
-	if (removal.was_absorbed()) {
+	if (removal.was_absorbed())
+	{
 		Body& absorbed = active_bodies[active_bodies.get_index(removal.absorbed_by)];
 
 		// Remove the body before absorption. Re-add after to deal with radius change.
@@ -173,14 +183,16 @@ std::vector<float> Universe::gen_rand_portions(int num_slots) const
 	slots.reserve(num_slots);
 
 	float sum = 0.0f;
-	for (int i = 0; i < num_slots; ++i) {
+	for (int i = 0; i < num_slots; ++i)
+	{
 		float lot = Rand::real();
 		slots.emplace_back(lot);
 		sum += lot;
 	}
 
 	// map from [0:1] of total sum.
-	for (int i = 0; i < num_slots; ++i) {
+	for (int i = 0; i < num_slots; ++i)
+	{
 		slots[i] /= sum;
 	}
 
@@ -216,7 +228,8 @@ void Universe::handle_collision(Collision collision, std::vector<Removal>& to_re
 	bool already_removed = std::any_of(to_remove.begin(), to_remove.end(),
 		[big_id, small_id](Removal removal) { return removal.removed == big_id or removal.removed == small_id; });
 
-	if (!already_removed) {
+	if (!already_removed)
+	{
 		to_remove.emplace_back(small_id, big_id);
 	}
 
@@ -227,11 +240,13 @@ void Universe::handle_collisions(std::span<const Collision> collisions)
 	std::vector<Removal> to_remove;
 	to_remove.reserve(active_bodies.size());
 
-	for (const Collision& collision : collisions) {
+	for (const Collision& collision : collisions)
+	{
 		handle_collision(collision, to_remove);
 	}
 
-	for (Removal removal : to_remove) {
+	for (Removal removal : to_remove)
+	{
 		handle_removal(removal);
 	}
 }
@@ -242,13 +257,15 @@ void Universe::update()
 	{
 		body.reset_forces();
 	});
-	
+
 	// do grav pulls (update acceleration)
-	if (settings.use_gravity_approximation) {
+	if (settings.use_gravity_approximation)
+	{
 		barnes_quad.update(active_bodies);
 		handle_gravity_approximation();
 	}
-	else {
+	else
+	{
 		handle_gravity();
 	}
 
@@ -291,7 +308,8 @@ std::vector<Body> Universe::generate_rand_system(float x, float y)
 	// Compress the maximum possible distance of a moon to its planet.
 	float moon_max_dist = std::max(settings.satellite_min_dist, settings.satellite_max_dist / 10);
 
-	for (int i = 0; i < num_planets; ++i) {
+	for (int i = 0; i < num_planets; ++i)
+	{
 		long planet_mass = mass_ratios[i] * remaining_mass;
 
 		Body& planet = system.emplace_back(0.0f, 0.0f, planet_mass);
@@ -299,7 +317,8 @@ std::vector<Body> Universe::generate_rand_system(float x, float y)
 		planet.set_orbit(planet_orbit, Rand::real());
 
 
-		if (Rand::chance(settings.moon_chance)) {
+		if (Rand::chance(settings.moon_chance))
+		{
 			// Currently only one moon can be generated per planet.
 			// Can have this eat into planet's mass instead of just adding mass (currently actual mass > system_mass with moon generation).
 			long moon_mass = Rand::real(0.01f, 0.1f) * planet.get_mass();
@@ -309,7 +328,6 @@ std::vector<Body> Universe::generate_rand_system(float x, float y)
 			moon_orbit.set_periapsis(planet, Rand::real(settings.satellite_min_dist, moon_max_dist));
 			moon.set_orbit(moon_orbit, Rand::real());
 		}
-
 	}
 
 	return system;
