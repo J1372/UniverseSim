@@ -1,10 +1,7 @@
 #pragma once
 #include "InteractionState.h"
-
 #include <vector>
-#include "PlanetMouseModifier.h"
-
-struct Vector2;
+#include <raylib.h>
 
 // Interaction state in the simulation where the user is in the process of generating a planetary system.
 class SystemCreation : public InteractionState
@@ -13,8 +10,8 @@ class SystemCreation : public InteractionState
 	// The currently generated system.
 	std::vector<Body> system;
 
-	PlanetMouseModifier star_modifier;
 	bool user_clicked = false;
+	Vector2 initial_velocity {};
 
 	// Converts satellite velocities to absolute velocities.
 	// Then adds all bodies in the system to the universe.

@@ -8,17 +8,18 @@
 #include "PlanetCreation.h"
 #include "RenderUtil.h"
 #include "DebugInfo.h"
+#include <raymath.h>
 
 void SystemCreation::add_system_to_universe(Universe& universe)
 {
-	// Convert the relative velocities of all satellites to absolute velocities.
-	Vector2 star_vel = system[0].vel();
-	for (auto it = system.begin() + 1; it != system.end(); ++it)
+	// Add user-defined velocity to bodies.
+	for (Body& body : system)
 	{
-		it->change_vel(star_vel);
+		body.change_vel(initial_velocity);
 	}
 
 	universe.add_bodies(std::move(system));
+	initial_velocity = Vector2Zero();
 }
 
 SystemCreation::SystemCreation(Vector2 mouse_pos, Universe& universe)
@@ -30,14 +31,21 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 	Vector2 screen_point = GetMousePosition();
 	Vector2 universe_point = GetScreenToWorld2D(screen_point, camera_state.get_raylib_camera());
 
-	if (star_modifier.process_input(system[0], camera_state.get_camera(), universe) or IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 	{
 		// User started or is still altering star's velocity.
 		user_clicked = true;
 	}
 	else if (user_clicked)
 	{
-		if (!IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+		{
+			Vector2 movement = GetMouseDelta();
+			// Increase velocity in opposite direction of the mouse drag.
+			constexpr float scale_down = 10.0f;
+			initial_velocity = Vector2Add(initial_velocity, { -movement.x / scale_down , -movement.y / scale_down });
+		}
+		else
 		{
 			// User has finished velocity customization.
 			add_system_to_universe(universe);
@@ -51,7 +59,6 @@ InteractionState* SystemCreation::process_input(const CameraState& camera_state,
 	else
 	{
 		// Snap the system position to mouse position.
-
 		Body& central_body = system[0];
 		Vector2 central_pos = central_body.pos();
 
