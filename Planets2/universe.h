@@ -69,6 +69,8 @@ class Universe
 	// Observers to notify when this body is being removed.
 	Event<Removal> on_removal_observers;
 
+	void generate_rand_planets(std::vector<Body>& system, const Body& to_orbit, int num_planets, long total_mass) const;
+
 public:
 
 	Universe(const UniverseSettings& to_set, std::unique_ptr<SpatialPartitioning>&& partitioning);
@@ -78,6 +80,8 @@ public:
 
 	// Generates a system where the central body is at (x,y), using the current settings.
 	std::vector<Body> generate_rand_system(float x, float y);
+	std::vector<Body> generate_binary_system(float x, float y, int num_planets, long star_mass, long remaining_mass);
+	std::vector<Body> generate_unary_system(float x, float y, int num_planets, long star_mass, long remaining_mass) const;
 
 	// Command to add the body to the universe.
 	void add_body(Body&& body);
@@ -86,7 +90,7 @@ public:
 	void add_bodies(std::vector<Body>&& bodies);
 
 	// Returns a random orbit
-	Orbit gen_rand_orbit(const Body& orbited, const Body& orbiter) const;
+	Orbit generate_rand_orbit(const Body& orbited, const Body& orbiter) const;
 
 	// Creates a random system and adds it to the universe.
 	void create_rand_system();

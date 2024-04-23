@@ -289,20 +289,8 @@ void Universe::create_rand_system()
 	add_bodies(std::move(system));
 }
 
-std::vector<Body> Universe::generate_rand_system(float x, float y)
+void Universe::generate_rand_planets(std::vector<Body>& system, const Body& to_orbit, int num_planets, long total_mass) const
 {
-	std::vector<Body> system;
-
-	int num_planets = Rand::num(settings.system_min_planets, settings.system_max_planets);
-	int approximate_num_moons = settings.moon_chance * num_planets;
-	system.reserve(num_planets + approximate_num_moons);
-
-	long system_mass = Rand::num(1, settings.RAND_MASS) * 5000; // rand_mass is max mass of random planet
-	long star_mass = settings.system_mass_ratio * system_mass;
-	long remaining_mass = system_mass * (1 - settings.system_mass_ratio);
-
-	Body& star = system.emplace_back(x, y, star_mass);
-
 	std::vector<float> mass_ratios = gen_rand_portions(num_planets);
 
 	// Compress the maximum possible distance of a moon to its planet.
@@ -310,12 +298,11 @@ std::vector<Body> Universe::generate_rand_system(float x, float y)
 
 	for (int i = 0; i < num_planets; ++i)
 	{
-		long planet_mass = mass_ratios[i] * remaining_mass;
+		long planet_mass = mass_ratios[i] * total_mass;
 
 		Body& planet = system.emplace_back(0.0f, 0.0f, planet_mass);
-		Orbit planet_orbit = gen_rand_orbit(star, planet);
+		Orbit planet_orbit = generate_rand_orbit(to_orbit, planet);
 		planet.set_orbit(planet_orbit, Rand::real());
-
 
 		if (Rand::chance(settings.moon_chance))
 		{
@@ -324,12 +311,93 @@ std::vector<Body> Universe::generate_rand_system(float x, float y)
 			long moon_mass = Rand::real(0.01f, 0.1f) * planet.get_mass();
 
 			Body& moon = system.emplace_back(0.0f, 0.0f, moon_mass);
-			Orbit moon_orbit = gen_rand_orbit(planet, moon);
+			Orbit moon_orbit = generate_rand_orbit(planet, moon);
 			moon_orbit.set_periapsis(planet, Rand::real(settings.satellite_min_dist, moon_max_dist));
 			moon.set_orbit(moon_orbit, Rand::real());
 		}
 	}
+}
 
+std::vector<Body> Universe::generate_rand_system(float x, float y)
+{
+	int num_planets = Rand::num(settings.system_min_planets, settings.system_max_planets);
+
+	long system_mass = Rand::num(1, settings.RAND_MASS) * 5000; // rand_mass is max mass of random planet
+	long star_mass = settings.system_mass_ratio * system_mass;
+	long remaining_mass = system_mass * (1 - settings.system_mass_ratio);
+
+	if (Rand::chance(0.2f))
+	{
+		return generate_binary_system(x, y, num_planets, star_mass, remaining_mass);
+	}
+	else
+	{
+		return generate_unary_system(x, y, num_planets, star_mass, remaining_mass);
+	}
+}
+
+std::vector<Body> Universe::generate_binary_system(float x, float y, int num_planets, long star_mass, long remaining_mass)
+{
+	std::vector<Body> system;
+	int approximate_num_moons = settings.moon_chance * num_planets;
+	system.reserve(num_planets + approximate_num_moons);
+
+	float star_mass_variance = Rand::real(0.0, 0.1);
+	Body& star1 = system.emplace_back(x, y, star_mass * (.5f + star_mass_variance));
+	Body& star2 = system.emplace_back(x, y, star_mass * (.5f - star_mass_variance));
+
+	float combined_radius = star1.get_radius() + star2.get_radius();
+
+	float dist_between_periapsis = Rand::real(15.0f, 40.0f) * combined_radius;
+	float r_primary = (dist_between_periapsis * star2.get_mass()) / star_mass;
+	float r_secondary = dist_between_periapsis - r_primary;
+
+	float angle_to_bary = Rand::radian();
+	Vector2 unit_pos { cos(angle_to_bary), sin(angle_to_bary) };
+
+	Body star1_copy = star1;
+	star1_copy.set_pos(Vector2Add({ x, y }, Vector2Scale(unit_pos, r_primary)));
+	star1_copy.set_mass(star_mass);
+	Body star2_copy = star2;
+	star2_copy.set_pos(Vector2Add({ x, y }, Vector2Scale(unit_pos, -r_secondary)));
+	star2_copy.set_mass(star_mass);
+
+	Orbit bin_orbit1 { star2_copy };
+	bin_orbit1.periapsis = dist_between_periapsis;
+	bin_orbit1.eccentricity = Rand::real(0.0f, 0.75f);
+	bin_orbit1.grav_const = settings.grav_const;
+	bin_orbit1.prograde = Rand::chance(0.5f);
+	bin_orbit1.periapsis_angle = angle_to_bary;
+
+	Orbit bin_orbit2 { star1_copy };
+	bin_orbit2.periapsis = dist_between_periapsis;
+	bin_orbit2.eccentricity = bin_orbit1.eccentricity;
+	bin_orbit2.grav_const = settings.grav_const;
+	bin_orbit2.prograde = bin_orbit1.prograde;
+	bin_orbit2.periapsis_angle = angle_to_bary - std::numbers::pi;
+
+	star1.set_orbit(bin_orbit1, 0.0);
+	star2.set_orbit(bin_orbit2, 0.0);
+	star1.set_vel(Vector2Scale(star1.vel(), (float)star2.get_mass() / star_mass));
+	star2.set_vel(Vector2Scale(star2.vel(), (float)star1.get_mass() / star_mass));
+
+	// Generate inner planets that orbit one of the stars.
+	int num_planets_split = num_planets / 2;
+	long mass_split = remaining_mass / 2;
+	generate_rand_planets(system, star1, num_planets_split, mass_split);
+	generate_rand_planets(system, star2, num_planets_split, mass_split);
+
+	return system;
+}
+
+std::vector<Body> Universe::generate_unary_system(float x, float y, int num_planets, long star_mass, long remaining_mass) const
+{
+	std::vector<Body> system;
+	int approximate_num_moons = settings.moon_chance * num_planets;
+	system.reserve(num_planets + approximate_num_moons);
+
+	Body& star = system.emplace_back(x, y, star_mass);
+	generate_rand_planets(system, star, num_planets, remaining_mass);
 	return system;
 }
 
@@ -358,7 +426,7 @@ Body* Universe::get_body(int search_id)
 
 }
 
-Orbit Universe::gen_rand_orbit(const Body& orbited, const Body& orbiter) const
+Orbit Universe::generate_rand_orbit(const Body& orbited, const Body& orbiter) const
 {
 	Orbit orbit { orbited };
 
