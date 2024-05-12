@@ -8,15 +8,42 @@ class Body;
 
 class BarnesHutNode
 {
-	// A quad can only have 0 or 1 body.
-	// If a quad has a body, it cannot be a parent.
+	// Standard Barnes-Hut quadtree:
+	// A node can only have 0 or 1 body.
+	// If a node has a body, it cannot be a parent.
 	// Each non-empty quad is a leaf.
 
-	// The center of mass of all bodies in and below this node.
-	Vector2 center_of_mass { 0,0 };
+	// Leaf nodes modified to hold more than 1 body
+	//	to reduce depth of result tree.
 
-	// The mass of all bodies in and below this node.
-	long mass_sum = 0l;
+	// Union between leaf node info and parent node info.
+	// Could use variant.
+	static constexpr int NODE_MAX_CAP = 8;
+	union U
+	{
+		// The center of mass of all bodies in and below this node.
+		struct
+		{
+			Vector2 center_of_mass;
+			long mass_sum;
+		} parent;
+
+		struct
+		{
+			std::array<std::pair<Vector2, long>, NODE_MAX_CAP> point_masses;
+			int num_bodies;
+
+			std::span<const std::pair<Vector2, long>> data_to_span() const
+			{
+				return { point_masses.data(), static_cast<std::size_t>(num_bodies) };
+			}
+		} leaf;
+
+
+		U() { memset(this, 0, sizeof(U)); }
+
+	} leaf_or_parent;
+
 
 	// Area of this quad node.
 	Rectangle dimensions {};
@@ -46,9 +73,6 @@ class BarnesHutNode
 
 	// Returns true if a point is inside the quad's dimensions.
 	bool contains(Vector2 point) const;
-
-	// Returns true if the node has no body in it.
-	bool is_empty() const;
 
 	// Creates 4 new child nodes.
 	// The current point mass is moved into the child node that contains it.

@@ -2,6 +2,7 @@
 #include "Body.h"
 #include "Physics.h"
 #include <raymath.h>
+#include "MyRandom.h"
 
 BarnesHutNode::BarnesHutNode(float x, float y, float size) :
 	dimensions { x, y, size, size }
@@ -9,7 +10,7 @@ BarnesHutNode::BarnesHutNode(float x, float y, float size) :
 
 float BarnesHutNode::dist_ratio_sq(Vector2 point) const
 {
-	return (dimensions.width * dimensions.width) / Physics::dist_squared(center_of_mass, point);
+	return (dimensions.width * dimensions.width) / Physics::dist_squared(leaf_or_parent.parent.center_of_mass, point);
 }
 
 bool BarnesHutNode::sufficiently_far(Vector2 point, float approximation_value_sq) const
@@ -30,7 +31,7 @@ void BarnesHutNode::update_mass_add(Vector2 center, long mass)
 	* 	sum of their moments (m1x1 + m2x2 + ...)
 	* 	/
 	* 	sum of their mass (m1 + m2 + ...)
-	*
+	* 
 	* currently, our CM_X is :
 	*
 	* CM_X =
@@ -44,7 +45,7 @@ void BarnesHutNode::update_mass_add(Vector2 center, long mass)
 	*	current_moment_sum + moment_n
 	*	/
 	*	current_mass_sum + mass_n
-	*
+	* 
 	* The only variable we don't immediately have is current_moment_sum.
 	*
 	* But we have our current center of mass(x) and mass sum.
@@ -58,33 +59,18 @@ void BarnesHutNode::update_mass_add(Vector2 center, long mass)
 	* After that, our center of mass is updated.
 	*/
 
-	if (is_leaf())
-	{
-		// Leaf nodes mathematically SHOULD be able to be handled without being a special case.
-		// But the center of mass calculation sometimes results in minor floating point error,
-		// which causes the distance between the center mass and its only node body to be non-zero, and very small.
-		// which then causes the net force calculation of that center mass on its own body to be enormous, throwing the body out of bounds.
-
-		// This is only a problem in leaf nodes, parent nodes' center of masses should not have this problem, even with rounding error.
-
-		// This body is the only one affecting this node's center mass, so
-		center_of_mass = center;
-		mass_sum = mass;
-
-		return;
-	}
-
 	Vector2 new_moment = Physics::moment(center, mass);
 
 	// find current moment sum for x and y.
-	Vector2 current_moment_sum = Physics::moment(center_of_mass, mass_sum);
+	auto& p = leaf_or_parent.parent;
+	Vector2 current_moment_sum = Physics::moment(p.center_of_mass, p.mass_sum);
 
-	long combined_mass = mass_sum + mass;
+	long combined_mass = p.mass_sum + mass;
 
-	center_of_mass.x = (current_moment_sum.x + new_moment.x) / combined_mass;
-	center_of_mass.y = (current_moment_sum.y + new_moment.y) / combined_mass;
+	p.center_of_mass.x = (current_moment_sum.x + new_moment.x) / combined_mass;
+	p.center_of_mass.y = (current_moment_sum.y + new_moment.y) / combined_mass;
 
-	mass_sum = combined_mass;
+	p.mass_sum = combined_mass;
 
 }
 
@@ -92,19 +78,27 @@ void BarnesHutNode::add_body(Vector2 center, long mass)
 {
 	if (is_leaf())
 	{
-		if (!is_empty())
+		auto& p = leaf_or_parent.leaf;
+
+		if (p.num_bodies == NODE_MAX_CAP)
 		{
 			split();
 			add_to_child(center, mass);
+			update_mass_add(center, mass);
+		}
+		else
+		{
+			p.point_masses[p.num_bodies] = { center, mass };
+			++p.num_bodies;
 		}
 	}
 	else
 	{
 		// add to one of our children
 		add_to_child(center, mass);
+		update_mass_add(center, mass);
 	}
 
-	update_mass_add(center, mass);
 }
 
 void BarnesHutNode::add_to_child(Vector2 center, long mass)
@@ -136,16 +130,8 @@ void BarnesHutNode::add_to_child(Vector2 center, long mass)
 		*/
 
 		// Try to place in any empty quad, to avoid splitting even further.
-		BarnesHutNode* empty_quad = children->get_quad<&BarnesHutNode::is_empty>();
-		if (empty_quad)
-		{ // empty == is a leaf.
-			empty_quad->add_body(center, mass);
-		}
-		else
-		{ // if none are empty, which should be even rarer, just add to the upper left quad.
-			children->UL().add_body(center, mass);
-		}
-
+		BarnesHutNode* place_in = &children.get()->UL() + Rand::num(0, 4);
+		place_in->add_body(center, mass);
 	}
 
 }
@@ -160,16 +146,10 @@ bool BarnesHutNode::is_leaf() const
 	return children == nullptr;
 }
 
-bool BarnesHutNode::is_empty() const
-{
-	return mass_sum == 0l;
-}
-
 void BarnesHutNode::update(std::span<const Body> bodies)
 {
 	concatenate();
-	center_of_mass = { 0,0 };
-	mass_sum = 0l;
+	leaf_or_parent.leaf.num_bodies = 0;
 
 	for (const Body& body : bodies)
 	{
@@ -188,8 +168,22 @@ void BarnesHutNode::split()
 	// add current body to correct quad
 	// We are a leaf, and leaves can only have 1 body.
 	// Therefore, our com and mass sum are the com and mass of the 1 body.
-	add_to_child(center_of_mass, mass_sum);
 
+
+	// add children to new leaves and calculate center of mass / mass sum set here.
+	Vector2 moment_sum { 0, 0 };
+	long mass_sum = 0l;
+	for (const auto& p : leaf_or_parent.leaf.data_to_span())
+	{
+		add_to_child(p.first, p.second);
+
+		moment_sum = Vector2Add(moment_sum, Physics::moment(p.first, p.second));
+		mass_sum += p.second;
+	}
+
+	leaf_or_parent.parent.center_of_mass.x = moment_sum.x / mass_sum;
+	leaf_or_parent.parent.center_of_mass.y = moment_sum.y / mass_sum;
+	leaf_or_parent.parent.mass_sum = mass_sum;
 }
 
 void BarnesHutNode::concatenate()
@@ -203,19 +197,22 @@ Vector2 BarnesHutNode::force_applied_to(Vector2 point, long mass, float approxim
 	{
 		// Use center of mass and mass sum as an approximate grav pull.
 		// This is an approximation of a grav pull on the body by the group of bodies in child nodes.
-		if (!is_empty())
+		Vector2 forces { 0, 0 };
+		const auto& leaf_data = leaf_or_parent.leaf;
+		for (auto& p : leaf_or_parent.leaf.data_to_span())
 		{
+			forces = Vector2Add(forces, Physics::grav_force(point, mass, p.first, p.second));
+		}
 
-			return Physics::grav_force(point, mass, center_of_mass, mass_sum);
-		}
-		else
-		{
-			return { 0, 0 };
-		}
+		return forces;
 	}
-	else if (sufficiently_far(point, approximation_value))
+
+	const auto& parent_data = leaf_or_parent.parent;
+
+
+	if (sufficiently_far(point, approximation_value))
 	{
-		return Physics::grav_force(point, mass, center_of_mass, mass_sum);
+		return Physics::grav_force(point, mass, parent_data.center_of_mass, parent_data.mass_sum);
 	}
 	else
 	{
